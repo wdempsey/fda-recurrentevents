@@ -31,7 +31,7 @@ for(id in 1001:1091) {
   axis(side =1, cex.axis = 0.75); axis(side=2,  cex.axis = 0.75)
   lines(sequence[plot_obs], nonevent_mean-mean(nonevent_mean), col = "red")
   
-  max.obs = max(c(event_mean, nonevent_mean)); min.obs = min(c(event_mean, nonevent_mean))
+  max.obs = max(c(event_mean, nonevent_mean), na.rm = TRUE); min.obs = min(c(event_mean, nonevent_mean), na.rm = TRUE)
   plot(sequence, event_mean, 
        type = "l", xlim = c(min(sequence), max(sequence)),
        ylim = c(min.obs*0.95, max.obs*1.05),
