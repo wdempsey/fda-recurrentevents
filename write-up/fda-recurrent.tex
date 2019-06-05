@@ -1,0 +1,486 @@
+\documentclass[11pt]{amsart}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{matrix,arrows}
+\usepackage{amsfonts,amssymb,amsthm, txfonts, pxfonts,amscd}
+\usepackage[stretch=10]{microtype}
+%\usepackage{hyperref}
+\def\struckint{\mathop{%
+\def\mathpalette##1##2{\mathchoice{##1\displaystyle##2}%
+ {##1\textstyle##2}{##1\scriptstyle##2}{##1\scriptscriptstyle##2}}%
+\mathpalette
+{\vbox\bgroup\baselineskip0pt\lineskiplimit-1000pt\lineskip-1000pt
+\halign\bgroup\hfill$}
+{##$\hfill\cr{\intop}\cr\diagup\cr\egroup\egroup}%
+}\limits}
+\usepackage{natbib}
+\usepackage{color}
+\usepackage{booktabs,caption,fixltx2e}
+\usepackage[flushleft]{threeparttable}
+
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{matrix,arrows}
+\usepackage{amsfonts,amssymb,amsthm, txfonts, pxfonts,amscd}
+%\usepackage[stretch=10]{microtype}
+%\usepackage{hyperref}
+%\def\struckint{\mathop{%
+%\def\mathpalette##1##2{\mathchoice{##1\displaystyle##2}%
+% {##1\textstyle##2}{##1\scriptstyle##2}{##1\scriptscriptstyle##2}}%
+%\mathpalette
+%{\vbox\bgroup\baselineskip0pt\lineskiplimit-1000pt\lineskip-1000pt
+%\halign\bgroup\hfill$}
+%{##$\hfill\cr{\intop}\cr\diagup\cr\egroup\egroup}%
+%}\limits}
+
+\newcommand{\sam}[1]{{\color{blue}{#1}}}
+\newcommand{\walt}[1]{\textcolor{red}{[WD:\ #1]}}
+
+\setlength{\textwidth}{6.5in}
+\setlength{\textheight}{8.5in}
+\setlength{\topmargin}{-0.25in}
+\setlength{\evensidemargin}{0in}
+\setlength{\oddsidemargin}{0in}
+%\setlength{\evensidemargin}{.25in}
+%\setlength{\oddsidemargin}{.25in}
+
+
+\usepackage{setspace}
+\doublespacing
+
+\usepackage{soul,color, mathtools}
+
+\def\pr{\mathop{\text{pr}}\nolimits}
+
+\def\Bka{{\it Biometrika}}
+\def\AIC{\textsc{aic}}
+\def\T{{ \mathrm{\scriptscriptstyle T} }}
+\def\v{{\varepsilon}}
+\def\partitionsn{\mathop{\mathcal{P}_{[n]}}\nolimits}
+\def\partitionsN{\mathop{\mathcal{P}_{\infty}}\nolimits}
+\def\Dmn{\mathop{{D}_{m,n}}\nolimits}
+\def\symmetricn{\mathop{\mathcal{S}_{n}}\nolimits}
+\def\PE{\mathop{\rm Pitman\mbox{-}Ewens}\nolimits}
+\def\per{\mathop{\rm per}\nolimits}
+\def\U{\mathop{\mathcal{U}_{}}\nolimits}
+\def\Nb{\mathop{\mathbb{N}_{}}\nolimits}
+\def\Nbb{\mathop{\mathbf{N}_{}}\nolimits}
+\def\nbb{\mathop{\mathbf{n}_{}}\nolimits}
+\def\Xbb{\mathop{\mathbf{X}_{}}\nolimits}
+\def\fin{\mathop{\text{fin}}\nolimits}
+\def\pr{\mathop{\text{pr}}\nolimits}
+\def\E{\mathcal{E}}
+\def\G{\mathcal{G}}
+\def\deg{\text{deg}_{}}
+\def\equalinlaw{=_{\mathcal{D}}}
+\def\Fk{\mathop{\mathcal{F}_k^{\downarrow}}\nolimits}
+\def\F{\mathop{\mathcal{F}^{\downarrow}}\nolimits}
+\def\size{\mathop{\text{size}}\nolimits}
+\def\Ycong{\mathop{\EY}\nolimits}
+\def\EIsig{\mathop{\mathcal{E}_{\mathcal{I}}^{\sigma}}\nolimits}
+\def\EY{\mathop{\mathcal{E}_{Y}}\nolimits}
+\def\finp{\mathop{\fin(\mathcal{P})}\nolimits}
+\def\En{\mathop{\mathfrak{E}_{[n]}}\nolimits}
+\def\EN{\mathop{\mathfrak{E}_{\Nb}}\nolimits}
+\def\logit{\mathop{\text{logit}_{}}\nolimits}
+\def\EI{\mathop{\mathcal{E}_{\mathcal{I}}}\nolimits}
+\def\ES{\mathop{\mathfrak{E}_S}\nolimits}
+\def\Ifk{\mathop{{I}_{}}\nolimits}
+%\def\mathcal{I}{\mathop{\mathcal{I}_{}}\nolimits}
+\def\Ycong{\mathop{\EY}\nolimits}
+\def\EIsig{\mathop{\mathcal{E}_{\mathcal{I}}^{\sigma}}\nolimits}
+\def\EY{\mathop{\mathcal{E}_{Y}}\nolimits}
+\def\finp{\mathop{\fin(\mathcal{P})}\nolimits}
+\def\En{\mathop{\mathfrak{E}_{[n]}}\nolimits}
+\def\EN{\mathop{\mathfrak{E}_{\Nb}}\nolimits}
+\def\logit{\mathop{\text{logit}_{}}\nolimits}
+\def\EI{\mathop{\mathcal{E}_{\mathcal{I}}}\nolimits}
+\def\ES{\mathop{\mathfrak{E}_S}\nolimits}
+
+
+
+\DeclareRobustCommand{\citeext}[1]{\citeauthor{#1} (\citeyear{#1})}
+\DeclareRobustCommand{\citeint}[1]{(\citeauthor{#1}, \citeyear{#1})}
+
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lemma}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{defn}[thm]{Definition}
+\newtheorem{example}[thm]{Example}
+\newtheorem{meas}[thm]{Measurement}
+\newtheorem{conj}[thm]{Conjecture}
+\newtheorem{assumption}[thm]{Assumption}
+\newtheorem{rmk}[thm]{Remark}%\endlocaldefs
+
+% change default numbering for enumerate environment to be in parentheses
+
+\makeatletter
+
+\def\S{\mathcal{S}}
+\def\indep{\mathrel{\rlap{$\perp$}\kern1.6pt\mathord{\perp}}}
+\def\R{\mathcal{R}}
+\def\H{\mathcal{H}}
+\def\E{\mathbb{E}}
+\def\Y{{\bf Y}}
+\def\Cov{\text{Cov}}
+\def\one{{\bf 1}}
+\def\diag{\text{diag}}
+\def\given{\, | \,}
+\def\Given{\, \big | \,}
+\def\Nat{\mathbb{N}}
+\def\Real{\mathbb{R}}
+\def\bft{{\bf t}}
+\def\bfx{{\bf x}}
+\def\bfp{{\bf p}}
+\def\bfT{{\bf T}}
+\def\dotminussym#1#2{%
+  \setbox0=\hbox{$\m@th#1-$}%
+  \kern.5\wd0%
+  \hbox to 0pt{\hss\hbox{$\m@th#1-$}\hss}%
+  \raise.6\ht0\hbox to 0pt{\hss$\m@th#1.$\hss}%
+  \kern.5\wd0}
+\newcommand{\dotminus}{\mathbin{\mathpalette\dotminussym{}}}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\mathchardef\mhyphen="2D
+
+% display breaks
+
+
+\begin{document}
+
+
+\title{Recurrent event analysis in the presence of functional
+  covariates via random subsampling}
+\author{Walter Dempsey}
+\address {Department of Statistics, 
+  Harvard University, One Oxford Street
+   Cambridge, MA  02138, USA}
+ \email{wdempsey@fas.harvard.edu}
+
+\date{\today}
+
+\begin{abstract}
+Digital monitoring studies collect real-time high frequency data via
+mobile sensors in the subjects' natural environment.  
+This data can be used to model the impact of changes in physiology on
+recurrent event outcomes such as smoking, drug use, alcohol use, or
+self-identified moments of suicide ideation. 
+Likelihood calculations for the recurrent event analysis, however,
+become computationally prohibitive in this setting.  
+% Unlike classic joint models, event risk is a function of
+% recent sensor data, not simply current sensor values.  
+Motivated by this, a random subsampling framework is proposed for
+computationally efficient estimation of the effect of time-varying
+covariates on the recurrent event process. A subsampling-unbiased
+estimator for the cumulative hazard enters into an approximation of
+log-likelihood. The proposed estimator then maximizes this
+approximation. The estimator has two sources of variation: the first
+due to the recurrent event model and the second due to subsampling.
+The latter can be reduced by increasing the sampling rate; however,
+this leads to increased computational costs. 
+Simulations demonstrate the method and efficiency-computation
+tradeoff. We then illustrate the approach using data from a digital
+monitoring study of suicide ideation.
+\end{abstract}
+
+\keywords{recurrent events; probabilistic subsampling; estimating equations;
+high frequency time series; suicidal ideation}
+
+
+\maketitle
+
+\section{Introduction}
+
+Advancement in mobile technology has led to the rapid integration of
+mobile and wearable sensors into behavioral health~\citep{Freeetal2013}.
+Take HeartSteps, for example, a mobile health (mHealth) study designed
+to increase physical activity in sedentary adults
+\citep{KlasnjaHS2019}. Here, a Jawbone sensor is used to monitor step
+count every minute of the participant's study day.
+Of interest in many mHealth studies is the relation of such
+real-time high frequency sensor data to an adverse, recurrent event
+process. In the smoking cessation mHealth study~\citep{}, for
+example, the relation between a time-varying sensor-based measure of
+physiological stress and the smoking lapse process is of interest.
+In a suicidal ideation mHealth study~\citep{}, the relation of
+electrodermal activity (EDA) and accelerometer with self-identified
+moments of suicidal ideation is of interest.
+
+
+The goal of this paper is two-fold: (1) to discuss the appropriate
+choice of a statistical model for joint high-frequency sensor data and
+the recurrent event data, and (2) to construct a robust,
+easy-to-implement method for parameter estimation and inference. 
+For (1), we discuss an important issue regarding measurement-error
+models when paired with recurrent event outcomes.
+For (2), we introduce a random subsampling procedure that has
+several benefits.  First, the resulting inference is unbiased;
+however, there is a computation-efficiency trade-off. In particular, a
+higher sampling rate can decrease variance at the cost of increased
+computation.  We show via simulations that the benefits of incredibly
+high sampling rates is often negligible, as the contribution to the
+variation is small in relation to to variation in the underlying
+stochastic processes. Second, the subsampling procedure allows
+inference to not depend on choice of dynamics for the health process.
+Third, optimal estimating equations are derived that depend on the
+instantaneous rate of the recurrent event process, which increase
+increase efficiency of the subsampling procedure. Finally,
+implementation can leverage existing software for functional data
+analysis, leading to fast adoption by domain scientists. We show how
+to implement methods via standard mixed effects software. 
+
+\section{Related prior work}
+
+
+
+\section{Recurrent event process and associated high frequency data}
+
+Suppose $n$ subjects are independently sampled with observed event
+times~$\bfT_{i} = \{ T_{i,1}, \ldots, T_{i,k_i}\}$ over some observation
+window $[0, \tau_i]$ for each subject $i = 1,\cdots, n$.  Assume the
+event times are ordered, i.e., $T_{i,j} < T_{i,j^\prime}$ for $j <
+j^\prime$. The window length, $\tau_i$, is the censoring time and is
+assumed independent of the event process. Let~$N_{i} (t)$ denote the
+associated counting process of $\bfT_{i}$; that is, $N_i (t) =
+\sum_{j=1}^{k_i} 1 [ T_{i,j} < t ]$.  
+In this section, we assume a single-dimensional health process~$\bfx_i
+= \{ x_i (s) \}_{0 < s < \tau_i}$ for each participant is measured at
+a dense grid of time points.  Accelerometer, for example, is measured
+at a rate of 32Hz (i.e., $32$ times per second). Electrodermal
+activity (EDA), on the other hand, is measured at a rate of 4Hz (i.e.,
+4 times per second).  Given the high frequency nature of the sensor 
+measurements, this paper assumes the process is measured continuously.   
+
+Let~$H_{i,t}^{NX} = H_{i,t}^{N} \otimes H_{i,t}^{X}$ be the $\sigma$-field
+generated by all past values~$(N_i (s), x_i (s))_{0 \leq s \leq t}$.
+The instantaneous risk of an event at time~$t$ is assumed to depend on
+the health process, time-in-study, and the event history through a
+fully parametric conditional hazard function:
+\begin{equation}
+\label{eq:hazard}
+h_i \left( t \Given H_{i,t}^{NX} ; \theta \right) =
+\lim_{\delta \to 0} \delta^{-1} \pr \left( N_i(t+\delta) - N_i(t)
+  \given H_{i,t}^{NX}; \theta \right).
+\end{equation}
+where~$\theta$ is the parameter vector. Equation~\eqref{eq:hazard}
+states the hazard may depend on past values of the event history and
+covariates.  For high frequency physiological data, we assume that 
+current risk is a linear functional of the health process over some
+recent window of time; that is, 
+\begin{equation}
+\label{eq:hazardlinear}
+h_i \left( t \given  H_{i,t}^{NX} ; \theta \right) = 
+h_0 (t) \exp \left( g_t \left( H_{i,t}^{N} \right)^{\prime} \alpha
+  + \int_{t-\Delta}^t x_i (s) \beta(s) ds  \right)
+\end{equation}
+where~$\Delta$ is an unknown window-length, and $g_t( H_{i,t}^N ) \in
+\mathbb{R}^p$ is a $p$-length feature vector summarizing the
+event-history and time-in-study information. The final
+term~$\int_{t-\Delta}^t x_i(s) \beta(s) ds$ reflects the unknown
+linear functional form of the impact of the time-varying covariate on
+current risk.   
+
+An alternative to~\eqref{eq:hazardlinear} would be to construct
+features from the sensor data history~$f_t ( H_{i,t}^{X}) \in
+\mathbb{R}^q$ and incorporated these features in the place of the
+final term. Our current approach builds linear features of~$H_{i,t}^X$
+directly from the integrated history, avoiding the feature
+construction problem -- a highly nontrivial issue for high frequency
+time-series data.  The main caveat is the additional
+parameter~$\Delta$; however, we show that so long as the
+estimated~$\hat \Delta$ exceeds~$\Delta$, then resulting estimation is
+unbiased albeit at a loss of efficiency.  Moreover, sensitivity
+analysis can be peformed to determine how choice of $\hat \Delta$
+affects inference.  One limitation of the approach presented here is
+that only fully parametric hazard models may be fit to the data.
+However, a spline model for the log baseline hazard affords sufficient
+model flexibility.
+
+\subsection{Measurement-error models with event processes}
+
+One potential criticism for~\eqref{eq:hazard} is that the health
+process may be measured with error.  
+A common mathematical strategy for joint models is to consider an
+unobservable, latent process~$\eta_i$ such that~$\bfT_i \indep x_i
+\given \eta_i$. Take~$\eta_i$ to be a zero-mean Gaussian process with 
+\begin{equation}\label{eq:jm}
+x_i(t) = \eta_i (t) + \epsilon_i (t),\quad \text{ and } \log h_i (t
+\given \eta ) = \log h_0 (t) + g_t \left( H_{i,t}^N \right)^{\prime}
+\alpha + \int_{t-\Delta}^t \eta_i (s) \beta (s) ds
+\end{equation}
+where~$\epsilon (t)$ is a white-noise measurement error. Thus,
+$\eta_i (t)$ is the ``true and unobserved value of the longitudinal
+outcome'' \citep[Sec. 2.1, pp.3]{Rizopoulos2010}. The conditional hazard
+function given~$\bfx_i$ is given by
+\[
+\pr \left ( T_{i,j} = t \Given \H_{i,\tau_i}^X, \{ T_{i,j^\prime} < t \}_{j^\prime <
+  j}, T_{i,j} \geq t \right) = E \left( h_i (t \given \eta) \exp
+\left( \int_{T_{i,j-1}}^t h_i (\eta (s)) ds \right) \given \bfx_i
+\right).
+\]
+Therefore, it appears that the conditional hazard function depends 
+not only on past $x$-values, but also on future $x$-values.
+Therefore, the processes~$\bfx$ and~$\bfT$ do not satisfy
+\emph{independent evolution}~\citep{DempseyPMCC2}.
+This is quite unnatural, as~\eqref{eq:jm} suggests current risk
+depends on future values of the sensor process.
+To alleviate this issue, we employ the strategy of taking~$\epsilon
+(t) \equiv 0$ and treating~$\bfx_i$ as a mean-zero Gaussian process.
+Note, the proposed inferential procedure will not rely on this
+modeling assumption being correct; instead, we will use the random
+subsampling mechanisms to address model misspecification.
+
+\subsection{Likelihood calculation}  
+
+The component of the log-likelihood related to the event process
+is given by
+\[
+  L_n (\theta) = \sum_{i=1}^{n} \left ( \sum_{j=1}^{k_i} 
+  \left[ \log ( h_i (T_{i,j}) ) - H_i (T_{i,j}, T_{i,j-1}; \theta)
+  \right] - H_{i} (\tau_i, T_{i,k_i}; \theta) \right) + \log \left(
+  \pr ( \bfx_i ; \psi ) \right)
+\]
+where~$T_{i,0} = 0$, $T_{i, k_i + 1} = \tau_i$, and
+\[
+H_{i} (T_{i,j}, T_{i,j-1}; \theta) = \int_{T_{i,j-1}}^{T_{i,j}} h_{i} (t; \theta) dt.
+\]
+Solving the associated score equations~$U_n (\theta) = 0$ yields the
+maximum likelihood estimator~$\hat \theta$, where
+\[
+U_n (\theta) = \sum_{i=1}^{n} \left ( \sum_{j=1}^{k_i} 
+  \left[ \frac{h^{(1)}_i (T_{i,j})}{h_i (T_{i,j})} - H^{(1)}_i
+    (T_{i,j}, T_{i,j-1}; \theta) \right]  - H^{(1)}_{i} (\tau_i,
+  T_{i,k_i}; \theta) \right) 
+\]
+and~$h_i^{(1)} (T_{i,j}; \theta)$ and $H_i^{(1)} (T_{i,j}, T_{i,j-1}; \theta)$
+are the derivatives of~$h_i^{(1)} (T_{i,j}; \theta)$ and~$H_i^{(1)}
+(T_{i,j}, T_{i,j-1}; \theta)$ with repsect to $\theta$.
+
+In classical joint models~\citep{Henderson2000, Tsiatis2004},
+time-varying covariates~$x_i (t)$ are observed only intermittently at
+appointment times, which may or may not be
+administrative~\citep{DempseyPMCC}.  In this setting, it is not feasible
+to compute the cumulative hazard functions~$H_{i} (T_{i,j}, T_{i,j-1};
+\theta)$.  In our current setting, we assume~$x_{i} (t)$ is observed
+continuously.  While this relieves the issue of intermittent
+observations, a joint model requires a flexible class of longitudinal
+models for the sensor stream data that adequately capture their
+dynamics.  Moreover, the risk model now depends on an integrated past
+history of the time-varying covariate leads to severe increase in
+computational complexity.
+
+\subsection{Probabilistic subsampling framework}
+
+To avoid both the statistical modeling challenge and the computational
+burden, we employ a point-process subsampling design to obtain
+unbiased estimates of the cumulative hazards for each subject. The
+subsampling procedure treats the collected sensor data as a set of
+\emph{potential observations}. 
+Suppose covariate information is sampled at times drawn from an
+independent inhomogeneous Poisson point process with known
+intensity~$\pi_i (t)$. At a subsampled time~$t$, the \emph{windowed
+  covariate history} $\{ x_i (t-s)\}_{0 \leq s \leq \Delta}$ is
+observed. Optimal choice of~$\pi_i (t)$ is beyond the scope of this
+paper; however, the literature suggests setting proportional to the
+hazard function~$h_i (t; \theta)$.
+
+An estimator is design-unbiased if its expectation is equal to that
+parameter under the probability distribution induced by the sampling
+design~\citep{Cassel1977}. Let~$D_i \subset [0,t_i]$ denote the set of
+subsampled points.  Note, by design, this set is distinct from the set
+of event times, i.e.,~$\bfT_i \cap D_i = \emptyset$.  Under
+subsampling via $\pi_i (t)$, then we may compute the Horvitz-Thompson
+estimator 
+\[
+\hat H_{i} (T_{i,j}, T_{i,j-1}; \theta) = \sum_{t \in D \cap [T_{i,j-1},
+  T_{i,j}]} \frac{ \lambda^{(1)} ( t \given \{ x(t - s) \}_{0 < s <
+    \Delta}; \theta ) }{ \pi (s) }
+\]
+Let~$N = \{ T_{i,j} \}_{i =1, j=1}^{n,k_i}$ denote the complete set of
+event times.  Then an alternative design-unbiased estimator of the
+cumulative hazards is given by
+\begin{equation}
+\label{eq:WPest}
+\hat H_{i} (T_{i,j}, T_{i,j-1}; \theta) = \sum_{t \in (N \cup D) \cap [T_{i,j-1},
+  T_{i,j}]} \frac{ \lambda^{(1)} ( t \given \{ x(t - s) \}_{0 < s <
+    \Delta}; \theta ) }{ \pi (s) + \lambda ( t \given \{ x(t - s) \}_{0 < s <
+    \Delta}; \theta) }
+\end{equation}
+Equation~\eqref{eq:WPest} is the estimator suggested
+by~\cite{Waagepetersen2008}.  This estimator depends on the
+superposition of the event and subsampling processes.  This estimator
+has been shown to be more efficient than the Horvitz-Thompson
+estimator; therefore, we restrict our attention to~\eqref{eq:WPest}
+for the remainder of this paper. Let
+\[
+w (t; \theta) = \frac{\pi (t)}{\pi (t) + \lambda (t \given \{
+  x(t - s) \}_{0 < s < \Delta}; \theta)}
+\]
+Then the resulting estimating equations are given by
+\begin{equation}
+\label{eq:approxscore}
+\hat{U}_n = \sum_{t \in N} w(t; \theta) \frac{\lambda^{(1)} (t \given \{
+  x(t - s) \}_{0 < s < \Delta}; \theta)}{ \lambda ( t \given \{
+  x(t - s) \}_{0 < s < \Delta}; \theta)}  - 
+\sum_{t \in D} w(t; \theta) \frac{\lambda^{(1)} (t \given \{
+  x(t - s) \}_{0 < s < \Delta}; \theta)}{ \pi (t) }
+\end{equation}
+Equation~\eqref{eq:approxscore} are approximate score functions built
+via plug-in of the design-unbiased estimator of the cumulative hazard.
+
+We note that this approach avoids modeling the sensor stream process,
+which would be required if one were to consider a standard joint model
+approach.  Sensor streams such as accelerometer and skin-conductance
+relate to complex dynamical systems.  The subsampling
+approach avoids this difficult modeling task entirely.
+
+
+\section{Functional principal components within event-history
+  analysis}
+
+Take $\{ X (s) \}_{0 < s < \Delta}$. Let~$\psi_{j} (s)$ is an
+orthonormal basis for $L^2 [ 0,1 ]$.  Then
+
+\[
+X(s) - \mu(s) 
+\]
+
+A simpler alternative is the Horvitz-Thompson estimator where the
+denominator only depends on 
+
+\[
+L(\theta) = \sum_{s \in N} \log \lambda \left( \{ x(s-t) \}_{0 < t
+    \leq \Delta} \right) 
+\]
+
+
+
+\section{Theoretical analysis}
+
+\begin{assumption}[Event process assumptions]
+
+\end{assumption}
+
+\begin{assumption}[Covariance assumptions]
+
+\end{assumption}
+
+\begin{assumption}[Functional data assumptions]
+
+\end{assumption}
+
+
+
+\section{Simulations}
+
+\subsection{}
+
+\section{Case Study: }
+
+\bibliographystyle{plainnat}
+\bibliography{si-fda-refs}
+
+\end{document}
