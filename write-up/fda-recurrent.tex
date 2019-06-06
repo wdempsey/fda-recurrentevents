@@ -335,13 +335,15 @@ subsampling mechanisms to address model misspecification.
 
 \subsection{Likelihood calculation}  
 
-The component of the log-likelihood related to the event process
-is given by
+For the sake of notational simplicity, we leave the dependency of the
+conditional hazard function on~$H_{i,t}^{NX}$ implicit, and write~$h_i
+(t; \theta)$. The component of the log-likelihood related to the event
+process is then given by
 \[
   L_n (\theta) = \sum_{i=1}^{n} \left ( \sum_{j=1}^{k_i} 
-  \left[ \log ( h_i (T_{i,j}) ) - H_i (T_{i,j}, T_{i,j-1}; \theta)
-  \right] - H_{i} (\tau_i, T_{i,k_i}; \theta) \right) + \log \left(
-  \pr ( \bfx_i ; \psi ) \right)
+  \left[ \log \left( h_i \left( T_{i,j}; \theta
+      \right) \right) - H_i \left( T_{i,j}, T_{i,j-1}; \theta \right) 
+  \right] - H_{i} \left( \tau_i, T_{i,k_i}; \theta \right) \right) 
 \]
 where~$T_{i,0} = 0$, $T_{i, k_i + 1} = \tau_i$, and
 \[
@@ -351,26 +353,25 @@ Solving the associated score equations~$U_n (\theta) = 0$ yields the
 maximum likelihood estimator~$\hat \theta$, where
 \[
 U_n (\theta) = \sum_{i=1}^{n} \left ( \sum_{j=1}^{k_i} 
-  \left[ \frac{h^{(1)}_i (T_{i,j})}{h_i (T_{i,j})} - H^{(1)}_i
+  \left[ \frac{h^{(1)}_i (T_{i,j}; \theta)}{h_i (T_{i,j}; \theta)} - H^{(1)}_i
     (T_{i,j}, T_{i,j-1}; \theta) \right]  - H^{(1)}_{i} (\tau_i,
   T_{i,k_i}; \theta) \right) 
 \]
 and~$h_i^{(1)} (T_{i,j}; \theta)$ and $H_i^{(1)} (T_{i,j}, T_{i,j-1}; \theta)$
 are the derivatives of~$h_i^{(1)} (T_{i,j}; \theta)$ and~$H_i^{(1)}
-(T_{i,j}, T_{i,j-1}; \theta)$ with repsect to $\theta$.
+(T_{i,j}, T_{i,j-1}; \theta)$ with respect to $\theta$.
 
 In classical joint models~\citep{Henderson2000, Tsiatis2004},
 time-varying covariates~$x_i (t)$ are observed only intermittently at
-appointment times, which may or may not be
-administrative~\citep{DempseyPMCC}.  In this setting, it is not feasible
-to compute the cumulative hazard functions~$H_{i} (T_{i,j}, T_{i,j-1};
-\theta)$.  In our current setting, we assume~$x_{i} (t)$ is observed
-continuously.  While this relieves the issue of intermittent
-observations, a joint model requires a flexible class of longitudinal
-models for the sensor stream data that adequately capture their
-dynamics.  Moreover, the risk model now depends on an integrated past
-history of the time-varying covariate leads to severe increase in
-computational complexity.
+appointment times. In our current setting, maximizing the likelihood
+is computationally prohibitive since for any~$\theta$ we must compute
+the cumulative hazard functions~$H_{i} (T_{i,j}, T_{i,j-1}; \theta)$
+which require integration of~$h_i(t;\theta)$ given
+by~\eqref{eq:hazardlinear} which itself depends on the
+integral~$\int_{t-\Delta}^t x_i (s) \beta(s) ds$.  
+That is, the risk model now depends on an integrated past history of
+the time-varying covariate which leads to severe increase in
+computational complexity. 
 
 \subsection{Probabilistic subsampling framework}
 
@@ -395,7 +396,7 @@ of event times, i.e.,~$\bfT_i \cap D_i = \emptyset$.  Under
 subsampling via $\pi_i (t)$, then we may compute the Horvitz-Thompson
 estimator 
 \[
-\hat H_{i} (T_{i,j}, T_{i,j-1}; \theta) = \sum_{t \in D \cap [T_{i,j-1},
+\hat H_{i} (T_{i,j}, T_{i,j-1}; \theta) = \sum_{t \in D_i \cap [T_{i,j-1},
   T_{i,j}]} \frac{ \lambda^{(1)} ( t \given \{ x(t - s) \}_{0 < s <
     \Delta}; \theta ) }{ \pi (s) }
 \]
@@ -438,8 +439,139 @@ relate to complex dynamical systems.  The subsampling
 approach avoids this difficult modeling task entirely.
 
 
-\section{Functional principal components within event-history
-  analysis}
+\section{Longitudinal functional principal components within
+  event-history analysis}
+
+Probabilistic subsampling converts the single sensor stream~$\bar x_i$
+into a sequence of functions observed repeatedly at sampled
+times~$D_i$ and event times~$N_i$. Such a data structure is commonly
+referred to as \emph{longitudinal functional data}~\ref{Xiao2013,
+  GoldSmith2015}.
+Given the large increase in longitudinal functional data in recent
+years, corresponding analysis has received much recent
+attention~\citep{Morris2003, MorrisCarroll2006,
+  Baladandayuthapani2008, Di2009, Greven2010, Staicu2010,
+  ChenMuller2012, LiGuan2014}.
+In this paper, we combine work by~\cite{Park2018}
+and~\cite{Goldsmith2011} to construct a computationally efficient
+penalized functional method for solving the estimation equations~$\hat
+U_n (\theta)$.
+
+In our setting, probabilistic subsampling leads to observation
+times~$t \in N \cup D$ at which 
+
+
+The marginal covariance~\cite{Park2018} allows a single 
+\begin{itemize}
+\item {\bf Step 1}: Estimate~$\hat \mu(s,t)$ via sandwich smoother for
+  all~$s \in [0,\Delta]$ and~$t \in \cup_{i=1}^n \left( D_i \cup N_i
+  \right)$. Define~$\tilde X (s,t) = X(s,t) - \hat \mu(s,t)$ to be a
+  mean-zero process for each~$t$.
+\item {\bf Step 2}: Compute the pooled sample covariance
+\[
+\hat \Xi (s , s^\prime) = 
+\left( \sum_{i=1}^n \left | N_i \cup D_i \right |\right)^{-1}
+\left( \sum_{i=1}^n \sum_{t \in N_i \cup D_i} \tilde X (s,t) \tilde X
+  (s^\prime, t) \right).
+\]
+Compute at a fine set of grid points. This is an estimate of 
+\[
+\Xi (s, s^\prime) = \int_{\mathcal{T}} c( (s,T), (s^\prime, T) ) g(T) dT
+\]
+where~$g(T)$ is a superposition of the event process and the
+subsampling process.
+\item {\bf Step 3}: Take spectral decomposition~$\{ \hat \phi_k (s),
+  \hat \lambda_k \}_{k \geq 1}$. Choose~$K_x \geq K_b$ large enough.
+\item {\bf Step 4}: Compute
+\[
+\hat c_{i,k} (t) = \int_{t-\Delta}^t \tilde X_i (s,t) \hat \phi_k (s) ds
+\]
+Then
+\[
+X(s,t) \approx \hat \mu(s,t) + \sum_{k=1}^{K_x} \hat c_{i,k} (t)
+\phi_k (s).
+\]
+\item {\bf Step 5}: Plugging both the spline and KL decomposition we
+  have
+\begin{align*}
+\int_{t-\Delta}^t X(s,t) \beta(s) ds 
+  &= \int_{t-\Delta}^t \left[ \hat \mu(s,t) + \sum_{k=1}^{K_x}
+    c_{i,t,k} \phi_k (s) \right] \times \left[ \sum_{k^\prime=1}^{K_b}
+    \beta_k \psi_k (s) \right] \\
+  &= [ M_{i,t}^\prime + C_{i,t}^\prime J_{\phi, \psi} ] \beta
+\end{align*}
+where~$M_{i,t}$ is a vector with~$i$th entry equal
+to~$\int_{t-\Delta}^t \hat \mu(s,t) \psi_k (s) ds$, $C_{i,t} =
+(c_{i,t,1}, \ldots, c_{i,t,K_x}) \in \mathbb{R}^{K_x \times 1}$,
+$\beta = (\beta_1, \ldots, \beta_{K_b}) \in \mathbb{R}^{K_b \times 1}$
+and~$J_{\phi, \psi} \in \mathbb{R}^{K_x \times K_b}$ where the~$(i,j)$
+entry is given by
+\[
+\int_{t-\Delta}^t \phi_{i} (s) \psi_{j} (s) ds.
+\]
+\end{itemize}
+
+We re-write the hazard function as:
+\[
+h_i (t; \theta) = \exp \left( Z_{i,t}^\prime, \alpha + [M_{i,t} + C_{i,t}^\prime
+  J_{\phi, \psi} ] \beta \right) = \exp \left( W_{i,t}^\prime \theta \right),
+\]
+where~$W_{i,t}^\prime = [ Z_{i,t}^\prime (M_{i,t}^\prime +
+C_{i,t}^\prime J_{\phi, \psi}) ]$ and~$\theta = (\alpha,
+\beta)$. Then, the score function is:
+\[
+\hat U_n (\theta) = \sum_{i=1}^n \left \{  \sum_{t \in N_i}
+  \frac{h_i^{(1)} (t; \theta)}{h_i (t; \theta)} - \hat H_i^{(1)}
+  (\tau_i, 0; \theta) 
+\right \}
+\]
+where
+\[
+\hat H_i^{(1)} (\tau_i; \theta) = \sum_{u \in N_i \cup D_i} \frac{
+  h^{(1)}_i (u; \theta)}{\pi_i (u) + h_i (u; \theta)}.
+\]
+Note that
+\[
+\frac{d}{d\theta} \log h_i (t; \theta) = \frac{h^{(1)}_i (t;
+  \theta)}{h_i (t; \theta)}.
+\]
+Therefore, these terms have very simple forms!!! 
+\[
+\frac{d}{d\theta} \log h_i (t; \theta) = W_{i,t}
+\]
+On the other hand,
+\[
+\frac{d}{d \theta} \log \left( \pi_i (t) + h_i (t;\theta) \right) = 
+\frac{\exp \left( W_{i,t}^\prime \theta \right)}{\pi_i (t) + \exp
+  \left( W_{i,t}^\prime \theta \right)} W_{i,t}
+\]
+Therefore,
+\begin{align*}
+\hat U_n (\theta) 
+  &= \sum_{i=1}^n \left \{ \sum_{t \in N_i} W_{i,t} -
+    \sum_{u \in N_i \cup D_i} \frac{\exp \left( W_{i,u}^\prime \theta
+    \right)}{\pi_i (t) + \exp \left( W_{i,u}^\prime \theta \right)}
+    W_{i,u} \right \} \\
+  &= \sum_{i=1}^n \left \{ \sum_{t \in N_i} \frac{\pi_i (t)}{\pi_i (t)
+    + \exp \left( W_{i,u}^\prime \theta \right)} W_{i,t} -
+    \sum_{u \in D_i} \frac{\exp \left( W_{i,u}^\prime \theta
+    \right)}{\pi_i (t) + \exp \left( W_{i,u}^\prime \theta \right)}
+    W_{i,u} \right \} \\
+  &= \sum_{i=1}^n \left \{ \sum_{t \in N_i} w_{i} (t; \theta) W_{i,t} -
+    \sum_{u \in D_i} (1 - w_i (u; \theta)) W_{i,u} \right \} \\
+\end{align*}
+
+
+\section{Prediction}
+We wish to estimate the risk at non-sampled points.
+
+For prediction, we use sparse FPCA (Yao 2005) 
+\begin{itemize}
+\item Take $\hat c_{k} (s,t)$ for~$t \in N \cup D$ and~$s \in
+  [0,\Delta]$
+\item 
+\end{itemize}
+
 
 Take $\{ X (s) \}_{0 < s < \Delta}$. Let~$\psi_{j} (s)$ is an
 orthonormal basis for $L^2 [ 0,1 ]$.  Then
@@ -448,14 +580,9 @@ orthonormal basis for $L^2 [ 0,1 ]$.  Then
 X(s) - \mu(s) 
 \]
 
-A simpler alternative is the Horvitz-Thompson estimator where the
-denominator only depends on 
-
 \[
-L(\theta) = \sum_{s \in N} \log \lambda \left( \{ x(s-t) \}_{0 < t
-    \leq \Delta} \right) 
+- b^\prime D b
 \]
-
 
 
 \section{Theoretical analysis}
@@ -472,11 +599,29 @@ L(\theta) = \sum_{s \in N} \log \lambda \left( \{ x(s-t) \}_{0 < t
 
 \end{assumption}
 
+\begin{thm}[No reconstruction error]
+
+\end{thm}
+
+\begin{thm}[Reconstruction error but~$\hat \Delta > \Delta$]
+\label{eq:biaseddown}
+\end{thm}
+
+Theorem~\ref{eq:}
+
+
+
+\begin{thm}[When~$\hat \Delta < \Delta$] 
+
+\end{thm}
+
 
 
 \section{Simulations}
 
-\subsection{}
+\subsection{Unbiased estimation}
+
+\subsection{Unbiased estimation}
 
 \section{Case Study: }
 
