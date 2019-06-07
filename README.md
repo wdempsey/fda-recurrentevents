@@ -23,14 +23,20 @@ The goal of this project is to do.
 
 If there are steps to run the code list them as follows: 
 
-0. **Dependencies**: All code is written in R. The code was run on the
-   research computing system managed by SLURM.
-1. **Data**: Data is from 91 suicidal-inpatients at Franciscan Children's Hospital
+0. **Dependencies**: All code is written in R. The code currently does
+   not have dependencies beyond core R packages. The code was run on
+   the research computing system managed by SLURM.
+1. **Data**: Data is from 91 suicidal-inpatients at Franciscan
+Children's Hospital. 
 * Data is stored on Harvard's Sharepoint system; access to data is
-managed by [Evan Kleiman]{}
-* Two types of pre-processingSubsampling routine
-Are there preprocessing steps? If so what folder are they in, for
-example: [the data preprocessing directory](/data_preprocessing)
+managed by [Evan Kleiman]{https://kleimanlab.org}
+* Data consists of two data frames per participant:
+  * **EDA**: Timestamped measurements of EDA. Each row consists of Participant ID,
+    E4 wearable ID, timestamp, raw EDA measurement, and 5 different
+    processed EDA measurements.
+  * **Button presses**: Timestamps at which the participant pressed
+    the button to indicate a moment of distress.  Each row consists of
+    Participant ID, timestamp (both in seconds and milliseconds). 
 2. **Data visualization**:
 * Gener
 3. **Methods**:
