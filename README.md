@@ -31,14 +31,14 @@ Children's Hospital.
 * Data is stored on Harvard's Sharepoint system; access to data is
 managed by [Evan Kleiman](https://kleimanlab.org)
 * Data consists of two data frames per participant:
-* **EDA**: Timestamped measurements of EDA. Each row consists of Participant ID,
+  * **EDA**: Timestamped measurements of EDA. Each row consists of Participant ID,
     E4 wearable ID, timestamp, raw EDA measurement, and 5 different
     processed EDA measurements.
   * **Button presses**: Timestamps at which the participant pressed
     the button to indicate a moment of distress.  Each row consists of
     Participant ID, timestamp (both in seconds and milliseconds). 
-2. **Data visualization**: Generates
-*alfja
+2. **[Data visualization](/visualization)**: Directory with code to
+generate plots per participant
 3. **Methods**:
 *
 4. **Evaluate**
