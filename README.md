@@ -42,21 +42,27 @@ generate plots per participant
 3. **[Methods](/methods)**: Directory with code implementation of the
 random subsampling methodology
 * **Inputs file**: Fill in the `inputs.json` file
-  * Directory for EDA participant data (1 EDA file per participant)
-  * Directory for button press data (1 file containing all button press data)
-  * User-completed `feature-generator.R` file that takes in timestamp,
-    participant id, and the button press data and outputs a feature
-    vector. One simple example is number of button presses in prior
-    30-minutes.
-  * User-specified sampling rate (per hour) for the non-event
+  * `eda-dir`: Directory for EDA participant data (1 EDA file per
+  participant)
+  * `button-press-dir`: Directory for button press data (1 file
+  containing all button press data)
+  * `feature-generator-dir`: User-completed `feature-generator.R` file that
+  takes in timestamp, participant id, and the button press data and
+  outputs a feature vector. One simple example is number of button
+  presses in prior 30-minutes.
+  * `partial-pooling-indicator`: User-specified indicator of whether
+  partial pooling should be used.
+  * `sampling-rate`: User-specified sampling rate (per hour) for the non-event
   times. Default is set to 1 sample every 30-minutes *(need to check we
   cannot improve it)*.
 * **Methods run file**: The following code snippet can be run once
 `inputs.json` has been completed:
+
 ```Rscript fda-recurrent inputs.json```
+
 * **Outputs file**: All output is saved in `outputs.RDS`. Contains:
-  * List of all sampled time points
-  * Mean estimate
+  * `sample-ts`: List of all sampled time points
+  * `theta-hat`: Penalized maximum likelihood estimate
   * Pooled Sample Covariance estimate
   * Eigenfunctions and eigenvalues
   * Parameter estimates along with standard errors
