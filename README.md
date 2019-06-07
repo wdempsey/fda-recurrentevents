@@ -39,8 +39,22 @@ managed by [Evan Kleiman](https://kleimanlab.org)
     Participant ID, timestamp (both in seconds and milliseconds). 
 2. **[Data visualization](/visualization)**: Directory with code to
 generate plots per participant
-3. **Methods**:
-*
+3. **[Methods](/methods)**: Directory with code implementation of the
+random subsampling methodology
+* **Inputs file**: Fill in the `inputs.json` file
+  * EDA and button press data for all participants (1 EDA file per
+  participant, 1 file containing all button press data)
+  * User-defined log-hazard model
+  * Sampling rate (per hour)
+* **Methods run file**: The following code snippet can be run once
+`inputs.json` has been completed:
+```Rscript fda-recurrent inputs.json```
+* **Outputs file**: All output is saved in `outputs.RDS`. Contains:
+  * List of all sampled time points
+  * Mean estimate
+  * Pooled Sample Covariance estimate
+  * Eigenfunctions and eigenvalues
+  * Parameter estimates along with standard errors
 4. **Evaluate**
 * Code to evaluate method on simulation studies [simulation subdirectory](/evaluation/simulationstudies)
 * Code to evaluate method on Franciscan dataset [case study subdirectory](/evaluation/casestudy)
@@ -48,7 +62,7 @@ generate plots per participant
 * Corresponding statistical writeup can be found in
 2. Run methods. Point people towards the folder with methods. [the methods directory](/methods)
 
-# Contact us #
+## Contact me ##
 
 Feel free to contact [Walter Dempsey](mailto:wdem@umich.edu) with
 questions, comments, and advice.
