@@ -21,7 +21,7 @@ The goal of this project is to do.
 
 ## Code Description ##
 
-If there are steps to run the code list them as follows: 
+Below we list important details in order use this repository:
 
 0. **Dependencies**: All code is written in R. The code currently does
    not have dependencies beyond core R packages. The code was run on
@@ -29,16 +29,16 @@ If there are steps to run the code list them as follows:
 1. **Data**: Data is from 91 suicidal-inpatients at Franciscan
 Children's Hospital. 
 * Data is stored on Harvard's Sharepoint system; access to data is
-managed by [Evan Kleiman]{https://kleimanlab.org}
+managed by [Evan Kleiman](https://kleimanlab.org)
 * Data consists of two data frames per participant:
-  * **EDA**: Timestamped measurements of EDA. Each row consists of Participant ID,
+* **EDA**: Timestamped measurements of EDA. Each row consists of Participant ID,
     E4 wearable ID, timestamp, raw EDA measurement, and 5 different
     processed EDA measurements.
   * **Button presses**: Timestamps at which the participant pressed
     the button to indicate a moment of distress.  Each row consists of
     Participant ID, timestamp (both in seconds and milliseconds). 
-2. **Data visualization**:
-* Gener
+2. **Data visualization**: Generates
+*alfja
 3. **Methods**:
 *
 4. **Evaluate**
