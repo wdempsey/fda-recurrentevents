@@ -25,7 +25,7 @@ for (id in 1001:1091) {
   
   file_name = paste("./R21_Study - EDA/",id,"_EDA.rds", sep = "")
   if(file.exists(file_name)) {
-    eda = readRDS(paste(id,"_EDA.rds", sep = ""))
+    eda = readRDS(file_name)
   } else{
     print(paste("No EDA file with id", id))
     break
