@@ -32,14 +32,13 @@ for (id in 1001:1091) {
   }
   datetime_ts = as_datetime(eda$ts/1000)
   sampled_times = generate_noneventtimes(datetime_ts, sampling_rate, max.iters = 20000)
-  sampled_times = sample(eda$ts, size = num.iters, replace = FALSE)
   output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_eda_apply(iter, sequence, id_bp, eda)
-  output_nonevent = foreach(iter=1:num.iters, .combine=rbind) %dopar% nonevent_approximate_eda_apply(iter, sequence, sampled_times, eda)
+  output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind) %dopar% nonevent_approximate_eda_apply(iter, sequence, sampled_times, eda)
   
   ## Define time as since minimum time in EDA or ID_BP
   base_time = min(eda$ts, id_bp$ts_ms)
   event_times_mins_since_base = (id_bp$ts_ms-base_time)/1000/60
-  nonevent_times_mins_since_base = (sampled_times-base_time)/1000/60
+  nonevent_times_mins_since_base = (sampled_times*1000-base_time)/1000/60
   
   event_temp = cbind(id, event_times_mins_since_base, output_event)
   nonevent_temp = cbind(id, nonevent_times_mins_since_base, output_nonevent)
