@@ -54,6 +54,14 @@ all_data = list("event_total_numerator" = event_total_numerator,
                 "nonevent_total_numerator" = nonevent_total_numerator,
                 "nonevent_total_denominator" = nonevent_total_denominator)
 saveRDS(object = all_data, file = "alldata.RDS")
+## If you don't want to re-run top, you can skip here and 
+## just pull in the computed data set, remove commenting below
+# all_data = readRDS("alldata.RDS")
+# sequence = seq(-30,10, by = 0.25) # sequence along which we compute
+# event_total_numerator = all_data$event_total_numerator
+# event_total_denominator = all_data$event_total_denominator
+# nonevent_total_numerator = all_data$nonevent_total_numerator
+# nonevent_total_denominator = all_data$nonevent_total_denominator
 
 event_avg_mean = nonevent_avg_mean = rep(0,length(sequence))
 num_samples = nrow(event_total_numerator)-1
@@ -77,7 +85,7 @@ par(mfrow = c(1,1), mar = c(3,3,1,1)+0.1)
 plot(sequence[plot_obs], event_avg[plot_obs], 
      type = "l", axes = FALSE, ylab = "", xlab = "",
      ylim = c(min.obs, max.obs))
-mtext("EDA (mean-centered)", side = 2, line = 2, cex = 0.75)
+mtext("EDA", side = 2, line = 2, cex = 0.75)
 #mtext("Time until event", side = 1, line = 2, cex = 0.75)
 axis(side =1, cex.axis = 0.75); axis(side=2,  cex.axis = 0.75, ylim = c(min.obs, max.obs))
 lines(sequence, nonevent_avg, col = "red")

@@ -22,8 +22,8 @@ approximate_eda_apply <- function(iter, sequence, id_bp, eda) {
 
 nonevent_approximate_eda_apply <- function(iter, sequence, sampled_times, eda) {
   current_ts = sampled_times[iter]
-  diff = eda$ts - current_ts
-  minute_diff = diff/1000/60 
+  diff = eda$ts/1000 - current_ts
+  minute_diff = diff/60 
   keep_obs = (-30 < minute_diff) & (minute_diff <= 0)
   output = unlist(lapply(sequence, approximate_eda(minute_diff[keep_obs],eda$EDA_FeatureScaled_Filtered[keep_obs])))
   return(output)

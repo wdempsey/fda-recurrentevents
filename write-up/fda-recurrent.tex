@@ -569,7 +569,8 @@ For prediction, we use sparse FPCA (Yao 2005)
 \begin{itemize}
 \item Take $\hat c_{k} (s,t)$ for~$t \in N \cup D$ and~$s \in
   [0,\Delta]$
-\item 
+\item Question: Is this necessary?  Can't we just plug in the real
+  data at that point?
 \end{itemize}
 
 
@@ -583,7 +584,6 @@ X(s) - \mu(s)
 \[
 - b^\prime D b
 \]
-
 
 \section{Theoretical analysis}
 
@@ -615,6 +615,17 @@ Theorem~\ref{eq:}
 
 \end{thm}
 
+\section{Extensions}
+
+\subsection{Re-using estimates under additional sampling}
+Inverse weights can be used to build new pooled covariance.
+Weights are set to
+\[
+\frac{\pi_{\text{new}} (t) + \hat \lambda (t;
+  \theta)}{\frac{\pi_{\text{old}} (t) + \hat \lambda (t; \theta)}}.
+\]
+
+\subsection{}
 
 
 \section{Simulations}
