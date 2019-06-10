@@ -28,3 +28,26 @@ nonevent_approximate_eda_apply <- function(iter, sequence, sampled_times, eda) {
   output = unlist(lapply(sequence, approximate_eda(minute_diff[keep_obs],eda$EDA_FeatureScaled_Filtered[keep_obs])))
   return(output)
 }
+
+generate_noneventtimes <- function(datetime_ts, sampling_rate, max.iters) {
+  sampled_times = c()
+  current_time = datetime_ts[1]
+  for(iter in 1:max.iters) {
+    random.next.time <- current_time + rexp(1,rate = sampling_rate)*60*60
+    if(random.next.time > max(datetime_ts)) {break}
+    diff = datetime_ts-random.next.time
+    if (seconds(min(abs(diff))) < 1) {
+      ## If the sampled time is < 1 minute from
+      ## sensor times, then keep as a sampled time
+      sampled_obs = which(abs(diff) == min(abs(diff)))
+      sampled_times = c(sampled_times, datetime_ts[sampled_obs[1]])
+      current_time = datetime_ts[sampled_obs[1]]
+    } else{
+      ## Else, set current.time to min time with diff > 0
+      print("ELSE")
+      new_obs = min(which(diff > 0))
+      current_time = datetime_ts[new_obs[1]]
+    }
+  }
+  return(sampled_times)
+}

@@ -1,4 +1,6 @@
 source('./estimation_functions.R')
+source('./inputs.R')
+require(lubridate)
 
 setwd("/Users/walterdempsey/Harvard University/R21_Study - EDA")
 buttonpress = readRDS("../R21_Study - tags/button_presses.RDS")
@@ -28,7 +30,8 @@ for (id in 1001:1091) {
     print(paste("No EDA file with id", id))
     break
   }
-  
+  datetime_ts = as_datetime(eda$ts/1000)
+  sampled_times = generate_noneventtimes(datetime_ts, sampling_rate, max.iters = 20000)
   sampled_times = sample(eda$ts, size = num.iters, replace = FALSE)
   output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_eda_apply(iter, sequence, id_bp, eda)
   output_nonevent = foreach(iter=1:num.iters, .combine=rbind) %dopar% nonevent_approximate_eda_apply(iter, sequence, sampled_times, eda)
