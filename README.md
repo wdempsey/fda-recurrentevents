@@ -36,20 +36,24 @@ Below we list important details in order use this repository:
    not have dependencies beyond core R packages. The code was run on
    the research computing system managed by SLURM.
 1. **Data**: Data is from 91 suicidal-inpatients at Franciscan
-Children's Hospital. 
+   Children's Hospital. 
 * Data is stored on Harvard's Sharepoint system; access to data is
-managed by [Evan Kleiman](https://kleimanlab.org)
-* Data consists of two data frames per participant:
-  * **EDA**: Timestamped measurements of EDA. Each row consists of Participant ID,
-    E4 wearable ID, timestamp, raw EDA measurement, and 5 different
-    processed EDA measurements.
+  managed by [Evan Kleiman](https://kleimanlab.org)
+* Data used in this paper consists of three data frames per participant: 
+  * **Electrodermal activity (EDA)**: Timestamped measurements of
+  EDA. Each row consists of Participant ID, E4 wearable ID, timestamp,
+  raw EDA measurement, and 5 different processed EDA measurements.
+  * **Accelerometer (ACC)**: Timestamped measurements of x-,y-, and
+  z-coordinates for ACC as well as generated features. Each row
+  consists of Participant ID, E4 wearable ID, timestamp, raw x,y,z
+  accelerometer measurements, and processed ACC mesurements 
   * **Button presses**: Timestamps at which the participant pressed
-    the button to indicate a moment of distress.  Each row consists of
-    Participant ID, timestamp (both in seconds and milliseconds). 
+  the button to indicate a moment of distress.  Each row consists of
+  Participant ID, timestamp (both in seconds and milliseconds). 
 2. **[Data visualization](/visualization)**: Directory with code to
-generate plots per participant
+   generate plots per participant
 3. **[Methods](/methods)**: Directory with code implementation of the
-random subsampling methodology
+   random subsampling methodology
 * **Inputs file**: Fill in the `inputs.json` file
   * `eda-dir`: Directory for EDA participant data (1 EDA file per
   participant)
