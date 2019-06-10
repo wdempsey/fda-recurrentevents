@@ -93,10 +93,11 @@ Below we list important details in order use this repository:
   subsampling
   * `var-process-comp`: Component of the variance related to
   recurrent event process
-4. **[Evaluate](/evaluation)**
-* Code to evaluate method on simulation studies [simulation subdirectory](/evaluation/simulationstudies)
+4. **[Evaluate](/evaluation)_*: all code for evaluation of the
+methodology (both simulation and case study)
+_ Code to evaluate method on simulation studies [simulation subdirectory](/evaluation/simulationstudies)
 * Code to evaluate method on Franciscan dataset [case study subdirectory](/evaluation/casestudy)
-5. **Write-up**: Corresponding statistical writeup
+5. **Write-up**: Latex file containing the [statistical writeup](/evaluation/fda-recurrent.tex)
 
 ## Contact me ##
 
