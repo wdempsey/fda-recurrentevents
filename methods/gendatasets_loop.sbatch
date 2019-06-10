@@ -24,5 +24,5 @@ source new-modules.sh
 module load R/3.3.3-fasrc01
 
 # Run program
-Rscript generate_dataset.R $PARTICIPANTID
+Rscript generate_dataset.R
 
