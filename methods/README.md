@@ -12,7 +12,5 @@ Steps to run code are as follows:
 2. The job runs [`generate_dataset.R`](/generate_dataset.R) to
    generate the dataset at event and a random subsampled non-event
    times. These files are saved in `/data-for-fda/data/` folder as 
-3. 
-4. The `plot_generator.R` [file](/plot_generator.R) generates plots
-using the calculated numerators and denominators.
-5. Save directory for plots is `/visualization/figs/`
+3. [Mean and covariance estimation file](/mean_cov_estimation.R) can
+   be run to generate `mean_estimates` and `pooled_estimates`
