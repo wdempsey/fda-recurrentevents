@@ -1,8 +1,8 @@
 # Recurrent event analysis in the presence of functional covariates via random subsampling  #
-Code for combining functional data analysis (FDA) with random
-subsampling methods for fast fitting of recurrent event models in the
-presence of functional covariates (i.e., real-time sensor-based
-measures)
+Code for project on combining functional data analysis (FDA) with
+random subsampling methods for fast fitting of recurrent event models
+in the presence of functional covariates (i.e., real-time sensor-based
+measures).
 
 ## Project Description ##
 This project includes the code needed to reproduce the results in the
@@ -13,11 +13,20 @@ paper using the following bibtex:
 ```tex
 @InProceedings{Dempsey:2019,
 author = {Dempsey, Walter},
-title = {Recurrent event analysis in the presence of functional covariates via random subsampling},
+title = {Recurrent event analysis in the presence of functional
+covariates via random subsampling},
 year = {2019}}
 ```
 
-The goal of this project is to do. 
+The goal of this project is to build subsampling-unbiased
+likelihood-based estimators, that tradeoff statistical efficiency for
+computational efficiency.
+Standard error estimates can be decomposed to understand the relative
+statistical efficiency, and whether further subsampling may be
+required.
+Methods allow for fast model fitting to help scientists interested in
+exploratory data analysis for recurrent event models in the presence
+of functional covariates.
 
 ## Code Description ##
 
@@ -59,19 +68,23 @@ random subsampling methodology
 `inputs.json` has been completed:
 
 ```Rscript fda-recurrent inputs.json```
-
+* **Intermediate output files**:
+  * `sampled-data`: dataframe where each row is participant id, timestamps, 
+  * `sandwich-mean-output`:
+  * `pooled-covariance`: Pooled Sample Covariance estimate
+  * `eigenfunctions` and `eigenvalues`: Vector of eigenfunctions and eigenvalues
 * **Outputs file**: All output is saved in `outputs.RDS`. Contains:
   * `sample-ts`: List of all sampled time points
   * `theta-hat`: Penalized maximum likelihood estimate
-  * Pooled Sample Covariance estimate
-  * Eigenfunctions and eigenvalues
-  * Parameter estimates along with standard errors
-4. **Evaluate**
+  * `std-err-theta`: Standard error for
+  * `var-sample-comp`: Component of the variance related to
+  subsampling
+  * `var-process-comp`: Component of the variance related to
+  recurrent event process
+4. **[Evaluate](/evaluation)**
 * Code to evaluate method on simulation studies [simulation subdirectory](/evaluation/simulationstudies)
 * Code to evaluate method on Franciscan dataset [case study subdirectory](/evaluation/casestudy)
-5. **Write-up**
-* Corresponding statistical writeup can be found in
-2. Run methods. Point people towards the folder with methods. [the methods directory](/methods)
+5. **Write-up**: Corresponding statistical writeup
 
 ## Contact me ##
 
