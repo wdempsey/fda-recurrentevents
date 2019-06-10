@@ -3,7 +3,7 @@ source('./inputs.R')
 require(lubridate)
 
 setwd("/n/murphy_lab/users/wdempsey/data-for-fda/data/")
-buttonpress = readRDS("/R21_Study - tags/button_presses.RDS")
+buttonpress = readRDS("./R21_Study - tags/button_presses.RDS")
 
 library(doParallel)
 set.seed(87514)
