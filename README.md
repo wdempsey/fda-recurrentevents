@@ -47,40 +47,48 @@ Below we list important details in order use this repository:
   z-coordinates for ACC as well as generated features. Each row
   consists of Participant ID, E4 wearable ID, timestamp, raw x,y,z
   accelerometer measurements, and processed ACC mesurements 
-  * **Button presses**: Timestamps at which the participant pressed
-  the button to indicate a moment of distress.  Each row consists of
-  Participant ID, timestamp (both in seconds and milliseconds). 
+  * **Button presses (BP)**: Timestamps at which the participant
+  pressed the button to indicate a moment of distress.  Each row
+  consists of Participant ID, timestamp (both in seconds and
+  milliseconds).
 2. **[Data visualization](/visualization)**: Directory with code to
    generate plots per participant
 3. **[Methods](/methods)**: Directory with code implementation of the
    random subsampling methodology
-* **Inputs file**: Fill in the `inputs.json` file
-  * `eda-dir`: Directory for EDA participant data (1 EDA file per
+* **Inputs file**: Fill in the [`inputs.R`](/methods/inputs.R)
+  file. File contains spots for:
+  * `eda_dir`: Directory for EDA participant data (1 file per
   participant)
-  * `button-press-dir`: Directory for button press data (1 file
+  * `acc_dir`: Directory for ACC participant data (1 file per
+  participant)
+  * `button_press_dir`: Directory for button press data (1 file
   containing all button press data)
-  * `feature-generator-dir`: User-completed `feature-generator.R` file that
-  takes in timestamp, participant id, and the button press data and
+  * `participant_ids`: List of all participant ids
+  * `feature_generator`: User-specified function that takes in
+  timestamp, participant id, and the button press data and
   outputs a feature vector. One simple example is number of button
   presses in prior 30-minutes.
-  * `partial-pooling-indicator`: User-specified indicator of whether
-  partial pooling should be used.
-  * `sampling-rate`: User-specified sampling rate (per hour) for the non-event
-  times. Default is set to 1 sample every 30-minutes *(need to check we
-  cannot improve it)*.
+  * `partial_pooling_indicator`: User-specified indicator of whether
+  partial pooling should be used. If 1, fit hierarchical model; if 0,
+  fit population model.
+  * `sampling-rate`: User-specified sampling rate (per hour) for the
+  non-event times. Default is set to 1 sample every 30-minutes.
+  * `Delta`: user-specified window-length (per hour). Default is set
+    to 30-minute window-length.
 * **Methods run file**: The following code snippet can be run once
-`inputs.json` has been completed:
-
-```Rscript fda-recurrent inputs.json```
+`inputs.R` has been completed: ```Rscript fda-recurrent.R```
 * **Intermediate output files**:
-  * `sampled-data`: dataframe where each row is participant id, timestamps, 
-  * `sandwich-mean-output`:
-  * `pooled-covariance`: Pooled Sample Covariance estimate
-  * `eigenfunctions` and `eigenvalues`: Vector of eigenfunctions and eigenvalues
+  * `sampled_data.RDS`: data frame where each row is participant id,
+  sampled_timestamp, minute-by-minute smoothed EDA for prior
+  * `sandwich-mean-output`: Sandwich smooth estimate of mu(s,t) at
+  sampled_timestamps
+  * `pooled-covariance`: Pooled sample covariance estimate
+  * `eigenfunctions` and `eigenvalues`: Vector of eigenfunctions and
+    eigenvalues
 * **Outputs file**: All output is saved in `outputs.RDS`. Contains:
   * `sample-ts`: List of all sampled time points
   * `theta-hat`: Penalized maximum likelihood estimate
-  * `std-err-theta`: Standard error for
+  * `std-err-theta`: Standard errors
   * `var-sample-comp`: Component of the variance related to
   subsampling
   * `var-process-comp`: Component of the variance related to
