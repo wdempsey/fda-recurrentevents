@@ -1,4 +1,5 @@
 sequence = seq(-30,10, by = 0.25) # sequence along which we compute
+plot_obs = sequence <= 0
 event_total_numerator = event_total_denominator = rep(NA, length(sequence))
 nonevent_total_numerator = nonevent_total_denominator = rep(NA, length(sequence))
 id_counter = NA
@@ -33,7 +34,7 @@ for(id in 1001:1091) {
     #mtext("Time until event", side = 1, line = 2, cex = 0.75)
     mtext(paste("Participant", id), side = 3, line = -1)
     axis(side =1, cex.axis = 0.75); axis(side=2,  cex.axis = 0.75)
-    lines(sequence[plot_obs], nonevent_mean-mean(nonevent_mean), col = "red")
+    lines(sequence, nonevent_mean-mean(nonevent_mean), col = "red")
     
     max.obs = max(c(event_mean, nonevent_mean), na.rm = TRUE); min.obs = min(c(event_mean, nonevent_mean), na.rm = TRUE)
     plot(sequence, event_mean, 
@@ -43,7 +44,7 @@ for(id in 1001:1091) {
     mtext("EDA", side = 2, line = 2, cex = 0.75)
     mtext("Time until event", side = 1, line = 2, cex = 0.75)
     axis(side =1, cex.axis = 0.75); axis(side=2,  cex.axis = 0.75)
-    lines(sequence[plot_obs], nonevent_mean, col = "red")
+    lines(sequence, nonevent_mean, col = "red")
     dev.off()
   }
 }
