@@ -58,6 +58,6 @@ full_data = list("event_numerator_output"=event_numerator_output,
                  "nonevent_numerator_output"=nonevent_numerator_output,
                  "nonevent_numerator_output"=nonevent_numerator_output)
 
-setwd("~/Documents/github/fda-recurrentevents/data_visualization/data")
+setwd("/Volumes/murphy_lab/users/wdempsey/data-for-fda/data/")
 saveRDS(object = full_data, file = paste("kerneloutput_id_",id,".RDS", sep=""))
 

@@ -2,7 +2,7 @@ sequence = seq(-30,10, by = 0.25) # sequence along which we compute
 event_total_numerator = event_total_denominator = rep(NA, length(sequence))
 nonevent_total_numerator = nonevent_total_denominator = rep(NA, length(sequence))
 id_counter = NA
-setwd("/Volumes/murphy_lab/users/wdempsey/fda-recurrent-events/data")
+setwd("/Volumes/murphy_lab/users/wdempsey/data-for-fda/data/")
 
 for(id in 1001:1091) {
   print(paste("On participant ",id))
