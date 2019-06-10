@@ -97,7 +97,7 @@ Below we list important details in order use this repository:
 methodology (both simulation and case study)
 _ Code to evaluate method on simulation studies [simulation subdirectory](/evaluation/simulationstudies)
 * Code to evaluate method on Franciscan dataset [case study subdirectory](/evaluation/casestudy)
-5. **Write-up**: Latex file containing the [statistical writeup](/evaluation/fda-recurrent.tex)
+5. **Write-up**: Latex file containing the [statistical writeup](/write-up/fda-recurrent.tex)
 
 ## Contact me ##
 
