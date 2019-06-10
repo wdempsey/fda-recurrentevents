@@ -2,12 +2,12 @@ source('./estimation_functions.R')
 source('./inputs.R')
 require(lubridate)
 
-setwd("/Users/walterdempsey/Harvard University/R21_Study - EDA")
-buttonpress = readRDS("../R21_Study - tags/button_presses.RDS")
+setwd("/n/murphy_lab/users/wdempsey/data-for-fda/data/")
+buttonpress = readRDS("/R21_Study - tags/button_presses.RDS")
 
 library(doParallel)
 set.seed(87514)
-sequence = seq(-30,0,1/60); num.iters = 1000; 
+sequence = seq(-30,0,1/60);
 event_complete = nonevent_complete = matrix(nrow = 0, ncol = 2+length(sequence))
 
 cl = Sys.getenv("SLURM_NTASKS_PER_NODE")
