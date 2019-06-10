@@ -23,13 +23,14 @@ for (id in 1001:1091) {
   
   id_bp = subset(buttonpress, ID == id)
   
-  file_name = paste(id,"_EDA.rds", sep = "")
+  file_name = paste("./R21_Study - EDA/",id,"_EDA.rds", sep = "")
   if(file.exists(file_name)) {
     eda = readRDS(paste(id,"_EDA.rds", sep = ""))
   } else{
     print(paste("No EDA file with id", id))
     break
   }
+  print("Made it to sampling nonevent times")
   datetime_ts = as_datetime(eda$ts/1000)
   sampled_times = generate_noneventtimes(datetime_ts, sampling_rate, max.iters = 20000)
   output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_eda_apply(iter, sequence, id_bp, eda)
