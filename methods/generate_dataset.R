@@ -1,8 +1,17 @@
-source('./estimation_functions.R')
+## Code to generate the dataframes that will be used
+## to construct functional covariates 
+## Requires subsampling non-event times 
+## and the pooled covariance estimator.
+
+## Inputs: RDS files for participant level eda and button_press
+## Outputs: event_complete.RDS and nonevent_complete.RDS
+
+source('./gendata_functions.R')
 source('./inputs.R')
 require(lubridate)
 
-setwd("/n/murphy_lab/users/wdempsey/data-for-fda/data/")
+#setwd("/n/murphy_lab/users/wdempsey/data-for-fda/data/")
+setwd("/Volumes/murphy_lab/users/wdempsey/data-for-fda/data/")
 buttonpress = readRDS("./R21_Study - tags/button_presses.RDS")
 
 library(doParallel)
