@@ -1,3 +1,18 @@
+## Code to compute the sandwich smooth mean estimator 
+## and the pooled covariance estimator.
+
+## Inputs: event_complete.RDS and nonevent_complete.RDS 
+## Inputs: These are dataframes containing the relevent EDA
+## Outputs: RDS files for event and nonevent dataframes:
+## Outputs: (1) mean functions mu(t,s), 
+## Outputs: (2) coefficients on the residual X(t,s) - mu(t,s)
+## Outputs: (3) eigenvectors of the pooled covariance estimate 
+## Outputs: (4) complete-case timestamps
+
+## Note: one can check if reconstruction is good by taking
+## hatX(t,s) = coefficients%*%eigenvectors + mu(t,s) 
+## And seeing how close hatX(t,s) is to X(t,s).
+
 setwd("/Volumes/murphy_lab/users/wdempsey/fda-recurrent-events/methods/")
 event_complete = readRDS("./event_complete.RDS")
 sequence = seq(-30,0,by =1/60)

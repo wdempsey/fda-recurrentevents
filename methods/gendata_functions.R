@@ -47,7 +47,7 @@ generate_noneventtimes <- function(datetime_ts, sampling_rate, max.iters) {
   sampled_times = c()
   current_time = datetime_ts[1]
   for(iter in 1:max.iters) {
-    print(iter)
+    # print(iter)
     random.next.time <- current_time + rexp(1,rate = sampling_rate)*60*60
     if(random.next.time > max(datetime_ts)) {break}
     diff = datetime_ts-random.next.time
@@ -63,7 +63,7 @@ generate_noneventtimes <- function(datetime_ts, sampling_rate, max.iters) {
       new_obs = min(which(diff > 0))
       current_time = datetime_ts[new_obs[1]]
     }
-    print(current_time)
+    # print(current_time)
   }
   return(sampled_times)
 }
