@@ -1,4 +1,4 @@
-# Recurrent event analysis in the presence of functional covariates via random subsampling  #
+us# Recurrent event analysis in the presence of functional covariates via random subsampling  #
 Code for project on combining functional data analysis (FDA) with
 random subsampling methods for fast fitting of recurrent event models
 in the presence of functional covariates (i.e., real-time sensor-based
@@ -93,9 +93,9 @@ Below we list important details in order use this repository:
   subsampling
   * `var-process-comp`: Component of the variance related to
   recurrent event process
-4. **[Evaluate](/evaluation)_*: all code for evaluation of the
+4. **[Evaluate](/evaluation)**: all code for evaluation of the
 methodology (both simulation and case study)
-_ Code to evaluate method on simulation studies [simulation subdirectory](/evaluation/simulationstudies)
+* Code to evaluate method on simulation studies [simulation subdirectory](/evaluation/simulationstudies)
 * Code to evaluate method on Franciscan dataset [case study subdirectory](/evaluation/casestudy)
 5. **Write-up**: Latex file containing the [statistical writeup](/write-up/fda-recurrent.tex)
 
