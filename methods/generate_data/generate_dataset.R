@@ -7,11 +7,11 @@
 ## Outputs: event_complete.RDS and nonevent_complete.RDS
 
 source('./gendata_functions.R')
-source('./inputs.R')
+source('../inputs.R')
 require(lubridate)
 
-#setwd("/n/murphy_lab/users/wdempsey/data-for-fda/data/")
-setwd("/Volumes/murphy_lab/users/wdempsey/data-for-fda/data/")
+setwd("/n/murphy_lab/users/wdempsey/data-for-fda/data/")
+# setwd("/Volumes/murphy_lab/users/wdempsey/data-for-fda/data/")
 buttonpress = readRDS("./R21_Study - tags/button_presses.RDS")
 
 library(doParallel)
@@ -50,13 +50,13 @@ for (id in 1001:1091) {
   event_times_mins_since_base = (id_bp$ts_ms-base_time)/1000/60
   nonevent_times_mins_since_base = (sampled_times*1000-base_time)/1000/60
   
-  event_temp = cbind(id, event_times_mins_since_base, output_event)
-  nonevent_temp = cbind(id, nonevent_times_mins_since_base, output_nonevent)
+  event_temp = cbind(id, id_bp$ts, event_times_mins_since_base, output_event)
+  nonevent_temp = cbind(id, sampled_times, nonevent_times_mins_since_base, output_nonevent)
   
   event_complete = rbind(event_complete, event_temp)
   nonevent_complete = rbind(nonevent_complete, nonevent_temp)
   
 }
 
-saveRDS(object = event_complete, file = "event_complete.RDS")
-saveRDS(object = nonevent_complete, file = "nonevent_complete.RDS")
+saveRDS(object = event_complete, file = paste("event_complete_", today(), ".RDS", sep = ""))
+saveRDS(object = nonevent_complete, file = paste("nonevent_complete_", today(), ".RDS", sep = ""))
