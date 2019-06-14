@@ -152,8 +152,8 @@
 \begin{document}
 
 
-\title{Recurrent event analysis in the presence of functional
-  covariates via random subsampling}
+\title{Recurrent event analysis in the presence of real-time high
+  frequency data via random subsampling}
 \author{Walter Dempsey}
 \address {Department of Statistics, 
   Harvard University, One Oxford Street
@@ -173,21 +173,22 @@ become computationally prohibitive in this setting.
 % Unlike classic joint models, event risk is a function of
 % recent sensor data, not simply current sensor values.  
 Motivated by this, a random subsampling framework is proposed for
-computationally efficient estimation of the effect of time-varying
-covariates on the recurrent event process. A subsampling-unbiased
-estimator for the cumulative hazard enters into an approximation of
-log-likelihood. The proposed estimator then maximizes this
-approximation. The estimator has two sources of variation: the first
-due to the recurrent event model and the second due to subsampling.
-The latter can be reduced by increasing the sampling rate; however,
-this leads to increased computational costs. 
+computationally efficient, approximate likelihood-based estimation.
+A subsampling-unbiased estimator for the derivative of the cumulative
+hazard enters into an approximation of log-likelihood. The estimator
+has two sources of variation: the first due to the recurrent event
+model and the second due to subsampling. The latter can be reduced by
+increasing the sampling rate; however, this leads to increased
+computational costs.  The approximate score equations are equivalent
+to logistic regression score equations, allowing for standard,
+``off-the-shelf'' software to be used in fitting these models.
 Simulations demonstrate the method and efficiency-computation
 tradeoff. We then illustrate the approach using data from a digital
 monitoring study of suicide ideation.
 \end{abstract}
 
 \keywords{recurrent events; probabilistic subsampling; estimating equations;
-high frequency time series; suicidal ideation}
+high frequency time series; logistic regression}
 
 
 \maketitle
@@ -202,16 +203,16 @@ to increase physical activity in sedentary adults
 count every minute of the participant's study day.
 Of interest in many mHealth studies is the relation of such
 real-time high frequency sensor data to an adverse, recurrent event
-process. In the smoking cessation mHealth study~\citep{}, for
+process. In a smoking cessation mHealth study~\citep{Sense2Stop}, for
 example, the relation between a time-varying sensor-based measure of
-physiological stress and the smoking lapse process is of interest.
-In a suicidal ideation mHealth study~\citep{}, the relation of
+physiological stress and smoking lapse is of scientific interest.
+In a suicidal ideation mHealth study~\citep{Kleiman2018}, the relation of
 electrodermal activity (EDA) and accelerometer with self-identified
-moments of suicidal ideation is of interest.
+moments of suicidal ideation is of scientific interest.
 
 
 The goal of this paper is two-fold: (1) to discuss the appropriate
-choice of a statistical model for joint high-frequency sensor data and
+choice of statistical model for joint high-frequency sensor data and
 the recurrent event data, and (2) to construct a robust,
 easy-to-implement method for parameter estimation and inference. 
 For (1), we discuss an important issue regarding measurement-error
@@ -223,24 +224,18 @@ higher sampling rate can decrease variance at the cost of increased
 computation.  We show via simulations that the benefits of incredibly
 high sampling rates is often negligible, as the contribution to the
 variation is small in relation to to variation in the underlying
-stochastic processes. Second, the subsampling procedure allows
-inference to not depend on choice of dynamics for the health process.
-Third, optimal estimating equations are derived that depend on the
-instantaneous rate of the recurrent event process, which increase
-increase efficiency of the subsampling procedure. Finally,
-implementation can leverage existing software for functional data
-analysis, leading to fast adoption by domain scientists. We show how
-to implement methods via standard mixed effects software. 
-
-\section{Related prior work}
-
-
+stochastic processes. Second, optimal estimating equations are derived
+that depend on the instantaneous rate of the recurrent event process,
+which increases efficiency of the subsampling procedure. 
+Finally, implementation can leverage existing, standard software for
+functional data analysis and logistic regression, leading to fast
+adoption by domain scientists. 
 
 \section{Recurrent event process and associated high frequency data}
 
 Suppose $n$ subjects are independently sampled with observed event
 times~$\bfT_{i} = \{ T_{i,1}, \ldots, T_{i,k_i}\}$ over some observation
-window $[0, \tau_i]$ for each subject $i = 1,\cdots, n$.  Assume the
+window $[0, \tau_i]$ for each subject $i = 1,\ldots, n$.  Assume the
 event times are ordered, i.e., $T_{i,j} < T_{i,j^\prime}$ for $j <
 j^\prime$. The window length, $\tau_i$, is the censoring time and is
 assumed independent of the event process. Let~$N_{i} (t)$ denote the
@@ -262,14 +257,15 @@ fully parametric conditional hazard function:
 \begin{equation}
 \label{eq:hazard}
 h_i \left( t \Given H_{i,t}^{NX} ; \theta \right) =
-\lim_{\delta \to 0} \delta^{-1} \pr \left( N_i(t+\delta) - N_i(t)
-  \given H_{i,t}^{NX}; \theta \right).
+\lim_{\delta \to 0} \delta^{-1} \pr \left( N_i(t+\delta) - N_i(t) > 0
+  \given H_{i,t}^{NX}; \theta \right), 
 \end{equation}
 where~$\theta$ is the parameter vector. Equation~\eqref{eq:hazard}
 states the hazard may depend on past values of the event history and
 covariates.  For high frequency physiological data, we assume that 
-current risk is a linear functional of the health process over some
-recent window of time; that is, 
+current risk is log-additive and depends on a linear functional of the
+health process over some recent window of time and some pre-specified
+features of the counting process; that is,  
 \begin{equation}
 \label{eq:hazardlinear}
 h_i \left( t \given  H_{i,t}^{NX} ; \theta \right) = 
@@ -313,7 +309,7 @@ x_i(t) = \eta_i (t) + \epsilon_i (t),\quad \text{ and } \log h_i (t
 \end{equation}
 where~$\epsilon (t)$ is a white-noise measurement error. Thus,
 $\eta_i (t)$ is the ``true and unobserved value of the longitudinal
-outcome'' \citep[Sec. 2.1, pp.3]{Rizopoulos2010}. The conditional hazard
+outcome'' \citep[Sec. 2.1, pp.3]{Rizopoulos2010}. The conditional intensity
 function given~$\bfx_i$ is given by
 \[
 \pr \left ( T_{i,j} = t \Given \H_{i,\tau_i}^X, \{ T_{i,j^\prime} < t \}_{j^\prime <
@@ -329,9 +325,9 @@ This is quite unnatural, as~\eqref{eq:jm} suggests current risk
 depends on future values of the sensor process.
 To alleviate this issue, we employ the strategy of taking~$\epsilon
 (t) \equiv 0$ and treating~$\bfx_i$ as a mean-zero Gaussian process.
-Note, the proposed inferential procedure will not rely on this
-modeling assumption being correct; instead, we will use the random
-subsampling mechanisms to address model misspecification.
+The proposed inferential procedure only relies on the Gaussian
+assumption when~$\bfx$ is observed with missingness (see
+Section~\ref{section:missingdata}).
 
 \subsection{Likelihood calculation}  
 
@@ -341,127 +337,127 @@ conditional hazard function on~$H_{i,t}^{NX}$ implicit, and write~$h_i
 process is then given by
 \[
   L_n (\theta) = \sum_{i=1}^{n} \left ( \sum_{j=1}^{k_i} 
-  \left[ \log \left( h_i \left( T_{i,j}; \theta
-      \right) \right) - H_i \left( T_{i,j}, T_{i,j-1}; \theta \right) 
-  \right] - H_{i} \left( \tau_i, T_{i,k_i}; \theta \right) \right) 
+    \log \left( h_i \left( T_{i,j}; \theta
+      \right) \right) - H_{i} \left( \tau_i; \theta \right) \right) 
 \]
-where~$T_{i,0} = 0$, $T_{i, k_i + 1} = \tau_i$, and
+where~$H_{i} (\tau_i ; \theta) = \int_{0}^{\tau_i} h_{i} (t; \theta)
+dt$. Solving the associated score equations~$U_n (\theta) = {\bf 0}$
+yields the maximum likelihood estimator~$\hat \theta$, where
 \[
-H_{i} (T_{i,j}, T_{i,j-1}; \theta) = \int_{T_{i,j-1}}^{T_{i,j}} h_{i} (t; \theta) dt.
+U_n (\theta) = \sum_{i=1}^{n} \left ( \sum_{j=1}^{k_i} \frac{h^{(1)}_i
+    (T_{i,j}; \theta)}{h_i (T_{i,j}; \theta)} - H^{(1)}_{i} (\tau_i;
+  \theta) \right)  
 \]
-Solving the associated score equations~$U_n (\theta) = 0$ yields the
-maximum likelihood estimator~$\hat \theta$, where
-\[
-U_n (\theta) = \sum_{i=1}^{n} \left ( \sum_{j=1}^{k_i} 
-  \left[ \frac{h^{(1)}_i (T_{i,j}; \theta)}{h_i (T_{i,j}; \theta)} - H^{(1)}_i
-    (T_{i,j}, T_{i,j-1}; \theta) \right]  - H^{(1)}_{i} (\tau_i,
-  T_{i,k_i}; \theta) \right) 
-\]
-and~$h_i^{(1)} (T_{i,j}; \theta)$ and $H_i^{(1)} (T_{i,j}, T_{i,j-1}; \theta)$
-are the derivatives of~$h_i^{(1)} (T_{i,j}; \theta)$ and~$H_i^{(1)}
-(T_{i,j}, T_{i,j-1}; \theta)$ with respect to $\theta$.
+where~$h_i^{(1)} (T_{i,j}; \theta)$ and $H_i^{(1)} (\tau_{i}; \theta)$
+are derivatives with respect to $\theta$.
 
 In classical joint models~\citep{Henderson2000, Tsiatis2004},
 time-varying covariates~$x_i (t)$ are observed only intermittently at
 appointment times. In our current setting, maximizing the likelihood
 is computationally prohibitive since for any~$\theta$ we must compute
-the cumulative hazard functions~$H_{i} (T_{i,j}, T_{i,j-1}; \theta)$
-which require integration of~$h_i(t;\theta)$ given
-by~\eqref{eq:hazardlinear} which itself depends on the
-integral~$\int_{t-\Delta}^t x_i (s) \beta(s) ds$.  
-That is, the risk model now depends on an integrated past history of
-the time-varying covariate which leads to severe increase in
-computational complexity. 
+the cumulative hazard functions~$H_{i} (\tau_i; \theta)$ which require
+integration of~$h_i(t;\theta)$ given by~\eqref{eq:hazardlinear} which
+itself depends on the integral~$\int_{t-\Delta}^t x_i (s) \beta(s)
+ds$.  That is, the risk model now depends on an integrated past
+history of the time-varying covariate which leads to severe increase
+in computational complexity. 
 
 \subsection{Probabilistic subsampling framework}
 
-To avoid both the statistical modeling challenge and the computational
-burden, we employ a point-process subsampling design to obtain
-unbiased estimates of the cumulative hazards for each subject. The
-subsampling procedure treats the collected sensor data as a set of
-\emph{potential observations}. 
-Suppose covariate information is sampled at times drawn from an
-independent inhomogeneous Poisson point process with known
-intensity~$\pi_i (t)$. At a subsampled time~$t$, the \emph{windowed
-  covariate history} $\{ x_i (t-s)\}_{0 \leq s \leq \Delta}$ is
+To solve the computational challenge we employ a point-process
+subsampling design to obtain unbiased estimates of the derivative of
+the cumulative hazards for each subject. The subsampling procedure
+treats the collected sensor data as a set of \emph{potential
+  observations}. Suppose covariate information is sampled at times
+drawn from an independent inhomogeneous Poisson point process with
+known intensity~$\pi_i (t)$. At a subsampled time~$t$, the
+\emph{windowed covariate history} $\{ x_i (t-s)\}_{0 \leq s \leq
+  \Delta}$ and counting process features~$g_t (H_{i,t}^N)$ are
 observed. Optimal choice of~$\pi_i (t)$ is beyond the scope of this
 paper; however, the literature suggests setting proportional to the
-hazard function~$h_i (t; \theta)$.
+hazard function~$h_i (t; \theta)$. 
 
 An estimator is design-unbiased if its expectation is equal to that
 parameter under the probability distribution induced by the sampling
 design~\citep{Cassel1977}. Let~$D_i \subset [0,t_i]$ denote the set of
 subsampled points.  Note, by design, this set is distinct from the set
 of event times, i.e.,~$\bfT_i \cap D_i = \emptyset$.  Under
-subsampling via $\pi_i (t)$, then we may compute the Horvitz-Thompson
-estimator 
+subsampling via $\pi_i (t)$, one may compute a Horvitz-Thompson
+estimator of the derivative of the cumulative hazard:
 \[
-\hat H_{i} (T_{i,j}, T_{i,j-1}; \theta) = \sum_{t \in D_i \cap [T_{i,j-1},
-  T_{i,j}]} \frac{ \lambda^{(1)} ( t \given \{ x(t - s) \}_{0 < s <
-    \Delta}; \theta ) }{ \pi (s) }
+\hat H_{i}^{(1)} (\tau_i; \theta) = \sum_{u \in D_i} \frac{
+  h^{(1)}_i (u; \theta) }{ \pi_i (s) }
 \]
-Let~$N = \{ T_{i,j} \}_{i =1, j=1}^{n,k_i}$ denote the complete set of
-event times.  Then an alternative design-unbiased estimator of the
+An alternative design-unbiased estimator of the derivative of the
 cumulative hazards is given by
 \begin{equation}
 \label{eq:WPest}
-\hat H_{i} (T_{i,j}, T_{i,j-1}; \theta) = \sum_{t \in (N \cup D) \cap [T_{i,j-1},
-  T_{i,j}]} \frac{ \lambda^{(1)} ( t \given \{ x(t - s) \}_{0 < s <
-    \Delta}; \theta ) }{ \pi (s) + \lambda ( t \given \{ x(t - s) \}_{0 < s <
-    \Delta}; \theta) }
+\hat H_{i}^{(1)} (\tau_i; \theta) = \sum_{u \in (\bfT_i \cup D_i)}
+\frac{ h^{(1)}_i ( t; \theta ) }{ \pi_i (s) + h_i ( t ; \theta) }
 \end{equation}
 Equation~\eqref{eq:WPest} is the estimator suggested
 by~\cite{Waagepetersen2008}.  This estimator depends on the
-superposition of the event and subsampling processes.  This estimator
-has been shown to be more efficient than the Horvitz-Thompson
-estimator; therefore, we restrict our attention to~\eqref{eq:WPest}
-for the remainder of this paper. Let
+superposition of the event and subsampling processes.
+Proposition~\ref{prop:optimal} shows the estimator for~$\theta$
+associated with using~\eqref{eq:WPest} is the most efficient within a
+suitable class of estimators for the derivative of the cumulative
+hazard function (including the Horvitz-Thompson estimator).
+Therefore, we restrict our attention to~\eqref{eq:WPest} for the
+remainder of this paper. Letting
 \[
-w (t; \theta) = \frac{\pi (t)}{\pi (t) + \lambda (t \given \{
-  x(t - s) \}_{0 < s < \Delta}; \theta)}
+w_i (t; \theta) = \frac{\pi_i (t)}{\pi_i (t) + h_i (t ; \theta)},
 \]
-Then the resulting estimating equations are given by
+the resulting estimating equations can be written as
 \begin{equation}
 \label{eq:approxscore}
-\hat{U}_n = \sum_{t \in N} w(t; \theta) \frac{\lambda^{(1)} (t \given \{
-  x(t - s) \}_{0 < s < \Delta}; \theta)}{ \lambda ( t \given \{
-  x(t - s) \}_{0 < s < \Delta}; \theta)}  - 
-\sum_{t \in D} w(t; \theta) \frac{\lambda^{(1)} (t \given \{
-  x(t - s) \}_{0 < s < \Delta}; \theta)}{ \pi (t) }
+\hat{U}_n (\theta) = \sum_{i=1}^n \left[ \sum_{u \in \bfT_i} w_i(u; \theta)
+  \frac{h^{(1)} (u; \theta)}{ h ( t; \theta)}  - \sum_{u \in D_i} w_i(u;
+  \theta) \frac{h_i^{(1)} (t; \theta)}{ \pi_i (t) } \right].
 \end{equation}
 Equation~\eqref{eq:approxscore} are approximate score functions built
-via plug-in of the design-unbiased estimator of the cumulative hazard.
-
-We note that this approach avoids modeling the sensor stream process,
-which would be required if one were to consider a standard joint model
-approach.  Sensor streams such as accelerometer and skin-conductance
-relate to complex dynamical systems.  The subsampling
-approach avoids this difficult modeling task entirely.
-
+via plug-in of the design-unbiased estimator of the derivative of the
+cumulative hazard given in~\eqref{eq:WPest}.
 
 \section{Longitudinal functional principal components within
   event-history analysis}
 
-Probabilistic subsampling converts the single sensor stream~$\bar x_i$
+Probabilistic subsampling converts the single sensor stream~$\bfx_i$
 into a sequence of functions observed repeatedly at sampled
-times~$D_i$ and event times~$N_i$. Such a data structure is commonly
-referred to as \emph{longitudinal functional data}~\ref{Xiao2013,
-  GoldSmith2015}.
+times~$D_i$ and event times~$\bfT_i$. Such a data structure is
+commonly referred to as \emph{longitudinal functional
+  data}~\citep{Xiao2013, GoldSmith2015}.
 Given the large increase in longitudinal functional data in recent
 years, corresponding analysis has received much recent
 attention~\citep{Morris2003, MorrisCarroll2006,
   Baladandayuthapani2008, Di2009, Greven2010, Staicu2010,
   ChenMuller2012, LiGuan2014}.
-In this paper, we combine work by~\cite{Park2018}
-and~\cite{Goldsmith2011} to construct a computationally efficient
-penalized functional method for solving the estimation equations~$\hat
-U_n (\theta)$.
+Here, we combine work by~\cite{Park2018} and~\cite{Goldsmith2011} to
+construct a computationally efficient penalized functional method for
+solving the estimation equations~$\hat U_n (\theta)$.
 
-In our setting, probabilistic subsampling leads to observation
-times~$t \in N \cup D$ at which 
+We start by defining~$X(t,s) = x(t-s)$ to be the sensor measurement~$0
+\leq s \leq \Delta$ time units prior to time~$t \in \bfT_i \cup D_i$.
+We use the sandiwch smoother~\citep{Xiao2013} to estimate the
+mean~$\mu(s,t) = \E [ X(t,s)]$.
+Alternative bivariate smoothers exist, such as the kernel-based local
+linear smoother~\citep{Hastie2009} bivariate tensor product
+splines~\cite{Wood2006} and the bivar
+The sandwich smoother was chosen for its computational efficiency and
+estimation accuracy.
+We then define~$\tilde X(s,t) = X(s,t) - \hat \mu(s,t)$ to be the
+mean-zero process at each time~$t \in $.
 
 
-The marginal covariance~\cite{Park2018} allows a single 
+Next, 
+
+
+
+Use of the marginal covariance~\cite{Park2018} reduces allows us to avoid
+computationally prohibitive computations.
+
+
+
+
 \begin{itemize}
 \item {\bf Step 1}: Estimate~$\hat \mu(s,t)$ via sandwich smoother for
   all~$s \in [0,\Delta]$ and~$t \in \cup_{i=1}^n \left( D_i \cup N_i
@@ -509,7 +505,192 @@ entry is given by
 \[
 \int_{t-\Delta}^t \phi_{i} (s) \psi_{j} (s) ds.
 \]
+\item {\bf Step 6}: The approximate score equations
+\begin{equation}
+\label{eq:weighted_esteq}
+\hat U_n (\theta) = \sum_{i=1}^n \left \{ \sum_{t \in N_i} w_{i} (t; \theta) W_{i,t} -
+    \sum_{u \in D_i} (1 - w_i (u; \theta)) W_{i,u} \right \} 
+\end{equation}
+where
+\begin{equation}
+\label{eq:waage_weight}
+w_i (t; \theta) = \frac{h_i(t;\theta)}{\pi_i (t) + h_i (t;\theta)}.
+\end{equation}
+Under weights~\eqref{eq:waage_weight} and log-linear intensity
+function,~\eqref{eq:weighted_esteq} is the logistic score function for
+the binary variable~$Y_i(u)$ for $u \in N_i \cup D_i$ and~$i \in [n]$
+where~$Y_i(u) = 1[u \in N_i]$. To see this, we rewrite $\hat U_n
+(\theta)$ as 
+\[
+  - \sum_{i=1}^n \sum_{t \in N_i \cup D_i}
+    \left[ {\bf 1} [t \in D_i]  - w_{i} (t; \theta) \right] W_{i,t} 
+= \sum_{i=1}^n \sum_{t \in N_i \cup D_i}
+    \left[ {\bf 1} [t \in D_i]  - \frac{1}{1 + \exp\left( - (
+          \tilde W_{i,t}^\top \theta + \log (\pi_i (t) ) ) \right)}
+    \right] \tilde W_{i,t}.
+\]
+where~$\tilde W_{i,t} = - W_{i,t}$.
+This is equivalent to
+\[
+\sum_{i=1}^n y_i \log p (x_i)
+\]
 \end{itemize}
+
+\begin{thm}[Asymptotic theory]
+For large~$n$, the estimate~$\hat \theta_n$ is approximately normal
+\[
+\sqrt(n) (\hat \theta_n - \theta) \to N(0, \Xi (\theta)^{-1})
+\]
+where
+\[
+  \Xi (\theta) = \int_{0}^{\tau} w(s; \theta) \left[ \frac{h^{(1)}(s;
+      \theta) \times  h^{(1)} (s;\theta)^{\top}}{h(s; \theta)} \right]
+  ds.
+\]
+and~$\tau$ is a random 
+\end{thm}
+An estimator for~$\Xi(\theta)$ is
+\[
+  \hat \Xi (\theta) = n^{-1} \sum_{i=1}^n \sum_{u \in N_i \cup D_i} 
+  w_i(u;\theta) (1-w_i(u;\theta)) \left[ \frac{h_i^{(1)}(u;
+      \theta)}{h_i (u; \theta)} \right] \times  \left [ \frac{h_i^{(1)} (u;\theta)}{h_i(u; \theta)} \right]^\top
+\]
+For the Cox model, the sampling-unbiased estimator for~$\hat
+\Xi(\theta)$ is equivalent to the Fisher information for the
+previously described logistic regression model.
+This implies that subsampling from an inhomogeneous Poisson process,
+standard logistic regression software can be used to fit the recurrent
+event model by specifying an offset equal to~$\log (\pi_i (s))$.
+
+\begin{prop}[Optimality of proposed approach]
+\label{prop:optimal}
+If the event process is an inhomogeneous Poisson point process with
+intensity~$h(t; \theta)$ and subsampling occurs via an independent,
+inhomogeneous Poisson point process with intensity~$\pi (t)$,
+then~$\hat U_n (\theta)$ are optimal estimating functions in a class
+of weighted estimating functions given by~\eqref{eq:weighted_esteq}
+with replacing~\eqref{} by any weight function~$w_i (t; \theta)$. This
+class includes the Horvitz-Thompson estimator under~$w(s; \theta)
+= 1$.
+\end{prop}
+
+Proposition~\ref{} follows immediately from~\cite{Rathbun2013}.
+This ensures the only loss of statistical efficiency is related to the 
+subsampling procedure and not the associated methodology.
+
+\subsection{Computation versus statistical efficiency tradeoff}
+
+Under~$\pi(t) = c \times h(t; \theta)$ for $c>0$,
+$w(t; \theta) = c/(c+1)$.  Then
+\[
+\Xi (\theta) = \frac{c}{c+1} \int_0^\tau \frac{ h^{(1)} (t; \theta)
+  h^{(1)} (t; \theta)^\top}{h (t; \theta)} dt = \frac{c}{c+1} \Sigma (\theta)
+\]
+Therefore the relative efficiency compared to the asymptotic variance
+of the maximum likelihood estimator is~$1 + 1/c$.
+Suppose we have~$\pi (t) = c \times \max_{t \in (0,\infty)} h(t;
+\theta)$, then~$w(t;\theta) \leq c/(c+1)$.  this implies
+\[
+\Xi (\theta) \leq \frac{c}{c+1} \Sigma(\theta)
+\]
+which again leads to an upper bound on efficiency of~$c/(1+c)$.
+Recall that the sampling rate is on the order of multiple measurements
+per second.  Suppose the risk is bounded above by $3$ (i.e., $3$ 
+events per hour). Then, we can sample~$30$ times per hour and have
+efficiency of $0.91$; for a 4Hz sensor, this reduces the number of
+samples from~$4 \times 60 \times 60 = 14,400$ per hour to on average
+$30$.  Even if the computational complexity is linear in the number of
+samples, we get $480$ times reduction in the data size at the cost of
+a $0.91$ statistical efficiency. 
+If we sample~$300$ times per hour, then the efficiency loss is only
+$0.99$, with a $48$ times reduction in data size.
+
+\subsection{Time-varying coefficient and prediction}
+
+Replace~$\beta(s)$ by~$\beta_t (s)$ and assume it's smooth in~$t$.
+
+THIS IS WHERE PREDICTION IS IMPORTANT!!
+
+We wish to estimate the risk at non-sampled points.
+
+For prediction, we use sparse FPCA (Yao 2005) 
+\begin{itemize}
+\item Take $\hat c_{k} (s,t)$ for~$t \in N \cup D$ and~$s \in
+  [0,\Delta]$
+\end{itemize}
+
+
+Take $\{ X (s) \}_{0 < s < \Delta}$. Let~$\psi_{j} (s)$ is an
+orthonormal basis for $L^2 [ 0,1 ]$.  Then
+
+\[
+X(s) - \mu(s) 
+\]
+
+\[
+- b^\prime D b
+\]
+
+\section{Theoretical analysis}
+
+\begin{assumption}[Event process assumptions]
+
+\end{assumption}
+
+\begin{assumption}[Covariance assumptions]
+
+\end{assumption}
+
+\begin{assumption}[Functional data assumptions]
+
+\end{assumption}
+
+\begin{thm}[No reconstruction error]
+
+\end{thm}
+
+\begin{thm}[Reconstruction error but~$\hat \Delta > \Delta$]
+\label{eq:biaseddown}
+\end{thm}
+
+Theorem~\ref{eq:}
+
+
+
+\begin{thm}[When~$\hat \Delta < \Delta$] 
+
+\end{thm}
+
+\section{Extensions}
+
+\subsection{Re-using estimates under additional sampling}
+Inverse weights can be used to build new pooled covariance.
+Weights are set to
+\[
+\frac{\pi_{\text{new}} (t) + \hat \lambda (t; \theta)}{\pi_{\text{old}} (t) + \hat \lambda (t; \theta)}
+\]
+
+\subsection{Missing data}
+\label{section:missingdata}
+
+\subsection{Multilevel models}
+
+\subsection{Multiple sensors and availability}
+
+\section{Simulations}
+
+\subsection{Unbiased estimation}
+
+\subsection{Impact of $\Delta$}
+
+\section{Case Study: }
+
+\bibliographystyle{plainnat}
+\bibliography{si-fda-refs}
+
+\appendix
+
+\section{Derivation of the design-unbiased score equations}
 
 We re-write the hazard function as:
 \[
@@ -561,82 +742,5 @@ Therefore,
     \sum_{u \in D_i} (1 - w_i (u; \theta)) W_{i,u} \right \} \\
 \end{align*}
 
-
-\section{Prediction}
-We wish to estimate the risk at non-sampled points.
-
-For prediction, we use sparse FPCA (Yao 2005) 
-\begin{itemize}
-\item Take $\hat c_{k} (s,t)$ for~$t \in N \cup D$ and~$s \in
-  [0,\Delta]$
-\item Question: Is this necessary?  Can't we just plug in the real
-  data at that point?
-\end{itemize}
-
-
-Take $\{ X (s) \}_{0 < s < \Delta}$. Let~$\psi_{j} (s)$ is an
-orthonormal basis for $L^2 [ 0,1 ]$.  Then
-
-\[
-X(s) - \mu(s) 
-\]
-
-\[
-- b^\prime D b
-\]
-
-\section{Theoretical analysis}
-
-\begin{assumption}[Event process assumptions]
-
-\end{assumption}
-
-\begin{assumption}[Covariance assumptions]
-
-\end{assumption}
-
-\begin{assumption}[Functional data assumptions]
-
-\end{assumption}
-
-\begin{thm}[No reconstruction error]
-
-\end{thm}
-
-\begin{thm}[Reconstruction error but~$\hat \Delta > \Delta$]
-\label{eq:biaseddown}
-\end{thm}
-
-Theorem~\ref{eq:}
-
-
-
-\begin{thm}[When~$\hat \Delta < \Delta$] 
-
-\end{thm}
-
-\section{Extensions}
-
-\subsection{Re-using estimates under additional sampling}
-Inverse weights can be used to build new pooled covariance.
-Weights are set to
-\[
-\frac{\pi_{\text{new}} (t) + \hat \lambda (t;
-  \theta)}{\frac{\pi_{\text{old}} (t) + \hat \lambda (t; \theta)}}.
-\]
-
-\subsection{}
-
-
-\section{Simulations}
-
-\subsection{Unbiased estimation}
-
-\subsection{Unbiased estimation}
-
-\section{Case Study: }
-
-\bibliographystyle{plainnat}
-\bibliography{si-fda-refs}
 
 \end{document}
