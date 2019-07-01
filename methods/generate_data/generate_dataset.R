@@ -51,7 +51,9 @@ for (id in 1001:1091) {
       event_temp = cbind(id, id_bp$ts, event_times_mins_since_base, output_event)
     } else {
       event_temp = c(id, id_bp$ts, event_times_mins_since_base, output_event)
-    } if (length(sampled_times) > 1) {
+    }
+    
+    if (length(sampled_times) > 1) {
       nonevent_temp = cbind(id, sampled_times, nonevent_times_mins_since_base, output_nonevent)
     } else {
       nonevent_temp = c(id, sampled_times, nonevent_times_mins_since_base, output_nonevent)
