@@ -47,12 +47,17 @@ for (id in 1001:1091) {
     event_times_mins_since_base = (id_bp$ts_ms-base_time)/1000/60
     nonevent_times_mins_since_base = (sampled_times*1000-base_time)/1000/60
     
-    event_temp = cbind(id, id_bp$ts, event_times_mins_since_base, output_event)
-    nonevent_temp = cbind(id, sampled_times, nonevent_times_mins_since_base, output_nonevent)
-    
+    if (nrow(id_bp) > 1) {
+      event_temp = cbind(id, id_bp$ts, event_times_mins_since_base, output_event)
+    } else {
+      event_temp = c(id, id_bp$ts, event_times_mins_since_base, output_event)
+    } if (length(sampled_times) > 1) {
+      nonevent_temp = cbind(id, sampled_times, nonevent_times_mins_since_base, output_nonevent)
+    } else {
+      nonevent_temp = c(id, sampled_times, nonevent_times_mins_since_base, output_nonevent)
+    }
     event_complete = rbind(event_complete, event_temp)
-    nonevent_complete = rbind(nonevent_complete, nonevent_temp)
-    
+    nonevent_complete = rbind(nonevent_complete, nonevent_temp)    
   }
 }  
 saveRDS(object = event_complete, file = paste("event_complete_", today(), ".RDS", sep = ""))
