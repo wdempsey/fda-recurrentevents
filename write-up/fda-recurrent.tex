@@ -1,4 +1,4 @@
-\documentclass[11pt]{amsart}
+\documentclass[12pt]{amsart}
 \usepackage{amsmath}
 \usepackage{tikz}
 \usetikzlibrary{matrix,arrows}
@@ -50,6 +50,7 @@
 
 \usepackage{soul,color, mathtools, fixmath}
 \usepackage{multirow}
+\usepackage{enumitem}
 \def\pr{\mathop{\text{pr}}\nolimits}
 
 \def\Bka{{\it Biometrika}}
@@ -153,8 +154,9 @@
 \begin{document}
 
 
-\title{Recurrent event analysis in the presence of real-time high
-  frequency data via random subsampling}
+\title[Recurrent event analysis with functional covariates via random
+subsampling]{Recurrent event analysis in the presence of real-time
+  high frequency data via random subsampling}
 \author{Walter Dempsey}
 \address {Department of Statistics, 
   Harvard University, One Oxford Street
@@ -510,62 +512,63 @@ for details).
 The next step of our method is modeling~$\beta(s)$. Here, we leverage
 ideas from the penalized spline literature~\citep{Ruppert2003,
   Wood2006book}. Let~$\mathbold{\phi} (s) = \{ \phi_1 (s), \ldots,
-\phi_{K_b} (x) \}$ be a spline basis such that~$\beta(s) =
+\phi_{K_b} (x) \}$ be a spline basis and assume that~$\beta(s) =
 \sum_{j=1}^{K_b} b_j \phi_{j} (s) = \mathbold{\phi} (t) {\bf b}$
 where~${\bf b} = [b_1, \ldots, b_{K_b}]^{\top}$. Thus, the integral
 in~\eqref{eq:hazardlinear} can be restated as 
 \begin{align*}
 \int_{t-\Delta}^t X(s,t) \beta(s) ds 
-  &= \int_{t-\Delta}^t \left[ \hat \mu(s,t) + {\bf c} (t)^\top
+  &\approx \int_{t-\Delta}^t \left[ \hat \mu(s,t) + {\bf c} (t)^\top
     \mathbold{\hat \psi} (s) \right] \times \left[
     \mathbold{\phi} (s) {\bf b} \right] \\
-  &= [ M_{i,t}^\prime + C_{i,t}^\prime J_{\psi, \phi} ] {\bf b}
+  &= [ M_{i,t}^\prime + C_{i,t}^\prime J_{\hat \psi, \phi} ] {\bf b}
 \end{align*}
-where~$M_{i} (t) = (M_{i,1} (t), \ldots, M_{i,K_b} (t))$, $M_{i,j} (t)
-= \int_{t-\Delta}^t \hat \mu (s,t) \phi_j (s)$, and~$J_{\psi, \phi}$ is a
-$K_x \times K_b$ dimensional matrix with the~$(k,l)$th entry is equal
-to~$\int_{0}^\Delta \psi_k (s) \phi_l (s)
+where~$M_{i,t} = (M_{i,1,t}, \ldots, M_{i,K_b,t})$, $M_{i,j,t}
+= \int_{t-\Delta}^t \hat \mu (s,t) \phi_j (s)$, and~$J_{\hat \psi,
+  \phi}$ is a $K_x \times K_b$ dimensional matrix with the~$(k,l)$th
+entry is equal to~$\int_{0}^\Delta \hat \psi_k (s) \phi_l (s)
 ds$~\citep{RamsaySilverman2005}.
 
 Given the basis for~$\beta(t)$, the model depends on choice of
 both~$K_b$ and~$K_x$.  We follow~\cite{Ruppert2002} by choosing $K_b$
 large enough to prevent undersmoothing and~$K_x \geq K_b$ to satisfy
 identifability constraints.
-In this paper, we follow the simple rule of thumb and set~$K_b = K_x =
-35$.
-As long as the choices of~$K_x$ and $K_b$ are large enough, their
-impact on estimation is typically negligible. 
-We formalize this statement in Theorem~\ref{thm:truncation}.
-Note the choice of~$K_b$ large may lead to overfitting the data.
-We therefore follow~\cite{GoldSmith2015} and induce smoothing by
-assuming that~$\{ b_k \}_{k=3}^{K_b} \sim N(0, \sigma_b^2 I)$.
+While our theoretical analysis considers truncation levels that depend
+on~$n$, in practice, we follow the simple rule of thumb and set~$K_b 
+= K_x = 35$. As long as the choices of~$K_x$ and $K_b$ are large
+enough, their impact on estimation is typically negligible. 
+%We formalize this statement in Theorem~\ref{thm:truncation}.
 Below, we will exploit a connection between~\eqref{eq:approxscore}
 and score equations for a logistic regression model.  Before moving
 on, we introduce notation:
-\begin{equation*}
+\begin{equation}
+\label{eq:approx_hazard}
 h_i \left( t \given  H_{i,t}^{NX} ; \theta \right) \approx
 \exp \left( Z_{i,t}^\top \gamma + g_t \left( H_{i,t}^{N} \right)^{\prime} \alpha
-  + M_{i,t}^\top {\bf b} + C_{i,t}^\top J_{\phi, \psi} {\bf b} \right)
+  + M_{i,t}^\top {\bf b} + C_{i,t}^\top J_{\hat \psi, \phi} {\bf b} \right)
 = \exp \left( W_{i,t}^\top \theta \right),
-\end{equation*}
-where~$\theta = (\gamma, \alpha, {\bf b})$ and~$\exp ( Z_{i,t}^\top
-\gamma) =: h_0 (t)$ is the parametrized baseline intensity function.
+\end{equation}
+where~$\theta = (\gamma, \alpha, {\bf b})$ and~$\exp (
+Z_{i,t}^\top \gamma) =: h_0 (t)$ is the parameterized baseline
+intensity function. We write~$\tilde U_n (\theta)$ to denote
+the approximate score function when substituting
+in~\eqref{eq:approx_hazard} for~\eqref{eq:hazardlinear}.
+
 
 
 \subsection{Connection to logistic score functions}
 
 We next establish a connection between the above approximate score 
-equations and the score equations for a logistic regression model.
-All proofs are provided in the supplementary materials.
-We can then exploit this connection to allow the model to be fit
-robustly using standard mixed effects software~\citep{Ruppert2002,
-  McCulloch2001}.
+equations~$\tilde U_n (\theta)$ and the score equations for a logistic
+regression model. We can then exploit this connection to allow the
+model to be fit robustly using standard mixed effects
+software~\citep{Ruppert2002, McCulloch2001}.
 
 \begin{lemma} \normalfont
 \label{lemma:logistic}
 Under weights~\eqref{eq:waage_weights} and the log-linear intensity
-function~\eqref{eq:hazardlinear}, the approximate score
-function~\eqref{eq:approxscore} is equivalent to 
+function~\eqref{eq:approx_hazard}, the approximate score
+function~$\tilde U_n (\theta)$ is equivalent to 
 \[
 \sum_{i=1}^n \sum_{t \in \bfT_i \cup D_i } \left[ {\bf 1}[t \in D_i]
   - \frac{1}{1 + \exp \left[- \left( \tilde{W}_{i,t}^\top \theta +
@@ -577,27 +580,85 @@ D_i$ and~$i \in [n]$ where~$Y_i(t) = 1[t \in N_i]$, offset~$\log \pi_i
 (t)$, and covariates~$\tilde W_{i,t}$. 
 \end{lemma}
 
-In this section, we make the following strong assumption.
+\subsection{Theoretical analysis}
 
-\begin{assumption} \normalfont
-\label{assumption:truncation}
-Both the functional covariate~$\{ X(t,s) \}_{0\leq s \leq \Delta}$ and
-the functional coefficient~$\beta(t)$ sit in the span of their
-respective truncated basis expansions. That is, there
-exists~$b^\star$ such that~$\beta(t) = \mathbold{\phi} (t) b^\star$
-and~$X(s,t) = \hat \mu (s,t) + {\bf c}_i (t)^\top \mathbold{\hat \psi}
-(s)$.
+Our theoretical analysis requires the several assumptions, some
+regarding the subsampling procedure, some for the event process, and
+some for the functional data. We state these assumptions and then our
+main theorems.  
+We start by assuming there exists a~$\tau < \infty$ such that all
+individuals are no longer at risk (i.e.,~$\tau_i < \tau$ for all~$i$).
+Moreover, define $R_i (t)$ to be the at risk indicator for
+participant~$i$.  That is,   
+\[
+R_i (t) = \left \{ \begin{array}{c c} 1 & t \in (0,\tau_i) \\ 0
+                                        & t > \tau_i\end{array} \right .
+\]
+Lemma~\ref{lemma:simpleasym} will be proven under regularity
+conditions A-E in~\cite[pp. 420--421]{Andersen1993} along with the
+following additional assumptions:
+
+\begin{assumption}[Event process assumptions] 
+\label{assumption:events}\normalfont
+We assume the following holds:
+\begin{enumerate}[label=(E.\arabic*)]
+\item\label{E1} The subsampling rate is both lower and upper
+  bounded for all ``at risk times''; that is,~$0 < L < \pi_i (t) < U <
+  \infty$ for all~$i=1,2,\ldots$ and~$t \in [0,\tau]$. 
+\item\label{E2} There exists a nonnegative definite matrix~$\Xi
+  (\theta)$ such that
+  \[
+    n^{-1} \Xi_n (\theta) = n^{-1} \sum_{i=1}^n \int_0^\tau w_i (t;
+    \theta) (1 - w_i (t; \theta)) \left[ \frac{h_i^{(1)}(t;
+        \theta)}{h_i (t; \theta)} \right] \times  \left [
+      \frac{h_i^{(1)} (t;\theta)}{h_i(t; \theta)} \right]^\top R_i (t)
+    dt \overset{P}{\to} \Xi (\theta).
+  \] 
+\item\label{E3} There exists~$M$ such that $|W_{i,j,t}| < M$ for
+  all~$(i,j,t)$.
+\item\label{E4} For all~$j,k$ 
+\[
+n^{-1} \sum_{i=1}^n \int_0^\tau \left | \frac{d^2}{d\theta_j
+    d\theta_k} h_i (t;\theta_0) \right|^2 R_i (t) dt \overset{P}{\to}
+C < \infty
+\]
+as $n \to \infty$.
+\end{enumerate}
 \end{assumption}
 
-Assumption~\ref{assumption:truncation} allows us to ignore the impact
-of truncation and present Lemma~\ref{lemma:simpleasym} which gives a
-simple asymptotic theory in this particular case.
-
-
+We also require several assumptions due to the truncation of the
+Karhunen-Lo{\`e}ve decomposition that represents~$X(t,s)$.
+\begin{assumption}[Functional assumptions~\citep{Park2018}] \normalfont
+\label{assumption:truncation}
+The following assumptions are standard in prior work on longitudinal
+functional data analysis~\citep{Park2018, Yao2005, ChenMuller2012}:
+\begin{enumerate}[label=(A.\arabic*)]
+\item\label{A1} $X = \{ X(s, T) : (s,T) \in \mathcal{S} \times
+  \mathcal{T} \}$ is a square integrable element of the $L^2 (
+  \mathcal{S} \times \mathcal{T})$
+\item\label{A2} The sampling density~$g(T)$ is continuous
+  and~$\sup |g(T)| < \infty$
+\item\label{A3} $\E[X(s,T) X(s^\prime, T) X(s,T^\prime)
+  X(s^\prime, T^\prime) ] < \infty$ for
+  each $s,s^\prime [0,\Delta]$ and~$0 < T, T^\prime < \tau$.
+\item\label{A4} $\E[\|X(\cdot, T)\|^4] < \infty$ for each~$0< T
+  < \tau$.
+\end{enumerate}
+\end{assumption}
+Assumption~\ref{A3} is guaranteed for by~\ref{E1} and~\ref{E3}, but is
+stated here to emphasize its importance for the marginal covariance
+procedure of~\cite{Park2018}.
+Finally, for simplicity, we assume that there exists~$b^\star$
+such that~$\beta(t) = \mathbold{\phi} (t) b^\star$; that is, the
+true function~$\beta(t)$ sits in the span of the spline basis
+expansion. 
+With the necessary assumptions stated, we can now state
+Lemma~\ref{lemma:simpleasym}, which provides asymptotic theory.
 \begin{lemma} \normalfont
 \label{lemma:simpleasym}
-Under Assumption~\ref{assumption:truncation} and~$\Delta$ known, for
-large~$n$ the estimate~$\hat \theta_n$ is approximately normal
+Under Assumption~\ref{assumption:events},
+Assumption~\ref{assumption:truncation}, and~$\Delta$ known, for
+large~$n$ the estimator~$\hat \theta_n$ is consistent; moreover,
 \[
 \sqrt{n} (\hat \theta - \theta) \to N(0, \Xi (\theta)^{-1})
 \]
@@ -709,55 +770,42 @@ no impact to statistical efficiency.
 \label{tab:compvseff}
 \end{table}
 
-\section{Theoretical analysis}
+\subsection{Penalized functional regression models}
 
+Recall theoretical results were proven under the assumption that there
+exists~$b^\star$ such that~$\beta(t) = \phi(t) {\bf b}^\star$.
+To make this assumption plausible, we set~$K_b$ large enough (but less
+than~$K_x$ to ensure identifiability) such that the spline basis
+expansion is sufficiently expressive. However, in practice, such a
+choice of~$K_b$ may lead to overfitting the data. We therefore, in the
+remainder of this paper, follow~\cite{GoldSmith2015} and induce
+smoothing by assuming that~$\{ b_k \}_{k=3}^{K_b} \sim N(0, \sigma_b^2
+I)$. Incorporating penalization is simple due to the connection
+between with the score functions for logistic regression. 
 
-\begin{assumption}[Event process assumptions]
-\begin{itemize}
-\item The subsampling rate~$\pi_i (t) \in [L_\pi, U_\pi]$ 
-\item There exists a nonnegative matrix
-\item There exists 
-\end{itemize}
-\end{assumption}
+\subsection{Confidence intervals for~$\beta(t)$}
 
-\begin{assumption}[Covariance assumptions]
-\begin{itemize}
-\item 
-\end{itemize}
-\end{assumption}
-
-\begin{assumption}[Functional data assumptions]
-M1 -- M4 in 
-\end{assumption}
-
-\begin{thm}[No reconstruction error]
-\label{thm:truncation}
-Under regularity conditions A-E in Andersen et al. 1993, 
-\[
-\frac{n (\hat \theta - \theta) \Xi (\theta) (\hat \theta - \theta) -
-  K_n+1}{\sqrt{2 (K_n + 1) }} \to N(0,1).
-\]
-
-\end{thm}
-
-\begin{thm}[Reconstruction error OR $\hat \Delta > \Delta$]
-\label{thm:biaseddown}
-
-
-
-\end{thm}
-
-Theorem~\ref{thm:biaseddown} shows that if we keep~$K_x = K_b = 35$
-and therefore have reconstruction error, we can expect a downward bias
-in parameter estimates.
-Moreover, if~$\Delta < \Delta^\star$ then we can expect a similar bias
-in the parameter estimates.  For the former, however, we can simply
-let~$K_x = K_b$ grow as a function of data size; for the latter, we
-can see if~$\hat \beta(s)$ is statistically significant for~$s$
-near~$\Delta$. If so, we can set~$\Delta$ larger to ensure the
-condition holds.
-
-
+Due to the connection with generalized mixed effects models, we can
+leverage existing inferential machinery to obtain variance-covariance
+estimates of model parameters. 
+That is, if~$\hat \Sigma_{bb}$ is the $K_b \times K_b$ deimnsional
+matrix obtained by plugging in the REML estimates of variance
+components into the formula for the variance of~$\hat b$, then the
+standard error for estimate at time~$t_0$ -- i.e., ~$\hat \beta (t_0)
+= \phi(t_0) \hat {\bf b}$ -- is given by~$\sqrt{ \phi (t_0 )
+  \hat \Sigma_{bb} \phi(t_0)^\top}$.  Then the approximate 95\%
+confidence interval can be constructed as~$\hat \beta (t_0) \pm 1.96
+\sqrt{\phi (t_0) \hat \Sigma_{bb} \phi(t_0)^\top}$. 
+ 
+We acknowledge two important limitations of confidence intervals
+obtained via this approach. First, penalization may lead to confidence
+intervals that perform poorly in regions where~$\hat \beta(t)$ is
+oversmoothed. Second, we ignore the variability inherent in the
+longitudinal functional principal component analysis; that is, our
+estimates ignore the variability in estimation of eigenfunctions~$\hat
+\psi$ as well as the coefficients~$\hat c_{i,k}(t)$.
+Joint modeling could be considered as in~\cite{Crainiceanu2010},
+however, this is beyond the scope of this article.
 
 \section{Extensions}
 
@@ -772,14 +820,15 @@ functional linear models provided by Lemma~\ref{lemma:logistic}.
 
 A core concern in mHealth is that sensor data can be missing due to
 sensor wearing issue.
-To see this, for the suicidal ideation case study, there are XX event
-times across the whole dataset.  Of these, XX event times had complete 
-data for the prior thirty minutes, XX had missingness less than 10\%
-(i.e., sufficient to ), and XX had missingness above 30\%.
+To see this, for the suicidal ideation case study, there are 2139
+self-identified moments of distress across all 91 participants.  Of
+these, 1289 event times had complete data for the prior thirty minutes,
+1984 had fraction of missing data on a fine grid less than 30\%, and
+1998 had fraction of missing data on a fine grid less than 10\%. 
 
-The issue here is that~$c_{i,k} (t)$ cannot be estimated if~$X(s,t)$
-is not observed for all~$s \in [0,\Delta]$. 
-Moreover, we want standard erros to reflect the uncertainty
+Missing data is a critical issue because~$c_{i,k} (t)$ cannot be
+estimated if~$X(s,t)$ is not observed for all~$s \in [0,\Delta]$. 
+Moreover, we want standard errors to reflect the uncertainty
 in these coefficients when missing data is prevalent.
 \cite{Goldsmith2015} suggest using best linear unbiased predictors
 (BLUP) or posterior modes in the mixed effects model to
@@ -805,7 +854,7 @@ where~$\mu_y (t) = \E [ X_i (t) \given Y_i (t) = y]$, and
 \]
 This generalizes the procedure of~\cite{Reimerr2018} to the
 longitudinal data setting.
-This is possible due to LEmma~\ref{} and our 
+This is possible due to  and our 
 Here, we ignore the issue that~$X(t,s)$ is 
 
 The estimate is then given by~$\bar \theta = M^{-1} \sum_{m=1}^M \hat
@@ -834,7 +883,19 @@ covariance.
 
 \subsection{Unbiased estimation}
 
+\subsection{Coverage properties}
+
 \subsection{Impact of $\Delta$}
+
+Theorem~\ref{thm:biaseddown} shows that if we keep~$K_x = K_b = 35$
+and therefore have reconstruction error, we can expect a downward bias
+in parameter estimates.
+Moreover, if~$\Delta < \Delta^\star$ then we can expect a similar bias
+in the parameter estimates.  For the former, however, we can simply
+let~$K_x = K_b$ grow as a function of data size; for the latter, we
+can see if~$\hat \beta(s)$ is statistically significant for~$s$
+near~$\Delta$. If so, we can set~$\Delta$ larger to ensure the
+condition holds.
 
 \section{Case Study: }
 
@@ -847,25 +908,25 @@ covariance.
 
 \begin{proof}[Proof of Lemma~\ref{lemma:logistic}]
 Recall~$\frac{d}{d\theta} \log h_i (t; \theta) = \frac{h^{(1)}_i (t;
-  \theta)}{h_i (t; \theta)}$. Therefore, under the log-linear
-intensity function, $\frac{d}{d\theta} \log h_i (t; \theta) =
-W_{i,t}$. On the other hand,
+  \theta)}{h_i (t; \theta)}$. Under the log-linear
+intensity function given by~\eqref{eq:approx_hazard},
+$\frac{d}{d\theta} \log h_i (t; \theta) = W_{i,t}$ and 
 \[
 \frac{d}{d \theta} \log \left( \pi_i (t) + h_i (t;\theta) \right) = 
-\frac{\exp \left( W_{i,t}^\prime \theta \right)}{\pi_i (t) + \exp
-  \left( W_{i,t}^\prime \theta \right)} W_{i,t}
+\frac{\exp \left( W_{i,t}^\top \theta \right)}{\pi_i (t) + \exp
+  \left( W_{i,t}^\top \theta \right)} W_{i,t}
 \]
 Therefore,
 \begin{align*}
-\hat U_n (\theta) 
+\tilde U_n (\theta) 
   &= \sum_{i=1}^n \left \{ \sum_{t \in N_i} W_{i,t} -
-    \sum_{t \in N_i \cup D_i} \frac{\exp \left( W_{i,t}^\prime \theta
-    \right)}{\pi_i (t) + \exp \left( W_{i,t}^\prime \theta \right)}
+    \sum_{t \in N_i \cup D_i} \frac{\exp \left( W_{i,t}^\top \theta
+    \right)}{\pi_i (t) + \exp \left( W_{i,t}^\top \theta \right)}
     W_{i,t} \right \} \\
   &= \sum_{i=1}^n \left \{ \sum_{t \in N_i} \frac{\pi_i (t)}{\pi_i (t)
-    + \exp \left( W_{i,t}^\prime \theta \right)} W_{i,t} -
-    \sum_{t \in D_i} \frac{\exp \left( W_{i,t}^\prime \theta
-    \right)}{\pi_i (t) + \exp \left( W_{i,t}^\prime \theta \right)}
+    + \exp \left( W_{i,t}^\top \theta \right)} W_{i,t} -
+    \sum_{t \in D_i} \frac{\exp \left( W_{i,t}^\top \theta
+    \right)}{\pi_i (t) + \exp \left( W_{i,t}^\top \theta \right)}
     W_{i,t} \right \} \\
   &= \sum_{i=1}^n \left \{ \sum_{t \in N_i} w_{i} (t; \theta) W_{i,t} -
     \sum_{t \in D_i} (1 - w_i (t; \theta)) W_{i,t} \right \} \\
@@ -884,13 +945,6 @@ for logistic regression with offset~$\log \pi_i (t)$.
 Lemma~\ref{lemma:simpleasym} will be proven under regularity
 conditions A-E in~\cite[pp. 420--421]{Andersen1993} along with the
 following assumptions related to the subsampling rate~$\pi_i (t)$.
-For simplicty we assume there exists~$\tau < \infty$ and all censoring
-times satisfy~$\tau_i \leq \tau$. Define $R_i (t)$ to be the at risk
-indicator for participant~$i$.  That is, 
-\[
-R_i (t) = \left \{ \begin{array}{c c} 1 & t \in (0,\tau_i) \\ 0
-                                        & t > \tau_i\end{array} \right .
-\]
 We define the joint counting process
 \[
 M_i (t) = N_i (t) - \int_0^t (h_i (s; \theta) + \pi_i (s)) R_i (s) ds. 
@@ -901,69 +955,78 @@ where~$N_i (t)$ is the counting process with jumps at all~$t \in
 Asymptotic consistency is guaranteed~\cite[Theorem VI.1.1]{Andersen1993} if
 \begin{equation}
 \label{eq:andersen1}
-n^{-1} \hat U_n (\theta_0 ) \overset{P}{\to} 0,
+n^{-1} \tilde U_n (\theta_0 ) \overset{P}{\to} 0,
 \end{equation}
 and 
-\[
-n^{-1} \frac{d}{d \theta^{\top}} \hat U_n (\theta) \big |_{\theta =
+\begin{equation}
+\label{eq:andersen2}
+n^{-1} \frac{d}{d \theta^{\top}} \tilde U_n (\theta) \big |_{\theta =
   \theta_0} = \Xi (\theta),
-\]
+\end{equation}
 and
-\[
-\lim_{n \to \infty} P \left(  and all \theta \in \Theta_0 \right) = 1
-\]
+\begin{equation}
+\label{eq:andersen3}
+\lim_{n \to \infty} P \left( \left | n^{-1} \frac{d^2}{d \theta_j d
+      \theta_k} \tilde U_n (\theta) \right | < M \text{ for all }
+  j,k \text{ and all } \theta \in \Theta_0 \right) = 1
+\end{equation}
 To prove~\eqref{eq:andersen1}, we decompose~$\hat U_n (\theta_0)$ into
 three terms
 \[
-n^{-1} \hat U_n (\theta_0) = n^{-1} U_n (\theta_0 )  + n^{-1} \left(
-  \tilde U_n (\theta) - U_n (\theta) \right) + n^{-1} \left(\hat U_n
-  (\theta) - \tilde U_n (\theta) \right)
+n^{-1} \tilde U_n (\theta_0) = n^{-1} U_n (\theta_0 )  + n^{-1} \left(
+  \hat U_n (\theta_0) - U_n (\theta) \right) + n^{-1} \left(\tilde U_n
+  (\theta_0) - \hat U_n (\theta_0) \right)
 \]
-where~$\tilde U_n (\theta_0)$ are the logistic score equations with
-$\int_0^\infty X_i(t-s) \beta(s) ds$ replaced by the
-approximation~$C_{i,t}^\top J_{\phi, \psi} {\bf b}$. 
-\cite{Andersen1993}[Theorem VI.1.1] show that~$n^{-1} U_n (\theta_0)
+where, recall,~$\hat U_n (\theta_0)$ are the logistic score equations
+with $\int_0^\infty X_i(t-s) \beta(s) ds$ and~$\tilde U_n (\theta_0)$
+with the approximation~$C_{i,t}^\top J_{\phi, \psi} {\bf b}$. 
+\cite{Andersen1993} (Theorem VI.1.1) show that~$n^{-1} U_n (\theta_0)
 \to 0$. The second term
 \begin{align*}
 n^{-1} \left( \hat U_n (\theta_0) - U_n (\theta_0) \right) =
   \frac{1}{n} \sum_{i=1}^n \int_0^{\tau} \frac{h^{(1)} (s;
   \theta_0)}{\pi_i (s) + h (s;\theta_0)} d M_i (s). 
 \end{align*}
-Lenglart's inequality\walt{Need to make precise} implies
-the second term converges in probability to zero.  This statement
-requires the following two conditions:
-\begin{enumerate}
-\item The subsampling rate is both lower and upper bounded for all
-  ``at risk times''; that is,~$0 < L < \pi_i (t) < U < \infty$ for
-  all~$i=1,2,\ldots$ and~$t \in [0,\tau]$. \walt{Could we just bound
-    $h_i (t; \theta) + \pi_i (t)$?}
-\item There exists a nonnegative definite matrix~$\Xi (\theta)$ such that
-\[
-n^{-1} \Xi_n (\theta) = n^{-1} \sum_{i=1}^n \int_0^\tau w_i (t;
-\theta) (1 - w_i (t; \theta)) \left[ \frac{h_i^{(1)}(t;
-      \theta)}{h_i (t; \theta)} \right] \times  \left [
-    \frac{h_i^{(1)} (t;\theta)}{h_i(t; \theta)} \right]^\top R_i (t)
-  dt \overset{P}{\to} \Xi (\theta).
-\] 
-\end{enumerate}
+where~$h(\cdot; \theta_0)$ is given by~\eqref{eq:hazardlinear}.
+Lenglart's inequality \walt{check} implies the second term converges
+in probability to zero under Assumptions~\ref{A1} and~\ref{A2}.
+
 The third term satisfies
 \begin{align*}
-n^{-1} \left \| \hat U_n (\theta_0) - \tilde U_n (\theta_0) \right \|
-  &\leq M n^{-1} \sum_{i=1}^n \sum_{t \in N_i \cup D_i}
-    \left \| g \left( W_{i,t}^\top \theta + \log (\pi_i (t)
-  ) \right) - g \left( \tilde W_{i,t}^\top \theta + \log (\pi_i (t) 
-  ) \right) \right \| \\
-&= M n^{-1} \sum_{i=1}^n \sum_{t \in N_i \cup D_i}
-    \left \| g^\prime \left( W_{i,t}^\top \theta + \log (\pi_i (t) )
-  \right) \right\| \times \left \| W_{i,t}^\top \theta_0 - \tilde W_{i,t}^\top
-  \tilde \theta_0  \right \| \\
-&= \frac{M}{4} \| N_i \cup D_i \| \left ( \sum_{j=p_n+1}^\infty
-  \lambda_{j}^2 \sum_{j=q_n+1}^\infty b_j^2 \right)^{1/2}
+  &n^{-1} \left \| \hat U_n (\theta_0) - \tilde U_n (\theta_0) \right \| \\
+  \leq & M n^{-1} \sum_{i=1}^n \sum_{t \in N_i \cup D_i} \bigg \| g
+         \left( W_{i,t}^\top \theta  + \sum_{k=K_x+1}^\infty \hat
+         c_{i,k} (t) \int_{t-\Delta}^t \hat \psi_k (s) \phi (s)^\top b
+         + \log (\pi_i (t) ) \right) - g \left( \tilde W_{i,t}^\top
+         \theta + \log (\pi_i (t)) \right) \bigg \| \\
+&\leq M n^{-1} \sum_{i=1}^n \sum_{t \in N_i \cup D_i}
+    \sup_{x \in \mathbb{R}} \left \| g^\prime \left( x \right)
+  \right\| \times \left \| \sum_{k=K_x+1}^\infty \hat c_{i,k} (t)
+  \sum_{l=1}^{K_b} \int_{t-\Delta}^t \hat \psi_k (s) \phi_l (s) b_l
+  \right \| \\ 
+&= \frac{M}{4} n^{-1} \sum_{i=1}^n \sum_{t \in N_i \cup D_i}
+  \times \sum_{l=1}^{K_b} \left \| \int_{t-\Delta}^t 
+  \left( X(s,t) - \sum_{k=1}^{K_x} \hat c_{i,k} (t) \psi_k (s) \right)
+  \phi_l (s) b_l\right \| \\
+&\to \frac{M}{4} \int_0^\tau \sum_{l=1}^{K_b} \left \| \int_{t-\Delta}^t 
+  \left( X(s,t) - \sum_{k=1}^{K_x} \hat c_{i,k} (t) \psi_k (s) \right)
+  \phi_l (s) b_l\right \| g(T) dT
 \end{align*}
 where~$M = \sup \| \tilde W_{i,t} \|$,~$g(x) = 1/(1+\exp(-x))$ is the
-expit function, and the final line is by Cauchy-Schwarz inequality.
-
-
+expit function. 
+The second inequality is due to the Taylor remainder theorem.
+The third is due to~$g^\prime (x) = e^x/(1+e^x)^2 \leq e^0/(1+e^0)^2 =
+1/4$, reordering the summation, and rewriting the error term in terms
+of the difference between~$X(s,t)$ and the approximation with
+truncation level~$K_x$. Letting~$n \to \infty$ allows us to re-write
+the outside sums in terms of the integrated difference where the
+integral is with respect to the sampling distribution~$g(T)$. Finally,
+under Assumptions~\ref{assumption:truncation}, \cite{Park2018} show
+\[
+X(s,t) - \sum_{k=1}^{K_x} \hat c_{i,k} (t) \psi_k (s) \overset{p}{\to} 0
+\]
+as~$K_x \to \infty$, which implies the third term goes to zero as the
+truncation level goes to infinity.
 \end{proof}
 
 \begin{proof}[Proof of Proposition~\ref{prop:optimal}]
