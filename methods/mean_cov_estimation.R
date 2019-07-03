@@ -13,14 +13,17 @@
 ## hatX(t,s) = coefficients%*%eigenvectors + mu(t,s) 
 ## And seeing how close hatX(t,s) is to X(t,s).
 
-setwd("/Volumes/murphy_lab/users/wdempsey/fda-recurrent-events/methods/")
-event_complete = readRDS("./event_complete.RDS")
+setwd("/Volumes/murphy_lab/users/wdempsey/data-for-fda/data/")
+event_complete = readRDS("./event_complete_2019-07-01.RDS")
 sequence = seq(-30,0,by =1/60)
-plot(sequence, event_complete[3,3:1803], type = "l")
+plot(sequence, event_complete[3,4:1804], type = "l")
 
 library(refund)
 full_obs = apply(X = event_complete, MARGIN = 1, FUN = function(x){!any(is.na(x))})
-Y = event_complete[full_obs,3:1803]
+greater_than_ten_percent_missing = apply(X = event_complete, MARGIN = 1, FUN = function(x){mean(!is.na(x[4:1804])) > 0.1})
+greater_than_thirty_percent_missing = apply(X = event_complete, MARGIN = 1, FUN = function(x){mean(!is.na(x[4:1804])) > 0.3})
+greater_than_fifty_percent_missing = apply(X = event_complete, MARGIN = 1, FUN = function(x){mean(!is.na(x[4:1804])) > 0.5})
+Y = event_complete[full_obs,4:1804]
 x = event_complete[full_obs,2]
 z = sequence
 est <- fbps(Y,list(x=x,z=z))
