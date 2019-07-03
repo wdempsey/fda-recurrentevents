@@ -18,7 +18,7 @@ event_complete = readRDS("./event_complete_2019-07-01.RDS")
 sequence = seq(-30,0,by =1/60); sensor_obs = 4:1804
 plot(sequence, event_complete[3,sensor_obs], type = "l")
 
-library(refund)
+library(refund); library(lubridate)
 full_obs = apply(X = event_complete, MARGIN = 1, FUN = function(x){!any(is.na(x))})
 greater_than_ten_percent_missing = apply(X = event_complete, MARGIN = 1, FUN = function(x){mean(!is.na(x[sensor_obs])) > 0.1})
 greater_than_thirty_percent_missing = apply(X = event_complete, MARGIN = 1, FUN = function(x){mean(!is.na(x[sensor_obs])) > 0.3})
@@ -56,8 +56,15 @@ eig_values[eig_values<0] = 0
 K = 35
 phi_vectors = eig_vectors[,1:K]
 coef = residual%*%phi_vectors
-plot(sequence, phi_vectors%*%coef[obs,]/inflation + est$Yhat[obs,], type = "l")
+## To show the impact of K
+obs = 20
+# par(mar = c(4,3,2,1)+ 0.1)
+# png(filename = "~/Dropbox/Presentations/06-21-19-SAA/realdataplot_K10.png",
+#     width = 480, height = 480, units = "px", pointsize = 12)
+plot(sequence, phi_vectors%*%coef[obs,]/inflation + est$Yhat[obs,], type = "l", axes = FALSE, xlab = "Time until button press", ylab = "")
+axis(side = 1); axis(side = 2, labels = FALSE)
 lines(sequence, Y[obs,], col = "red", lwd = 2)
+# dev.off()
 
 ## SAVE THE MEAN, COEFFICIENT MATRIX, AND FIRST K EIGEN VECTORS
 saveRDS(object = est$Yhat, file = paste("event_means_",today(),".RDS", sep=""))
