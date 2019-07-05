@@ -79,7 +79,7 @@ nonevent_complete = readRDS("./nonevent_complete_2019-07-01.RDS")
 sequence = seq(-30,0,by =1/60); sensor_obs = 4:1804
 plot(sequence, nonevent_complete[3,sensor_obs], type = "l")
 
-library(refund)
+library(refund); library(lubridate)
 full_obs = apply(X = nonevent_complete, MARGIN = 1, FUN = function(x){!any(is.na(x))})
 Y = nonevent_complete[full_obs,sensor_obs]
 x = nonevent_complete[full_obs,2]
