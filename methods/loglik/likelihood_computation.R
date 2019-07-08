@@ -18,29 +18,19 @@
 ## denominator =  c^prime %*% (mle_output$var_subsampl + mle_output$var_event ) %*% c 
 ## rel eff = numerator / denominator
 
-## Source the underlying functions
-source("./likelihood_functions.R")
-
-library(doParallel)
-cl = Sys.getenv("SLURM_NTASKS_PER_NODE")
-cl
-
-registerDoParallel(cores = (cl))
-
-# Shows the number of Parallel Workers to be used
-getDoParWorkers()
-print("Parallel setup complete")
 ## GENERATE SPLINES
 library(splines)
 sequence <- seq(-30,0, by = 1/60)
-# knots <- seq(-36, 6, 2)  # 10 => 10-4 = 6 Basis splines
-# x <- seq(-30, 0, by = 1/60)
-# bb <- splineDesign(knots, x = x, outer.ok = FALSE)
-knots <- seq(0, 30, 1)  # 10 => 10-4 = 6 Basis splines
-x <- seq(0, 30, by = 1/60)
-bb <- splineDesign(knots, x = x, outer.ok = TRUE)
+# knots <- seq(-40, 10, 1)  # 10 => 10-4 = 6 Basis splines
+knots <- c(-32,seq(-30,0,1), 2)  # 10 => 10-4 = 6 Basis splines
+x <- seq(-30, 0, by = 1/60)
+bb <- splineDesign(knots, x = x, outer.ok = FALSE, ord = 2)
+# knots <- seq(0, 30, 1)  # 10 => 10-4 = 6 Basis splines
+# x <- seq(0, 30, by = 1/60)
+# bb <- splineDesign(knots, x = x, outer.ok = TRUE)
 print("Generated Splines")
 
+library(lubridate)
 setwd("/Volumes/murphy_lab/users/wdempsey/data-for-fda/data/")
 # setwd("/n/murphy_lab/users/wdempsey/data-for-fda/data/")
 ## PULL IN EVENT RDS FILES
@@ -79,44 +69,28 @@ print("RDS Files Readin correctly")
 
 Y = c(rep(1,nrow(event_model.matrix)), rep(0, nrow(nonevent_model.matrix)))
 
-model.matrix = rbind(event_model.matrix, nonevent_model.matrix)
+model.matrix = rbind(event_model.matrix[,-1], nonevent_model.matrix[,-1])
+hour.info = c(event_model.matrix[,1], nonevent_model.matrix[,1])
 
-temp = glm(Y~model.matrix-1, family = binomial, offset = rep(log_sampling_rate,length(Y)))
+temp = glm(Y~as.factor(hour.info) + model.matrix - 1, family = "binomial", offset = rep(log_sampling_rate,length(Y)))
 
-beta = temp$coefficients[-1]
+beta_obs = 25:(25+ncol(bb)-1)
+beta = temp$coefficients[beta_obs]
+beta[is.na(beta)] = 0
 
 par(mar = c(4,4,2,1) + 0.1)
-plot(sequence, bb%*%beta, type= "l")
+obs = sequence > -30 & sequence < 0
+plot(sequence[obs], (bb%*%beta)[obs], type= "l")
 
-stderr = sqrt(diag(bb%*%vcov(temp)[2:28, 2:28]%*%t(bb)))
+Sigma = vcov(temp)[beta_obs, beta_obs]
+Sigma[is.na(Sigma)] = 0 
+stderr = sqrt(diag(bb%*%Sigma%*%t(bb)))
 
-lines(sequence, bb%*%beta + 1.96 * stderr, col = "red")
-lines(sequence, bb%*%beta - 1.96 * stderr, col = "red")
+lines(sequence[obs], (bb%*%beta + 1.96 * stderr)[obs], col = "red")
+lines(sequence[obs], (bb%*%beta - 1.96 * stderr)[obs], col = "red")
+abline(h = 0, col = "blue")
 
-# ## Bring in rootSolve library for 
-# ## using Newton Rhapson method on 
-# ## collected data
-# library("rootSolve")
-# 
-# llik <- llik_computation(event_coef, event_means, event_J,
-#                          nonevent_coef, nonevent_means, nonevent_J,
-#                          nonevent_ids, pi_ids) 
-# 
-# llik_deriv <- llik_computation_derivative(event_coef, event_means, event_J,
-#                                           nonevent_coef, nonevent_means, nonevent_J,
-#                                           nonevent_ids, pi_ids) 
-# temp = readRDS("wedidit.RDS")
-# init_beta = temp$par ## init_beta = c(1, rnorm(ncol(nonevent_J), sd = 0.1))
-# 
-# print("Optimization begins")
-# 
-# system.time(print(llik(init_beta)))
-# 
-# output <- optim(init_beta, fn = llik, gr = llik_deriv, method = "BFGS", control=list(trace=TRUE, maxit = 1000))
-# #method = "BFGS", lower = rep(-10,length(init_beta)), upper = rep(10, length(init_beta)))
-# 
-# print("Optimization ends")
-# 
-# print(output$par)
+# sequence[which(bb%*%beta + 1.96 * stderr > 0 & bb%*%beta - 1.96 * stderr > 0)]
+# sequence[which(bb%*%beta + 1.96 * stderr < 0 & bb%*%beta - 1.96 * stderr < 0)]
 
-saveRDS(object = output, file = "wedidit2.RDS")
+# saveRDS(object = output, file = "wedidit2.RDS")
