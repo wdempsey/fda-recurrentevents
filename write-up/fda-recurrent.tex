@@ -818,50 +818,82 @@ functional linear models provided by Lemma~\ref{lemma:logistic}.
 \subsection{Missing data}
 \label{section:missingdata}
 
-A core concern in mHealth is that sensor data can be missing due to
-sensor wearing issue.
-To see this, for the suicidal ideation case study, there are 2139
-self-identified moments of distress across all 91 participants.  Of
-these, 1289 event times had complete data for the prior thirty minutes,
-1984 had fraction of missing data on a fine grid less than 30\%, and
-1998 had fraction of missing data on a fine grid less than 10\%. 
+A core concern in mHealth is that sensor data can often be missing for
+intervals of time due to sensor wearing issue (e.g., sensor band
+becomes loose, turns off accidentally, data packets lost, or battery
+dies). In the suicidal ideation case study, for example, there are
+2139 self-identified moments of distress across all 91 participants.
+Of these, 1289 event times had complete data for the prior thirty
+minutes, 1984 had fraction of missing data on a fine grid less than
+30\%, and 1998 had fraction of missing data on a fine grid less than
+10\%. 
 
 Missing data is a critical issue because~$c_{i,k} (t)$ cannot be
 estimated if~$X(s,t)$ is not observed for all~$s \in [0,\Delta]$. 
 Moreover, we want standard errors to reflect the uncertainty
 in these coefficients when missing data is prevalent.
-\cite{Goldsmith2015} suggest using best linear unbiased predictors
+\cite{Goldsmith2011} suggest using best linear unbiased predictors
 (BLUP) or posterior modes in the mixed effects model to
 estimate~$c_{i,k} (t)$; however, one criticism would be when there is
 substantial variability in these estimates.  To deal with this,
 \cite{Crainiceanu2010, Goldsmith2010} take a full Bayesian analysis.
-\cite{Yao2005} introduced PACE as a frequentist analysis that deals
-with this issue.
-However,~\cite{Reimherr2018} show that for sparse, irregular
-longitudinal, the imputation model should not ignore the outcome~$Y_i
-(t)$.
+\cite{Yao2005} introduced PACE as an alternative frequentist method.
+However,~\cite{Petrovich2018} shows that for sparse, irregular
+longitudinal, the imputation model should not ignore the outcome
+variable~$Y_i (t)$.
 
-Here we present an extension of~\cite{Reimherr2018} to our setting,
-leverage Lemma~\ref{lemma:logistic} and the marginal covariance
-estimation procedure to build a multiple imputation approach.
+Here we present an extension of~\cite{Petrovich2018} to our setting by
+leveraging Lemma~\ref{lemma:logistic} and the marginal covariance
+estimation procedure to construct a multiple imputation procedure.
+Let~$\bfx_{i} (t)$ denote incomplete sensor data at time~$t$ (i.e., at
+times~$\{ s_{i,r} \}_{r=1}^{k_{it}} \}$ in~$[0,\Delta]$. Then
+\begin{align}
+\label{eq:impute}
+\E [ X_i (s,t) \given Y_i(t) = y, \bfx_i (t) ] 
+  &= \mu_y (s,t) + {\bf a}_{i,t}^\top (s) {\bf B}_{i,t} (\bfx_i (t) -
+    \mathbold{\mu}_i (t) ) \\
+\text{Cov} \left( X_i (s,t), X_i (s^\prime, t) \given Y_i (t) = y,
+  \bfx_i (t) \right) 
+  &= \Sigma_{t} (s, s^\prime) - 
+    {\bf a}_{i,t} (s)^\top {\bf B}_{i,t} {\bf a}_{i,t} (s^\prime)
+\end{align}
+where we have
 \[
-\E [ X_i (s,t) \given Y_i(t) = y, \bfx ] = \mu_y (s,t) + {\bf a}_{i,t}^\top
-{\bf B}_i (\bfx_i (t) - \mathbold{\mu}_i )
+{\bf a}_{i,t} (s)^\top = \left( \begin{array}{c} \Sigma_t (s_{i,1}, s) \\ \vdots \\
+                       \Sigma_t (s_{i,k_{it}}, s) \end{array} \right); \quad
+{\bf B}_{i,t}^{-1} = \left( 
+  \begin{array}{c c c} 
+    \Sigma_t(s_{i,1}, s_{i,1}) & \Sigma_t(s_{i,1}, s_{i,2}) & \cdots \\
+    \Sigma_t(s_{i,1}, s_{i,2}) & \ddots & \vdots \\
+    \vdots & \cdots & \Sigma_t (s_{i,k_{it}}, s_{i,k_{it}}) 
+  \end{array} \right),
 \]
-where~$\mu_y (t) = \E [ X_i (t) \given Y_i (t) = y]$, and
-\[
-{\bf a}_i^\top = ( \Sigma(s, )
-\]
-This generalizes the procedure of~\cite{Reimerr2018} to the
-longitudinal data setting.
-This is possible due to  and our 
-Here, we ignore the issue that~$X(t,s)$ is 
+$\mathbold{\mu}_i (t) = \E [ \bfx_i (t) \given Y_i (t) = y] = \{
+\mu_y (s_{j}, t) \}_{j=1}^r$ and~$\mu_y (s,t)$ is the mean of~$X(t,s)$
+from group~$y$, and~$\Sigma_t ( s^\prime, s)$ is the covariance
+between~$X(s^\prime,t)$ and $X(s,t)$ for $s^\prime, s \in [0, \Delta]$ 
+and~$t \in \mathbb{R}_+$.
+These covariances can be estimated using the methods considered by
+\cite{ChenMuller2012}.  Our imputation procedure instead uses the
+marginal covariance~$\Xi$ as a proxy for the true covariance
+function~$\Sigma_t(\cdot, \cdot)$.  We found this to work well in
+simulations as~$\Sigma_t$ was relatively constant across~$t$; however,
+this imputation strategy may be inappropriate when the covariance
+structure changes significantly with time~$t$.
 
-The estimate is then given by~$\bar \theta = M^{-1} \sum_{m=1}^M \hat
-\theta^{(m)}$; the covariance matrix can be estimated by
+The imputation strategy generalizes the procedure introduced
+by~\cite{Petrovich2018} to the longitudinal functional data
+setting.  This is only possible due to the connection established with
+logistic regression by Lemma~\ref{lemma:logistic}.
+We consider a multiple imputation estimate with~$M$ imputations;
+the likelihood estimate is given by~$\bar \theta = M^{-1}
+\sum_{m=1}^M \hat \theta^{(m)}$ where~$\theta^{(m)}$ is the estimate
+from the~$m$th imputated dataset; the covariance matrix can be
+estimated by 
 \[
 M^{-1} \sum_{m=1}^M \hat \Xi^{(m)} (\theta) + \frac{1}{M-1}
-\sum_{m=1}^M \hat \theta - \bar \theta) (\hat \theta - \bar \theta)
+\sum_{m=1}^M (\hat \theta^{(m)} - \bar \theta) (\hat \theta^{(m)} -
+\bar \theta)
 \]
 where~$\hat \Xi^{(m)}$ is the estimator~\eqref{eq:fisher} for
 the~$m$th imputated dataset.
@@ -871,19 +903,73 @@ the~$m$th imputated dataset.
 
 \subsection{Multiple sensors and availability}
 
+\section{Simulation study}
+
+We next assess the proposed methodology via a simulation study.
+Simulation studies of joint high frequency sensor and recurrent
+event data can be quite difficult to construct.  Here, we use the
+imputation strategy introduced in Section~\ref{section:missingdata} to
+circumvent some of the issues.  
+In this section, we assume each individual is observed over five
+12-hour days.  
 
 
-\subsection{Re-using estimates under additional sampling}
+First, we generate a sequence of event times via a marginal hazard
+rate that ignores sensor data.  
 
-If~$\pi$ is constant then we can continue to use the same pooled
-covariance. 
+We generate 5 days of 12 hours with range of marginal rates (1 per
+12 hours, 1 per 6 hours, 1 per hour).  We then sample non-events at
+rates or (1 per 12/6/1/0.5 hours).
+We assume that~$Y_t = 0$ implies the curve is flat with mean 0.
+We assume that~$Y_t = 1$ implies three curves (A) the curve jumps
+around 10 minutes prior to the event and remains elevated, (B) the
+curve goes down then up and down smoothly, (C) 
+These curves are given in Figure~\ref{} for three choices of
+parameters that indicate varying degrees of departure from the~$Y_t =
+0$ case.
+
+Using~\eqref{eq:}
+We define~$X(t,s)$ at the grid of observerations per secondw ith
+\[
+  \Sigma_t (s, s^\prime) = 
+  \frac{\sigma^2}{\Gamma (v) 2^{\nu-1}} 
+  \left( \frac{\sqrt{2 \nu} |t-s|}{\rho_t} \right)^{\nu}
+  K_v \left( \frac{\sqrt{2 \nu} |t-s|}{\rho_t} \right)
+\]
+where~$K_v$ is the modified Bessel function of the second kind, and
+we choose~$\nu = 5/2$ and $\sigma^2 = 1$. 
+We choose three versions of~$\rho_t$: (A) constant across time
+at $0.5$, (B) constant within each day but linearly decreasing
+across days from~$0.7$ to~$0.3$, and (C) constant within each day but
+linearly increasing across days from~$0.3$ to~$0.7$.
+
+These curves are evaluate
+
+We estimate with~$K_b = K_x = 35$ under both the logistic, penalized
+logistic, and multi-level penalized logistic models.
 
 
-\section{Simulations}
 
-\subsection{Unbiased estimation}
+\subsection{Mean-integrated squared error (MISE)}
+
+Since we are primarily interested in accuracy of the final
+estimates~$\hat \beta(s)$, we report the mean integrated  squared
+error (MISE) of~$\hat \beta (s)$, defined as~$\frac{1}{1000}
+\sum_{j=1}^{1000} \int_{-\infty}^t ( \hat \beta_j (t) - \beta(s))^2
+ds$ where~$\beta(s) \equiv 0$ for $s > \Delta$.  We define the MISE in
+this manner to account for settings where~$\Delta$ is unknown.
+For~$\Delta$ known, the MISE simplifies to integrals from~$t-\Delta$
+to~$t$.
+Table~\ref{} show the MISE of~$\hat \beta (s)$ decomposed into the
+variance and squared biase
+
+
+
 
 \subsection{Coverage properties}
+
+In each (A)-(C) we parametrize the curves and check the type I error
+for various sizes of the 
 
 \subsection{Impact of $\Delta$}
 
@@ -897,7 +983,68 @@ can see if~$\hat \beta(s)$ is statistically significant for~$s$
 near~$\Delta$. If so, we can set~$\Delta$ larger to ensure the
 condition holds.
 
-\section{Case Study: }
+\section{A worked example: Adolescent psychiatric inpatient mHealth study}
+
+During a XX month period in 2019, 100 psychiatric inpatients admitted
+for suicidal risk to Franciscan Children's Hospital 
+
+
+hospitals with histologically verified liver cirrhosis were recu
+those presenting to a psychiatric hospital with suicide ideation
+and/or a recent suicide attempt) during a high risk time period (i.e.,
+post-hospitalization)
+
+Currently, only 51 patients for whom the initial biopsy could be
+reevaluated using more restrictive criteria were available for
+analysis.
+The goal of the study was to ask whether sensor information can used
+to identify distress early prior in the process of escalation by
+monitoring physiological correlates of distress -- in particular,
+electrodermal activity (EDA), a measure of skin conductance, and
+``gACC'', a coordinate-free feature built from accelerometer data 
+that measures physical movement. 
+The scientific hypothesis to be tested is whether a spike in
+EDA and/or gACC 
+
+The goal of the sutyd
+
+
+
+EDA and ACC sensor data along with buttonpress timestamps were
+graciously provided by Evan Kleiman and his study team {\tt
+https://kleimanlab.org}.
+At the end of the study period, the mortality rate was 292/488, or
+approximately 60\%.
+
+The focus here is on two EDA and the  prothrombin index, a composite
+blood coagulation index
+related to liver function, measured initially at three-month intervals
+and subsequently at roughly twelve-month intervals.
+The individual prothrombin trajectories are highly variable,
+both in forward and in reverse time,
+which tends to obscure patterns and trends.
+In Figure~\ref{fig:mean_traj}a the mean trajectory is plotted against time from recruitment
+for two patient groups placebo/prednisone and censored/not censored.
+Naturally, only those patients who are still alive are included in the average
+for that time.
+Figure~\ref{fig:mean_traj}b shows the same plots in reverse alignment.
+While there are certain similarities in the two plots,
+the differences in temporal trends are rather striking.
+In particular, prothrombin levels in the six months prior to censoring are fairly stable,
+which is in marked contrast with levels in the six months prior to failure,
+as seen in the lower pair of curves.
+
+Inspection of the graphs for uncensored patients in the right panel of Figure~\ref{fig:mean_traj} suggests
+beginning with the simplest revival model in which the sequences
+for distinct patients are independent Gaussian with moments
+
+
+\subsection{Effect of electrodermal activity on prognosis}
+Over a period of 5~years and one month following recruitment,
+patient~$u$ had eight appointments with prothrombin values as follows:
+
+
+
 
 \bibliographystyle{plainnat}
 \bibliography{si-fda-refs}
