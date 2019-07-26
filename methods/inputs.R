@@ -33,4 +33,4 @@ partial_pooling_indicator <- 0
 
 ## User-specified sampling rate (per hour)
 ## for the non-event times
-sampling_rate = 2 # 2 times per hour (i.e., every 30-minutes)
+sampling_rate = 4 # 4 times per hour (i.e., every 15-minutes)
