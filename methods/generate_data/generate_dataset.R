@@ -40,18 +40,24 @@ for (id in 1001:1091) {
   eda_file_name = paste("./R21_Study - EDA/",id,"_EDA.rds", sep = "")
   acc_file_name = paste("./R21_Study - ACC/",id,"_acc.rds", sep = "")
   if(!(file.exists(eda_file_name) & file.exists(acc_file_name))) {
-    print(paste("No EDA file with id", id))
+    print(paste("No EDA and/or ACC file with id", id))
   } else{
     eda = readRDS(eda_file_name)
-    acc = readRDS(acc_file_name); max_acc = 127 * 0.5773503 * 3
-    acc$g = sqrt((acc$acc_x/max_acc)^2 + (acc$acc_y/max_acc)^2 + (acc$acc_z/max_acc)^2)
     print("Made it to sampling nonevent times")
     datetime_ts = as_datetime(eda$ts/1000)
     sampled_times = generate_noneventtimes(datetime_ts, sampling_rate, max.iters = 20000)
+    
+    print("And now onto EDA calculations")
     eda_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_eda_apply(iter, sequence, id_bp, eda)
-    acc_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_acc_apply(iter, sequence, id_bp, acc)
     eda_output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind) %dopar% nonevent_approximate_eda_apply(iter, sequence, sampled_times, eda)
+    rm("eda")
+    
+    print("And now onto ACC calculations")
+    acc = readRDS(acc_file_name); max_acc = 127 * 0.5773503 * 3
+    acc$g = sqrt((acc$acc_x/max_acc)^2 + (acc$acc_y/max_acc)^2 + (acc$acc_z/max_acc)^2)
+    acc_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_acc_apply(iter, sequence, id_bp, acc)
     acc_output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind) %dopar% nonevent_approximate_acc_apply(iter, sequence, sampled_times, acc)
+    rm("acc")
     
     ## Define time as since minimum time in EDA or ID_BP
     base_time = min(eda$ts, id_bp$ts_ms, acc$ts)
@@ -73,9 +79,11 @@ for (id in 1001:1091) {
       eda_nonevent_temp = c(id, sampled_times, nonevent_times_mins_since_base, eda_output_nonevent)
       acc_nonevent_temp = c(id, sampled_times, nonevent_times_mins_since_base, acc_output_nonevent)
     }
+    print("Appending EDA data")
     eda_event_complete = rbind(eda_event_complete, eda_event_temp)
     eda_nonevent_complete = rbind(eda_nonevent_complete, eda_nonevent_temp)    
     
+    print("Appending ACC data")
     acc_event_complete = rbind(acc_event_complete, acc_event_temp)
     acc_nonevent_complete = rbind(acc_nonevent_complete, acc_nonevent_temp)    
   }
