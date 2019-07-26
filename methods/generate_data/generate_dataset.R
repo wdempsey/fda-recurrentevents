@@ -11,6 +11,7 @@ require(lubridate)
 
 setwd("/n/murphy_lab/users/wdempsey/data-for-fda/data/")
 # setwd("/Volumes/murphy_lab/users/wdempsey/data-for-fda/data/")
+# setwd("/Users/walterdempsey/Harvard University/R21_Study - raw_data/")
 buttonpress = readRDS("./R21_Study - tags/button_presses.RDS")
 
 library(doParallel)
@@ -31,15 +32,19 @@ for (id in 1001:1091) {
   
   id_bp = subset(buttonpress, ID == id)
   
-  file_name = paste("./R21_Study - EDA/",id,"_EDA.rds", sep = "")
-  if(!file.exists(file_name)) {
+  eda_file_name = paste("./R21_Study - EDA/",id,"_EDA.rds", sep = "")
+  acc_file_name = paste("./acc/",id,"_acc.rds", sep = "")
+  if(!(file.exists(eda_file_name) & file.exists(acc_file_name))) {
     print(paste("No EDA file with id", id))
   } else{
-    eda = readRDS(file_name)
+    eda = readRDS(eda_file_name)
+    acc = readRDS(acc_file_name)
+    acc$g = sqrt(acc$acc_x^2 + acc$acc_y^2 + acc$acc_z^2)
     print("Made it to sampling nonevent times")
     datetime_ts = as_datetime(eda$ts/1000)
     sampled_times = generate_noneventtimes(datetime_ts, sampling_rate, max.iters = 20000)
-    output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_eda_apply(iter, sequence, id_bp, eda)
+    eda_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_eda_apply(iter, sequence, id_bp, eda)
+    acc_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_acc_apply(iter, sequence, id_bp, acc)
     output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind) %dopar% nonevent_approximate_eda_apply(iter, sequence, sampled_times, eda)
     
     ## Define time as since minimum time in EDA or ID_BP

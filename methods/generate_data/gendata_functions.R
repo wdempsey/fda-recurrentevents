@@ -23,7 +23,18 @@ approximate_eda_apply <- function(iter, sequence, id_bp, eda) {
   diff = eda$ts - current_ts
   minute_diff = diff/1000/60 
   keep_obs = (-30 < minute_diff) & (minute_diff <= 0)
-  output = unlist(lapply(sequence, approximate_eda(minute_diff[keep_obs],eda$EDA_HighLowPass[keep_obs])))
+  output = unlist(lapply(sequence, approximate_eda(minute_diff[keep_obs],eda$EDA_FeatureScaledFiltered_Day[keep_obs])))
+  return(output)
+}
+
+approximate_acc_apply <- function(iter, sequence, id_bp, acc) {
+  ## Input: Current iter, sequence of times until event, set of event times, EDA data
+  ## Output: Outputs corresponding EDA at time-until-event
+  current_ts = id_bp$ts_ms[iter]
+  diff = acc$ts - current_ts
+  minute_diff = diff/1000/60 
+  keep_obs = (-30 < minute_diff) & (minute_diff <= 0)
+  output = unlist(lapply(sequence, approximate_eda(minute_diff[keep_obs],acc$g[keep_obs])))
   return(output)
 }
 
