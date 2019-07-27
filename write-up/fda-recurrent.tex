@@ -389,14 +389,14 @@ subsampling via $\pi_i (t)$, one may compute a Horvitz-Thompson
 estimator of the derivative of the cumulative hazard:
 \[
 \hat H_{i}^{(1)} (\tau_i; \theta) = \sum_{u \in D_i} \frac{
-  h^{(1)}_i (u; \theta) }{ \pi_i (s) }
+  h^{(1)}_i (u; \theta) }{ \pi_i (u) }
 \]
 An alternative design-unbiased estimator of the derivative of the
 cumulative hazards is given by
 \begin{equation}
 \label{eq:WPest}
 \hat H_{i}^{(1)} (\tau_i; \theta) = \sum_{u \in (\bfT_i \cup D_i)}
-\frac{ h^{(1)}_i ( t; \theta ) }{ \pi_i (s) + h_i ( t ; \theta) }
+\frac{ h^{(1)}_i ( u; \theta ) }{ \pi_i (u) + h_i ( u ; \theta) }
 \end{equation}
 Equation~\eqref{eq:WPest} is the estimator suggested
 by~\cite{Waagepetersen2008}.  This estimator depends on the
@@ -415,8 +415,8 @@ the resulting estimating equations can be written as
 \begin{equation}
 \label{eq:approxscore}
 \hat{U}_n (\theta) = \sum_{i=1}^n \left[ \sum_{u \in \bfT_i} w_i(u; \theta)
-  \frac{h^{(1)} (u; \theta)}{ h ( t; \theta)}  - \sum_{u \in D_i} w_i(u;
-  \theta) \frac{h_i^{(1)} (t; \theta)}{ \pi_i (t) } \right].
+  \frac{h^{(1)} (u; \theta)}{ h ( u; \theta)}  - \sum_{u \in D_i} w_i(u;
+  \theta) \frac{h_i^{(1)} (u; \theta)}{ \pi_i (u) } \right].
 \end{equation}
 Equation~\eqref{eq:approxscore} are approximate score functions built
 via plug-in of the design-unbiased estimator of the derivative of the
@@ -582,10 +582,10 @@ D_i$ and~$i \in [n]$ where~$Y_i(t) = 1[t \in N_i]$, offset~$\log \pi_i
 
 \subsection{Theoretical analysis}
 
-Our theoretical analysis requires the several assumptions, some
-regarding the subsampling procedure, some for the event process, and
-some for the functional data. We state these assumptions and then our
-main theorems.  
+Our theoretical analysis requires the several
+assumptions, some regarding the subsampling procedure, some for the
+event process, and some for the functional data. We state these
+assumptions and then our main theorems.  
 We start by assuming there exists a~$\tau < \infty$ such that all
 individuals are no longer at risk (i.e.,~$\tau_i < \tau$ for all~$i$).
 Moreover, define $R_i (t)$ to be the at risk indicator for
@@ -640,7 +640,7 @@ functional data analysis~\citep{Park2018, Yao2005, ChenMuller2012}:
   and~$\sup |g(T)| < \infty$
 \item\label{A3} $\E[X(s,T) X(s^\prime, T) X(s,T^\prime)
   X(s^\prime, T^\prime) ] < \infty$ for
-  each $s,s^\prime [0,\Delta]$ and~$0 < T, T^\prime < \tau$.
+  each $s,s^\prime \in [0,\Delta]$ and~$0 < T, T^\prime < \tau$.
 \item\label{A4} $\E[\|X(\cdot, T)\|^4] < \infty$ for each~$0< T
   < \tau$.
 \end{enumerate}
@@ -817,6 +817,9 @@ functional linear models provided by Lemma~\ref{lemma:logistic}.
 
 \subsection{Missing data}
 \label{section:missingdata}
+\walt{Question: How to perform multiple imputation for~$X(\cdot,t)$
+  and $X(\cdot, t^\prime)$ for~$|t - t^\prime| <\Delta$? That is, how
+  do you perform multiple imputation with this overlapping structure?}
 
 A core concern in mHealth is that sensor data can often be missing for
 intervals of time due to sensor wearing issue (e.g., sensor band
@@ -836,7 +839,7 @@ in these coefficients when missing data is prevalent.
 (BLUP) or posterior modes in the mixed effects model to
 estimate~$c_{i,k} (t)$; however, one criticism would be when there is
 substantial variability in these estimates.  To deal with this,
-\cite{Crainiceanu2010, Goldsmith2010} take a full Bayesian analysis.
+\cite{Crainiceanu2010} take a full Bayesian analysis.
 \cite{Yao2005} introduced PACE as an alternative frequentist method.
 However,~\cite{Petrovich2018} shows that for sparse, irregular
 longitudinal, the imputation model should not ignore the outcome
@@ -874,12 +877,14 @@ from group~$y$, and~$\Sigma_t ( s^\prime, s)$ is the covariance
 between~$X(s^\prime,t)$ and $X(s,t)$ for $s^\prime, s \in [0, \Delta]$ 
 and~$t \in \mathbb{R}_+$.
 These covariances can be estimated using the methods considered by
-\cite{ChenMuller2012}.  Our imputation procedure instead uses the
-marginal covariance~$\Xi$ as a proxy for the true covariance
-function~$\Sigma_t(\cdot, \cdot)$.  We found this to work well in
-simulations as~$\Sigma_t$ was relatively constant across~$t$; however,
-this imputation strategy may be inappropriate when the covariance
-structure changes significantly with time~$t$.
+\cite{ChenMuller2012}.  
+% Our imputation procedure instead uses the
+% marginal covariance~$\Xi$ as a proxy for the true covariance
+% function~$\Sigma_t(\cdot, \cdot)$.  
+% We found this to work well in simulations as~$\Sigma_t$ was relatively
+% constant across~$t$; however, this imputation strategy may be
+% inappropriate when the covariance structure changes significantly with
+% time~$t$.
 
 The imputation strategy generalizes the procedure introduced
 by~\cite{Petrovich2018} to the longitudinal functional data
@@ -898,6 +903,7 @@ M^{-1} \sum_{m=1}^M \hat \Xi^{(m)} (\theta) + \frac{1}{M-1}
 where~$\hat \Xi^{(m)}$ is the estimator~\eqref{eq:fisher} for
 the~$m$th imputated dataset.
 
+\newpage
 
 \subsection{Multilevel models}
 
@@ -909,17 +915,18 @@ We next assess the proposed methodology via a simulation study.
 Simulation studies of joint high frequency sensor and recurrent
 event data can be quite difficult to construct.  Here, we use the
 imputation strategy introduced in Section~\ref{section:missingdata} to
-circumvent some of the issues.  
-In this section, we assume each individual is observed over five
-12-hour days.  
+circumvent some of these issues.  
 
-
-First, we generate a sequence of event times via a marginal hazard
-rate that ignores sensor data.  
-
-We generate 5 days of 12 hours with range of marginal rates (1 per
-12 hours, 1 per 6 hours, 1 per hour).  We then sample non-events at
-rates or (1 per 12/6/1/0.5 hours).
+Here, we assume each individual is observed over five 12-hour days.  
+We then generate a sequence of event times via a marginal hazard
+rate that ignores sensor data.  We assume the marginal rate is
+constant and set to 1 per 12/6/1 hour(s). We then sample non-events at
+rates of 1 per 12/6/1/0.5 hours.
+This sampling strategy yields (non-)event times~$t$ along with
+labels~$Y_t \in \{0,1\}$. 
+We then use the imputation strategy given by
+equation~\eqref{eq:impute} to generate the curves~$\{ X(s,t) \}$.
+For simplicity, we do not deal with 
 We assume that~$Y_t = 0$ implies the curve is flat with mean 0.
 We assume that~$Y_t = 1$ implies three curves (A) the curve jumps
 around 10 minutes prior to the event and remains elevated, (B) the
@@ -927,6 +934,10 @@ curve goes down then up and down smoothly, (C)
 These curves are given in Figure~\ref{} for three choices of
 parameters that indicate varying degrees of departure from the~$Y_t =
 0$ case.
+The associated~$\beta$ depends on the covariance~$\Sigma_t (s,t)$.
+In particular, $\beta = \Sigma_t^{-1} (\mu_{1,t} - \mu_{0,t})$ is
+guaranteed by Lemma~\ref{} and Theorem 1 of \cite{Petrovich2018}.
+For~$\beta(s)$ non time-varying implies the covariance term 
 
 Using~\eqref{eq:}
 We define~$X(t,s)$ at the grid of observerations per secondw ith
@@ -943,7 +954,10 @@ at $0.5$, (B) constant within each day but linearly decreasing
 across days from~$0.7$ to~$0.3$, and (C) constant within each day but
 linearly increasing across days from~$0.3$ to~$0.7$.
 
-These curves are evaluate
+to estimate the impact of strong X dependence for close X's then we
+will GENERATE SEQUENTIALLY TO FILL IN TO ACCOUNT FOR OVERLAP!
+HOW SHOULD WE HANDLE COVARIANCE BETWEEN X's outside the range?
+WE WILL APPROXIMATE?
 
 We estimate with~$K_b = K_x = 35$ under both the logistic, penalized
 logistic, and multi-level penalized logistic models.
