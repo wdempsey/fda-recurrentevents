@@ -2,7 +2,7 @@
 Code for project on combining functional data analysis (FDA) with
 random subsampling methods for fast fitting of recurrent event models
 in the presence of functional covariates (i.e., real-time sensor-based
-measures).
+measures).  
 
 ## Project Description ##
 This project includes the code needed to reproduce the results in the
@@ -11,7 +11,7 @@ covariates via random subsampling". If using this code please cite the
 paper using the following bibtex:
 
 ```tex
-@InProceedings{Dempsey:2019,
+@article{Dempsey:2019,
 author = {Dempsey, Walter},
 title = {Recurrent event analysis in the presence of functional
 covariates via random subsampling},
