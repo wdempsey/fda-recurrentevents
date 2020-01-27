@@ -74,7 +74,8 @@ expit <- function(x) {exp(x)/(1+exp(x))}
 
 logit <- function(p) {log(p/(1-p))}
 
-mise_calc <- function(beta_1t, betaHat.net.list) {
-  temp_Xb = (beta_1t - betaHat.net.list[i] - mean(betaHat.net.list))^2
+mise_calc <- function(beta_1t, betaHat.net) {
+  temp_Xb = (beta_1t - betaHat.net)^2
   term2 = (temp_Xb[1] + temp_Xb[length(temp_Xb)])/2 * gap + sum(temp_Xb[2:(length(temp_Xb)-1)]*gap) 
+  return(term2)
 }

@@ -37,7 +37,7 @@ eig_Sigma = eigen(Sigma)
 K_x = 35  # Pick first 35 eigen-vectors
 cumsum(eig_Sigma$values)[K_x]/sum(eig_Sigma$values) # Explains most of the variation
 
-set.seed("131232")
+set.seed("134163")
 dataset = generate_complete_data(N = 1000, Cov_X, C, times, eig_Sigma, beta_1t)
 rm(abs_diff, C, Cov_X, x)
 
@@ -78,7 +78,7 @@ K <- 100
 lambdapath <- round(exp(seq(log(lambda_max), log(lambda_max*epsilon), 
                             length.out = K)), digits = 10)
 
-set.seed("7918731")
+set.seed("97139817")
 ridge.fit.cv <- cv.glmnet(w, dataset$Y, alpha = 0, intercept = TRUE, 
                           penalty.factor = p.fac, standardize = FALSE,
                           lambda = lambdapath, nfolds = 20,
@@ -97,7 +97,8 @@ plot(max(local_times)-local_times, betaHat.net, col = "blue", type = "l",
 axis(side = 1); axis(side = 2, labels = FALSE)
 # lines(local_times, betaHat.net.star, col = "red")
 lines(local_times, beta_1t)
-mtext("Time until event", side = 1, line = 1)
+mtext("Time until event", side = 1, line = 2)
 mtext(expression(paste(beta, "(s)")),side = 2, line = 1)
 
+mise_calc(beta_1t, betaHat.net)
 

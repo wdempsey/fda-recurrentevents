@@ -356,8 +356,7 @@ Our theoretical analysis requires assumptions regarding the subsampling procedur
 \label{assumption:events}\normalfont
 We assume the following holds:
 \begin{enumerate}[label=(E.\arabic*)]
-\item\label{E1} The subsampling rate is both lower and upper bounded for all at-risk times; that is,~$0 < L < \pi_i (t) < U < \infty$ for all~$i=1,2,\ldots$ and~$t \in [0, \tau]$ such that $R_i (t) = 1$.
-\item\label{E1} The subsampling rate is both lower and upper bounded for all ``at risk times''; that is,~$0 < L < \pi_i (t) < U < \infty$ for all~$i=1,2,\ldots$ and~$t \in [0,\tau]$.
+\item\label{E1} The subsampling rate is both lower and upper bounded for all at-risk times; that is,~$0 < L < \pi_i (t) < U < \infty$ for all~$i=1,2,\ldots$ and~$t \in [0,\tau]$ such that $R_i (t) = 1$
 \item\label{E2} There exists a nonnegative definite matrix~$\Xi (\theta)$ such that
   \[
     n^{-1} \Xi_n (\theta) = n^{-1} \sum_{i=1}^n \int_0^\tau w_i (t;
@@ -493,14 +492,14 @@ We acknowledge two important limitations of confidence intervals obtained via th
 \section{Simulation study} \label{section:simstudy}
 
 
-We next assess the proposed methodology via a simulation study. Here, we assume each individual is observed over five days each defined on the unit interval~$[0,1]$ with $1000$ equally spaced observation times per day. We define~$X(t)$ at the grid of observerations as a mean-zero Gaussian process with covariance
+We next assess the proposed methodology via a simulation study. Here, we assume each individual is observed over five days where each day is defined on the unit interval~$[0,1]$ with $1000$ equally spaced observation times per day. We define~$X(t)$ at the grid of observations as a mean-zero Gaussian process with covariance
 \[
   \Sigma (t, t^\prime) =
   \frac{\sigma^2}{\Gamma (v) 2^{\nu-1}}
   \left( \frac{\sqrt{2 \nu} |t-s|}{\rho_t} \right)^{\nu}
   K_v \left( \frac{\sqrt{2 \nu} |t-s|}{\rho_t} \right)
 \]
-where~$K_v$ is the modified Bessel function of the second kind.  We set~$\nu = 1/2$, $\sigma^2 = 1$, and~$\rho = 0.5$ as well as set~$K_b = K_x = 35$.  For simplicity, we assume~$\Sigma$ is known in computation of the the eigendecomposisions. Given~$\{ X(t) \}_{0 \leq t \leq 1}$ for a given user-day, we generate event times according a chosen hazard function~$h (t; theta)$.  To mimic our real data, we set
+where~$K_v$ is the modified Bessel function of the second kind.  We set~$\nu = 1/2$, $\sigma^2 = 1$, and~$\rho = 0.3$ as well as set~$K_b = K_x = 35$.  For simplicity, we assume~$\Sigma$ is known in computation of the eigendecompositions. Given~$\{ X(t) \}_{0 \leq t \leq 1}$ for a given user-day, we generate event times according a chosen hazard function~$h (t; \theta)$.  To mimic our real data, we set
 \[
 h(t; \theta) = \exp \left( \theta_0 + \int_{0}^{\Delta} X(t-s) \beta(s) ds \right).
 \]
@@ -512,23 +511,38 @@ Since we are primarily interested in accuracy of the final estimates~$\hat \beta
 
 \begin{table}[!th]
 \begin{tabular}{c | c c c c c}
-Sampling rate & 0.5 & 1 & 5 & 25 & 50 \\
-Variance
-Squared Bias
-MISE
+Sampling rate & 0.5 & 1 & 5 & 25 & 50 \\ \hline
+Variance & (10,12) & - & - & - & - \\
+Squared Bias & - & - & - & - & -  \\
+MISE & - & - & - & - & -  \\ \hline
+Type I error & - & - & - & - & -  \\ \hline
 \end{tabular}
-\caption{XXX}
+\caption{Mean-integrated squared error and type I error as a function of sampling rate for $\beta(s)$ given by (1) and (2) respectively.}
 \label{tab:mise}
 \end{table}
 
 \subsection{Coverage properties}
 
-In each (A)-(C) we parametrize the curves and check the type I error
-for various sizes of the
+We simulate the system $1000$ times under $\beta \equiv 0$ and check the type I error.
 
 \subsection{Impact of $\Delta$}
 
-Theorem~XX shows that if we keep~$K_x = K_b = 35$ and therefore have reconstruction error, we can expect a downward bias in parameter estimates. Moreover, if~$\Delta < \Delta^\star$ then we can expect a similar bias in the parameter estimates.  For the former, however, we can simply let~$K_x = K_b$ grow as a function of data size; for the latter, we can see if~$\hat \beta(s)$ is statistically significant for~$s$ near~$\Delta$. If so, we can set~$\Delta$ larger to ensure the condition holds.
+Theorem~XX shows that if we keep~$K_x = K_b = 35$ and therefore have reconstruction error, we can expect a downward bias in parameter estimates. Moreover, if~$\Delta < \Delta^\star$ then we can expect a similar bias in the parameter estimates.  For the former, however, we can simply let~$K_x = K_b$ grow as a function of data size; for the latter, we can see if~$\hat \beta(s)$ is statistically significant for~$s$ near~$\Delta$. If so, we can set~$\Delta$ larger to ensure the condition holds.  In each simulation, we use $\Delta \in (18,21,24,27,30)$.
+
+\begin{table}[!th]
+\begin{tabular}{c c c c c c}
+& \multicolumn{5}{c}{Sampling rate} \\ \cline{2-6}
+$\Delta=$ & 0.5 & 1 & 5 & 25 & 50 \\ \hline
+18  & - & - & - & - & -  \\
+21 & - & - & - & - & -  \\
+24 & - & - & - & - & -  \\
+27 & - & - & - & - & -  \\
+30 & - & - & - & - & -  \\ \hline
+\end{tabular}
+\caption{XXX}
+\label{tab:mise}
+\end{table}
+
 
 \section{Extensions}
 
@@ -618,11 +632,8 @@ Simple version compared to the von Hippel's boot MI proposal.
 
 \section{A worked example: Adolescent psychiatric inpatient mHealth study} \label{section:example}
 
-During a XX month period in 2019, 100 psychiatric inpatients admitted
-for suicidal risk to Franciscan Children's Hospital
-
-
-hospitals with histologically verified liver cirrhosis were recu
+During a XX month period in 2019, 91 psychiatric inpatients admitted for suicidal risk to Franciscan Children's Hospital  were enrolled in
+ with histologically verified liver cirrhosis were recu
 those presenting to a psychiatric hospital with suicide ideation
 and/or a recent suicide attempt) during a high risk time period (i.e.,
 post-hospitalization)
@@ -630,14 +641,7 @@ post-hospitalization)
 Currently, only 51 patients for whom the initial biopsy could be
 reevaluated using more restrictive criteria were available for
 analysis.
-The goal of the study was to ask whether sensor information can used
-to identify distress early prior in the process of escalation by
-monitoring physiological correlates of distress -- in particular,
-electrodermal activity (EDA), a measure of skin conductance, and
-``gACC'', a coordinate-free feature built from accelerometer data
-that measures physical movement.
-The scientific hypothesis to be tested is whether a spike in
-EDA and/or gACC
+One of the goals of the study was to assess the association between sensor-based covariate information can used to identify distress early prior in the process of escalation by monitoring physiological correlates of distress -- in particular, electrodermal activity (EDA), a measure of skin conductance, and ``gACC'', a coordinate-free feature built from accelerometer data that measures physical movement. The scientific hypothesis to be tested is whether a spike in EDA and/or gACC
 
 The goal of the sutyd
 
@@ -670,6 +674,8 @@ as seen in the lower pair of curves.
 Inspection of the graphs for uncensored patients in the right panel of Figure~\ref{fig:mean_traj} suggests
 beginning with the simplest revival model in which the sequences
 for distinct patients are independent Gaussian with moments
+
+{\bf comparison over $\Delta$ and using imputation}
 
 
 \subsection{Effect of electrodermal activity on prognosis}
