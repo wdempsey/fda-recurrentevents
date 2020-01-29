@@ -38,6 +38,9 @@ K_x = 35  # Pick first 35 eigen-vectors
 cumsum(eig_Sigma$values)[K_x]/sum(eig_Sigma$values) # Explains most of the variation
 
 set.seed("134163")
+base_num_events = 5
+base_rate = logit(5/length(times))
+sampling_rate = 10/1000
 dataset = generate_complete_data(N = 1000, Cov_X, C, times, eig_Sigma, beta_1t)
 rm(abs_diff, C, Cov_X, x)
 

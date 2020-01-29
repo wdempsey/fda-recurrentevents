@@ -1,4 +1,4 @@
-generate_userday <- function(Cov_X, C, times, eig_Sigma, beta_1t) {
+generate_userday <- function(Cov_X, C, times, eig_Sigma, beta_1t, sampling_rate, base_rate) {
   ## Generate X(t) for t \in [0,1]
   X = t(C)%*%rnorm(M)  # Use Chol Decomp and Random Normals
   # plot(times, X)
@@ -15,7 +15,7 @@ generate_userday <- function(Cov_X, C, times, eig_Sigma, beta_1t) {
   }
   
   ## Calculate the logit based probabilities
-  probs = expit(logit(10/length(times))+result)
+  probs = expit(base_rate+result)
   # plot(event_times, probs)
   Y = sapply(probs,function(p) rbinom(n=1,size = 1,p))
   # abline(v = event_times[Y==1])
@@ -23,12 +23,11 @@ generate_userday <- function(Cov_X, C, times, eig_Sigma, beta_1t) {
   # plot(event_times, probs, type = 'l')
   
   ## Given time stamp I want to generate the summary
-  nonevents = event_times[rbinom(n = length(event_times), size = 1, prob = 10/1000)==1]
+  nonevents = event_times[rbinom(n = length(event_times), size = 1, prob = sampling_rate)==1]
   nonevents = nonevents[!is.element(nonevents, events)]
   
   data = rep(0,0)
-  # print("Events at times")
-  # print(events)
+  ## Construct event times
   if(length(events) > 0) {
     for (t in events) {
       t_loc = which(is.element(times,t))
@@ -42,8 +41,7 @@ generate_userday <- function(Cov_X, C, times, eig_Sigma, beta_1t) {
     }
   }
   
-  # print("Nonevents at times")
-  # print(nonevents)
+  ## Construct non-event times
   if(length(nonevents) > 0) {
     for (t in nonevents) {
       t_loc = which(is.element(times,t))
