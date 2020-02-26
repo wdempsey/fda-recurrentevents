@@ -163,7 +163,7 @@
 \date{\today}
 
 \begin{abstract}
-Digital monitoring studies collect real-time high frequency data via mobile sensors in the subjects' natural environment. This data can be used to model the impact of changes in physiology on recurrent event outcomes such as smoking, drug use, alcohol use, or self-identified moments of suicide ideation. Likelihood calculations for the recurrent event analysis, however, become computationally prohibitive in this setting. Motivated by this, a random subsampling framework is proposed for computationally efficient, approximate likelihood-based estimation. A subsampling-unbiased estimator for the derivative of the cumulative hazard enters into an approximation of log-likelihood. The estimator has two sources of variation: the first due to the recurrent event model and the second due to subsampling. The latter can be reduced by increasing the sampling rate; however, this leads to increased computational costs.  The approximate score equations are equivalent to logistic regression score equations, allowing for standard, ``off-the-shelf'' software to be used in fitting these models. Simulations demonstrate the method and efficiency-computation trade-off. We then illustrate the approach using data from a digital monitoring study of suicidal ideation.
+Digital monitoring studies collect real-time high frequency data via mobile sensors in the subjects' natural environment. This data can be used to model the impact of changes in physiology on recurrent event outcomes such as smoking, drug use, alcohol use, or self-identified moments of suicide ideation. Likelihood calculations for the recurrent event analysis, however, become computationally prohibitive in this setting. Motivated by this, a random subsampling framework is proposed for computationally efficient, approximate likelihood-based estimation. A subsampling-unbiased estimator for the derivative of the cumulative hazard enters into an approximation of log-likelihood. The estimator has two sources of variation: the first due to the recurrent event model and the second due to subsampling. The latter can be reduced by increasing the sampling rate; however, this leads to increased computational costs.  The approximate score equations are equivalent to logistic regression score equations, allowing for standard, ``off-the-shelf'' software to be used in fitting these models. Simulations demonstrate the method and efficiency-computation trade-off. We end by illustrating our approach using data from a digital monitoring study of suicidal ideation.
 \end{abstract}
 
 \keywords{recurrent events; probabilistic subsampling; estimating equations; high frequency time series; logistic regression}
@@ -175,7 +175,7 @@ Digital monitoring studies collect real-time high frequency data via mobile sens
 
 Advancement in mobile technology has led to the rapid integration of mobile and wearable sensors into behavioral health~\citep{Freeetal2013}. Take HeartSteps, for example, a mobile health (mHealth) study designed to increase physical activity in sedentary adults \citep{KlasnjaHS2019}. Here, a Jawbone sensor is used to monitor step count every minute of the participant's study day. Of interest in many mHealth studies is the relation of such real-time high frequency sensor data to an adverse, recurrent event process. In a smoking cessation mHealth study~\citep{Sense2Stop}, for example, the relation between a time-varying sensor-based measure of physiological stress and smoking lapse is of scientific interest. In a suicidal ideation mHealth study~\citep{Kleiman2018}, the relation of electrodermal activity (EDA) and accelerometer with self-identified moments of suicidal ideation is of scientific interest.
 
-The goal of this paper is two-fold: (1) to discuss the appropriate choice of statistical model for joint high-frequency sensor data and the recurrent event data, and (2) to construct a simple, easy-to-implement method for parameter estimation and inference. For (1), we discuss an important issue regarding measurement-error models when paired with recurrent event outcomes. For (2), we introduce a random subsampling procedure that has several benefits.  First, the resulting inference is unbiased; however, there is a computation-efficiency trade-off. In particular, a higher sampling rate can decrease estimator variance at the cost of increased computation.  We show via simulations that the benefits of incredibly high sampling rates is often negligible, as the contribution to the variation is small in relation to to variation in the underlying stochastic processes. Second, derived estimating equations are optimal, implying loss of statistical efficiency is only due to subsampling procedure and not derived methodology.  Finally, implementation can leverage existing, standard software for functional data analysis and logistic regression, leading to fast adoption by domain scientists.
+The goal of this paper is two-fold: (1) to discuss the appropriate choice of statistical model for joint high-frequency sensor data and the recurrent event data, and (2) to construct a simple, easy-to-implement method for parameter estimation and inference. For (1), we discuss an important issue regarding measurement-error models when paired with recurrent event outcomes. For (2), we introduce a random subsampling procedure that has several benefits.  First, the resulting inference is unbiased; however, there is a computation-efficiency trade-off. In particular, a higher sampling rate can decrease estimator variance at the cost of increased computation.  We show via simulations that the benefits of incredibly high sampling rates is often negligible, as the contribution to the variation is small relative to the variation in the underlying stochastic processes. Second, derived estimating equations are optimal, implying loss of statistical efficiency is only due to subsampling procedure and not the derived methodology.  Finally, implementation can leverage existing, standard software for functional data analysis and logistic regression, leading to fast adoption by domain scientists.
 
 \section{Recurrent event process and associated high frequency data}
 
@@ -188,7 +188,7 @@ h_i \left( t \Given H_{i,t}^{NX} ; \theta \right) =
 \lim_{\delta \to 0} \delta^{-1} \pr \left( N_i(t+\delta) - N_i(t) > 0
   \given H_{i,t}^{NX} \right),
 \end{equation}
-where~$\theta$ is the parameter vector. Equation~\eqref{eq:hazard} states the hazard may depend on past values of the event history and covariates.  For high frequency physiological data, we assume that current risk is log-additive and depends on a linear functional of the health process over some recent window of time and some pre-specified features of the counting process; that is,
+where~$\theta$ is the parameter vector. For high frequency physiological data, we assume that current risk is log-additive and depends on a linear functional of the health process over some recent window of time and some pre-specified features of the counting process; that is,
 \begin{equation}
 \label{eq:hazardlinear}
 h_i \left( t \given  H_{i,t}^{NX} ; \theta \right) =
@@ -212,7 +212,7 @@ where~$\epsilon_i(t)$ is a white-noise measurement error term. Thus, $\eta_i (t)
 \[
 \pr \left ( T_j > t+s \Given \H_{i,\tau_i}^X, \bfT_{-j} = \bft_{-j}, T_j > t \right) = E \left( - \exp \left( \int_{t}^{t+s} h_i (u \given \eta ) du \right) \Given \bfx_i, \bfT_{-j} = \bft_{-j} \right),
 \]
-where the expectation is a Gaussian integral, albeit infinite-dimensional.  For most choices of covariance structure, if the white-noise error term is non-zero then the above calculation will show the conditional survival function depends not only on past $x$-values, but also on future $x$-values, i.e.,~$\bfx$ and~$\bfT$ do not satisfy \emph{independent evolution}~\citep{DempseyPMCC2}. This is quite unnatural, as~\eqref{eq:jm} suggests the instantaneous risk of an event at time~$t$ depends on future values of the sensor process. To ensure independent evolution, we employ the strategy of setting~$\epsilon (t) \equiv 0$ and treating~$\bfx_i$ as a mean-zero Gaussian process. The proposed inferential procedure will only rely on the Gaussian assumption when~$\bfx$ is not fully observed (see Section~\ref{section:missingdata}).
+where the expectation is a Gaussian integral, albeit infinite-dimensional.  For most choices of covariance structure, if the white-noise error term is non-zero then the above calculation will show the conditional survival function depends not only on past $x$-values, but also on future $x$-values, i.e.,~$\bfx$ and~$\bfT$ do not satisfy \emph{independent evolution}~\citep{DempseyPMCC2}. This is quite unnatural, as~\eqref{eq:jm} suggests the instantaneous risk of an event at time~$t$ depends on future values of the sensor process. To ensure independent evolution, we employ the strategy of setting~$\epsilon (t) \equiv 0$.and treating~$\bfx_i$ as a Gaussian process measured without a white-noise error term. The proposed inferential procedure will only rely on the Gaussian assumption when~$\bfx$ is not fully observed (see Section~\ref{section:missingdata}).
 
 \subsection{Likelihood calculation}
 
@@ -226,9 +226,9 @@ where~$H_{i} (\tau_i ; \theta) = \int_{0}^{\tau_i} h_{i} (t; \theta) dt$ is the 
 \[
 U_n (\theta) = \sum_{i=1}^{n} \left ( \sum_{j=1}^{k_i} \frac{h^{(1)}_i
     (T_{i,j}; \theta)}{h_i (T_{i,j}; \theta)} - H^{(1)}_{i} (\tau_i;
-  \theta) \right)
+  \theta) \right),
 \]
-where~$h_i^{(1)} (T_{i,j}; \theta)$ and $H_i^{(1)} (\tau_{i}; \theta)$ are derivatives with respect to $\theta$.
+with $h_i^{(1)} (T_{i,j}; \theta)$ and $H_i^{(1)} (\tau_{i}; \theta)$ are derivatives with respect to $\theta$.
 
 In classical joint models~\citep{Henderson2000, Tsiatis2004}, time-varying covariates~$x_i (t)$ are observed only intermittently at appointment times. In our current setting, maximizing the likelihood is computationally prohibitive since for any~$\theta$ we must compute the cumulative hazard functions~$H_{i} (\tau_i; \theta)$ which require integration of~$h_i(t;\theta)$ given by~\eqref{eq:hazardlinear} which itself depends on the integral~$\int_{t-\Delta}^t x_i (s) \beta(s) ds$.  That is, the risk model now depends on an integrated past history of the time-varying covariate which leads to severe increase in computational complexity.
 
@@ -252,14 +252,14 @@ Equation~\eqref{eq:WPest} is the estimator suggested by~\cite{Waagepetersen2008}
 \label{eq:waage_weights}
 w_i (t; \theta) = \frac{\pi_i (t)}{\pi_i (t) + h_i (t ; \theta)},
 \end{equation}
-the resulting estimating equations can be written as
+the resulting approximate estimating equations can be re-written as
 \begin{equation}
 \label{eq:approxscore}
 \hat{U}_n (\theta) = \sum_{i=1}^n \left[ \sum_{u \in \bfT_i} w_i(u; \theta)
-  \frac{h^{(1)} (u; \theta)}{ h ( u; \theta)}  - \sum_{u \in D_i} w_i(u;
+  \frac{h^{(1)} (u; \theta)}{ h ( u; \theta)}  - \sum_{u \in \bfD_i} w_i(u;
   \theta) \frac{h_i^{(1)} (u; \theta)}{ \pi_i (u) } \right].
 \end{equation}
-Equation~\eqref{eq:approxscore} are approximate score functions built via plug-in of the design-unbiased estimator of the derivative of the cumulative hazard given in~\eqref{eq:WPest}.
+Equation~\eqref{eq:approxscore} represents the approximate score functions built via plug-in of the design-unbiased estimator of the derivative of the cumulative hazard given in~\eqref{eq:WPest}.
 
 \begin{rmk}[Connection to design-based estimation]
 The approximate score equations given by~\eqref{eq:approxscore} arise in design-based inference of point processes.  Design-based inference is common for spatial point processes~\citep{Waagepetersen2008} where the spatial varying covariate is observed at a random sample of locations. It is common in mobile health where ecological momentary assessments~\citep{Rathbun2012,Rathbun2016} are used to randomly sample individuals at various time-points to assess their emotional state.  In the current setting, we leverage these ideas to form a subsampling protocol that can substantially reduce computationally complexity.  Therefore, the purpose is quite different. Moreover, the dependence of the intensity function on the recent history of sensor values leads to additional complications that must be addressed.
@@ -272,25 +272,25 @@ Probabilistic subsampling converts the single sensor stream~$\bfx_i$ into a sequ
 
 \subsection{Estimation of the windowed covariate history}
 
-We start by defining~$X(t,s) = x(t-s)$ to be the sensor measurement~$0 \leq s \leq \Delta$ time units prior to time~$t \in \bfT_i \cup \bfD_i$. We use the sandwich smoother~\citep{Xiao2013} to estimate the mean~$\mu_y(s,t) = \E_y [ X(t,s)]$ where the expectation is indexed by whether $t$ is an event ($y=1$) or subsampled ($y=0$) time respectively. Alternative bivariate smoothers exist, such as the kernel-based local linear smoother~\citep{Hastie2009} bivariate tensor product splines~\citep{Wood2006} and the bivariate penalized spline smoother~\citep{MarxEilers2005}. The sandwich smoother was chosen for its computational efficiency and estimation accuracy. We then define~$\tilde X(s,t) = X(s,t) - \hat \mu_y(s,t)$ to be the mean-zero process at each time~$t \in \bfT_i \cup \bfD_i$.
+We start by defining~$X(t,s) = x(t-s)$ to be the sensor measurement~$0 \leq s \leq \Delta$ time units prior to time~$t \in \bfT_i \cup \bfD_i$. We use the sandwich smoother~\citep{Xiao2013} to estimate the mean~$\mu_y(t,s) = \E_y [ X(t,s)]$ where the expectation is indexed by whether $t$ is an event ($y=1$) or subsampled ($y=0$) time respectively. Alternative bivariate smoothers exist, such as the kernel-based local linear smoother~\citep{Hastie2009} bivariate tensor product splines~\citep{Wood2006} and the bivariate penalized spline smoother~\citep{MarxEilers2005}. The sandwich smoother was chosen for its computational efficiency and estimation accuracy. We then define~$\tilde X(t,s) = X(t,s) - \hat \mu_y(t,s)$ to be the mean-zero process at each time~$t \in \bfT_i \cup \bfD_i$.
 
 As in~\cite{Park2018}, define the \emph{marginal covariance} by
 \[
-\Sigma_y (s, s^\prime) = \int_{0}^\tau c_y( (s,T), (s^\prime, T) ) f_y(T) dt.
+\Sigma_y (s, s^\prime) = \int_{0}^\tau c_y( (T,s), (T,s^\prime) ) f_y(T) dt.
 \]
-for~$0 \leq s,s^\prime \leq \Delta$, where~$c_y((s,t), (s^\prime,t))$ is the covariance function of the windowed covariate history~$X(t,\cdot)$ and $f_y(T)$ is the intensity function for event ($y=1$) and subsampled ($y=0$) times respectively. Estimation of~$\Sigma_y$ occurs in two steps. For simplicity, we present the steps for subsampled times (i.e., $y=0$) but the steps are the same for event times as well. First, the pooled sample covariance is calculated at a set of grid points:
+for~$0 \leq s,s^\prime \leq \Delta$, where~$c_y((t,s), (t,s^\prime))$ is the covariance function of the windowed covariate history~$X(t,\cdot)$ and $f_y(T)$ is the intensity function for event ($y=1$) and subsampled ($y=0$) times respectively. Estimation of~$\Sigma_y$ occurs in two steps. For simplicity, we present the steps for subsampled times (i.e., $y=0$) but the steps are the same for event times as well. First, the pooled sample covariance is calculated at a set of grid points:
 \[
-\tilde \Sigma_0 (s_r , s_{r^\prime}) = \left( \sum_{i=1}^n \left | \bfD_i \right |\right)^{-1} \left( \sum_{i=1}^n \sum_{t \in \bfD_i} \tilde X (s_r,t) \tilde X (s_{r^\prime}, t) \right).
+\tilde \Sigma_0 (s_r , s_{r^\prime}) = \left( \sum_{i=1}^n \left | \bfD_i \right |\right)^{-1} \left( \sum_{i=1}^n \sum_{t \in \bfD_i} \tilde X (t,s_r) \tilde X (t,s_{r^\prime}) \right).
 \]
 Due to our concern over independent evolution as discussed in section~\ref{section:memproblems}, we do not assume that each observation is observed with white noise and therefore the diagonal elements of~$\hat \Sigma_0$ are not inflated. Second, the estimator~$\hat \Sigma$ is further smoothed again using the sandwich smoother~\citep{Xiao2013}. Note~\cite{Park2018} smooth the off-diagonal elements, while here we smooth the entire pooled sample covariance matrix. All negative eigenvalues are set to zero to ensure positive semi-definiteness. The result is used as an estimator~$\hat \Sigma_0$ for the pooled covariance $\Sigma_0$.
 
 Next, we take the spectral decomposition of the estimated covariance function; let $\{ \hat \psi^{(0)}_k (s),\hat \lambda^{(0)}_k \}_{k \geq 1}$ be the resulting sequence of eigenfunctions and eigenvalues. The key benefit of the marginal covariance approach is that it allows us to compute a single, time-invariant basis expansion; this reduces the computational burden by avoiding the three dimensional covariance function (i.e., covariance depends on~$t$) and associated spectral decomposition in methods considered by \cite{ChenMuller2012}. Using the Karhunen-Lo{\`e}ve decomposition, we can represent~$X(t,s)$ for $t \in \bfT_i \cap \bfD_i$ by
 \[
-X(s,t) = \hat \mu_y (s,t) + \sum_{k=1}^{\infty} \hat c^{(y)}_{i,k} (t) \hat
-\psi^{(y)}_k (s) \approx \hat \mu_y (s,t) + {\bf c}^{(y)}_{i} (t)^\top \mathbold{\hat
+X(t,s) = \hat \mu_y (t,s) + \sum_{k=1}^{\infty} \hat c^{(y)}_{i,k} (t) \hat
+\psi^{(y)}_k (s) \approx \hat \mu_y (t,s) + {\bf c}^{(y)}_{i} (t)^\top \mathbold{\hat
   \psi}^{(y)} (s)
 \]
-where $\hat c^{(y)}_{i,k} (t) = \int_{t-\Delta}^t \tilde X_i (s,t) \hat \psi^{(y)}_k (s) ds$, ${\bf c}^{(y)}_i (t) = (c^{(y)}_{i,1} (t), \ldots, c^{(y)}_{i,K_x} (t))^\top$, $\mathbold{\hat \psi}^{(y)} (s) = (\hat \psi^{(y)}_1 (s), \ldots, \hat \psi^{(y)}_{K_x} (s))^\top$, and~$K_x < \infty$ is the truncation level of the infinite expansion. Following~\cite{Goldsmith2011}, we set~$K_x$ to satisfy identifiability constraints (see Section~\ref{section:beta} for details). In subsequent sections, we leave the dependence on $y$ (i.e., whether $t \in \bfT_i$ or $\in \bfD_i$) implicit unless required for notational simplicity.
+where $\hat c^{(y)}_{i,k} (t) = \int_{t-\Delta}^t \tilde X_i (t,s) \hat \psi^{(y)}_k (s) ds$, ${\bf c}^{(y)}_i (t) = (c^{(y)}_{i,1} (t), \ldots, c^{(y)}_{i,K_x} (t))^\top$, $\mathbold{\hat \psi}^{(y)} (s) = (\hat \psi^{(y)}_1 (s), \ldots, \hat \psi^{(y)}_{K_x} (s))^\top$, and~$K_x < \infty$ is the truncation level of the infinite expansion. Following~\cite{Goldsmith2011}, we set~$K_x$ to satisfy identifiability constraints (see Section~\ref{section:beta} for details). In subsequent sections, we leave the dependence on $y$ (i.e., whether $t \in \bfT_i$ or $\in \bfD_i$) implicit unless required for notational simplicity.
 
 
 \subsection{Estimation of~$\beta(s)$}
@@ -298,13 +298,13 @@ where $\hat c^{(y)}_{i,k} (t) = \int_{t-\Delta}^t \tilde X_i (s,t) \hat \psi^{(y
 
 The next step of our method is modeling~$\beta(s)$. Here, we leverage ideas from the penalized spline literature~\citep{Ruppert2003, Wood2006book}. Let~$\mathbold{\phi} (s) = \{ \phi_1 (s), \ldots, \phi_{K_b} (x) \}$ be a spline basis and assume that~$\beta(s) = \sum_{j=1}^{K_b} b_j \phi_{j} (s) = \mathbold{\phi} (t) {\bf b}$ where~${\bf b} = [b_1, \ldots, b_{K_b}]^{\top}$. Thus, the integral in~\eqref{eq:hazardlinear} can be restated as
 \begin{align*}
-\int_{t-\Delta}^t X(s,t) \beta(s) ds
-  &\approx \int_{t-\Delta}^t \left[ \hat \mu(s,t) + {\bf c} (t)^\top
+\int_{t-\Delta}^t X(t,s) \beta(s) ds
+  &\approx \int_{t-\Delta}^t \left[ \hat \mu(t,s) + {\bf c} (t)^\top
     \mathbold{\hat \psi} (s) \right] \times \left[
-    \mathbold{\phi} (s) {\bf b} \right] \\
-  &= [ ( M_{i,t} )^\top + (C_{i,t})^\top J_{\hat \psi, \phi} ] {\bf b}
+    \mathbold{\phi} (s) {\bf b} \right] ds \\
+  &= [ M_{i,t}^\top + {\bf c} (t)^\top J_{\hat \psi, \phi} ] {\bf b}
 \end{align*}
-where~$M_{i,t} = (M_{i,1,t}, \ldots, M_{i,K_b,t})$, $M_{i,j,t} = \int_{t-\Delta}^t \hat \mu (s,t) \phi_j (s)$, and~$J_{\hat \psi, \phi}$ is a $K_x \times K_b$ dimensional matrix with the~$(k,l)$th entry is equal to~$\int_{0}^\Delta \hat \psi_k (s) \phi_l (s) ds$~\citep{RamsaySilverman2005}.
+where~$M_{t} = (M_{1,t}, \ldots, M_{K_b,t})$, $M_{j,t} = \int_{t-\Delta}^t \hat \mu (t,s) \phi_j (s)$, and~$J_{\hat \psi, \phi}$ is a $K_x \times K_b$ dimensional matrix with the~$(k,l)$th entry is equal to~$\int_{0}^\Delta \hat \psi_k (s) \phi_l (s) ds$~\citep{RamsaySilverman2005}.
 
 Given the basis for~$\beta(t)$, the model depends on choice of both~$K_b$ and~$K_x$.  We follow~\cite{Ruppert2002} by choosing $K_b$ large enough to prevent under-smoothing and~$K_x \geq K_b$ to satisfy identifiability constraints. While our theoretical analysis considers truncation levels that depend on~$n$, in practice, we follow the simple rule of thumb and set~$K_b = K_x = 35$. As long as the choices of~$K_x$ and $K_b$ are large enough, their impact on estimation is typically negligible. Below, we will exploit a connection between~\eqref{eq:approxscore} and score equations for a logistic regression model.  Before moving on, we introduce some additional notation. Define
 \begin{equation}
@@ -324,7 +324,7 @@ We next establish a connection between the above approximate score equations~$\t
 \label{lemma:logistic}
 Under weights~\eqref{eq:waage_weights} and the log-linear intensity function~\eqref{eq:approx_hazard}, the approximate score function~$\tilde U_n (\theta)$ is equivalent to
 \[
-\sum_{i=1}^n \sum_{t \in \bfT_i \cup D_i } \left[ {\bf 1}[t \in D_i]
+\sum_{i=1}^n \sum_{t \in \bfT_i \cup \bfD_i } \left[ {\bf 1}[t \in D_i]
   - \frac{1}{1 + \exp \left[- \left( \tilde{W}_{i,t}^\top \theta +
         \log \pi_i (t) \right) \right]} \right] \tilde{W}_{i,t}
 \]
@@ -337,9 +337,9 @@ This connection established by Lemma~\ref{lemma:logistic} between our proposed m
 Given observed recurrent event and high frequency data~$\{ \bfT_i, \bfx_i \}_{i=1}^n$,
 \begin{enumerate}
 \item For each $i \in [n]$, sample non-event times as a time-inhomogeneous Poisson point process with intensity according to~$\pi_i (t)$
-\item Estimate mean~$\mu_y (t,s)$ for $0 \leq s \leq \Delta$ at all event times~$t \in \cup_{i=1}^n \bfT_i$ and sampled non-event times~$t \in \cup_{i=1}^n \bfD_i$.
-\item Compute marginal covariance across event times,~$\Sigma_1$, and non-event times and~$\Sigma_0$.
-\item Compute eigendecomposition~$\{ \hat \psi_k^{(y)}, \hat \lambda_k^{()} \}$ of marginal covariance~$\Sigma_y$
+\item \label{p2} Estimate mean~$\mu_y (t,s)$ for $0 \leq s \leq \Delta$ at all event times~$t \in \cup_{i=1}^n \bfT_i$ and sampled non-event times~$t \in \cup_{i=1}^n \bfD_i$.
+\item \label{p3} Compute marginal covariance across event times,~$\Sigma_1$, and non-event times,~$\Sigma_0$.
+\item \label{p4} Compute eigendecomposition~$\{ \hat \psi_k^{(y)}, \hat \lambda_k^{()} \}$ of marginal covariance~$\Sigma_y$
 \item Use the eigendecomposition to construct~$W_{i,t}$ for all $i \in [n]$ and $t \in \bfD_i \cup \bfT_i$
 \item \label{point:log} Perform logistic regression with binary outcome~$\{ \Y_i (t) \}$  and offset of~$\log \pi_i (t)$.
 \end{enumerate}
@@ -376,24 +376,21 @@ as $n \to \infty$.
 \end{enumerate}
 \end{assumption}
 
-We also require several assumptions due to the truncation of the Karhunen-Lo{\`e}ve decomposition that represents~$X(s,t)$.
+We also require several assumptions due to the truncation of the Karhunen-Lo{\`e}ve decomposition that represents~$X(t,s)$.
 \begin{assumption}[Functional assumptions~\citep{Park2018}] \normalfont
 \label{assumption:truncation}
 The following assumptions are standard in prior work on longitudinal functional data analysis~\citep{Park2018, Yao2005, ChenMuller2012}:
 \begin{enumerate}[label=(A.\arabic*)]
-\item\label{A1} $X = \{ X(s, t) : (s,t) \in \mathcal{S} \times
-  \mathcal{T} \}$ is a square integrable element of the $L^2 (
-  \mathcal{S} \times \mathcal{T})$
+\item\label{A1} $X = \{ X(t, s) : (t,s) \in \mathcal{T} \times
+  \mathcal{S} \}$ is a square integrable element of the $L^2 (
+  \mathcal{T} \times \mathcal{S})$
 \item\label{A2} The subsampling and conditional intensity rate functions~$f_y(T)$ are continuous and~$\sup |f_y(T)| < \infty$.
-\item\label{A3} $\E[X(s,t) X(s^\prime, t) X(s,t^\prime)
-  X(s^\prime, t^\prime) ] < \infty$ for
-  each $s,s^\prime \in [0,\Delta]$ and~$0 < t, t^\prime < \tau$.
-\item\label{A4} $\E[\|X(\cdot, t)\|^4] < \infty$ for each~$0< t < \tau$.
+\item\label{A3} {\color{red}$\E[X(t,s) X(t,s^\prime) X(t^\prime,s)
+  X(s^\prime, t^\prime) ] < \infty$ for each $s,s^\prime \in [0,\Delta]$ and~$0 < t, t^\prime < \tau$.}
+\item\label{A4} $\E[\|X(t,\cdot)\|^4] < \infty$ for each~$0< t < \tau$.
 \end{enumerate}
 \end{assumption}
 Finally, for simplicity, we assume that there exists~$b^\star$ such that~$\beta(t) = \mathbold{\phi} (t) b^\star$; that is, the true function~$\beta(t)$ sits in the span of the spline basis expansion. With the necessary assumptions stated, we can now state Lemma~\ref{lemma:simpleasym}, which provides asymptotic theory.
-
-Assumption~\ref{A3} is guaranteed by~\ref{E1} and~\ref{E3}, but is stated here to emphasize its importance for the marginal covariance procedure of~\cite{Park2018}. Finally, for simplicity, we assume that there exists~$b^\star$ such that~$\beta(t) = \mathbold{\phi} (t) b^\star$; that is, the true function~$\beta(t)$ sits in the span of the spline basis expansion. With the necessary assumptions stated, we can now state Lemma~\ref{lemma:simpleasym}, which provides asymptotic theory.
 
 \begin{lemma} \normalfont
 \label{lemma:simpleasym}
