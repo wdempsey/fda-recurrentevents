@@ -290,7 +290,7 @@ X(t,s) = \hat \mu_y (t,s) + \sum_{k=1}^{\infty} \hat c^{(y)}_{i,k} (t) \hat
 \psi^{(y)}_k (s) \approx \hat \mu_y (t,s) + {\bf c}^{(y)}_{i} (t)^\top \mathbold{\hat
   \psi}^{(y)} (s)
 \]
-where $\hat c^{(y)}_{i,k} (t) = \int_{t-\Delta}^t \tilde X_i (s,t) \hat \psi^{(y)}_k (s) ds$, ${\bf c}^{(y)}_i (t) = (c^{(y)}_{i,1} (t), \ldots, c^{(y)}_{i,K_x} (t))^\top$, $\mathbold{\hat \psi}^{(y)} (s) = (\hat \psi^{(y)}_1 (s), \ldots, \hat \psi^{(y)}_{K_x} (s))^\top$, and~$K_x < \infty$ is the truncation level of the infinite expansion. Following~\cite{Goldsmith2011}, we set~$K_x$ to satisfy identifiability constraints (see Section~\ref{section:beta} for details). In subsequent sections, we leave the dependence on $y$ (i.e., whether $t \in \bfT_i$ or $\in \bfD_i$) implicit unless required for notational simplicity.
+where $\hat c^{(y)}_{i,k} (t) = \int_{t-\Delta}^t \tilde X_i (t,s) \hat \psi^{(y)}_k (s) ds$, ${\bf c}^{(y)}_i (t) = (c^{(y)}_{i,1} (t), \ldots, c^{(y)}_{i,K_x} (t))^\top$, $\mathbold{\hat \psi}^{(y)} (s) = (\hat \psi^{(y)}_1 (s), \ldots, \hat \psi^{(y)}_{K_x} (s))^\top$, and~$K_x < \infty$ is the truncation level of the infinite expansion. Following~\cite{Goldsmith2011}, we set~$K_x$ to satisfy identifiability constraints (see Section~\ref{section:beta} for details). In subsequent sections, we leave the dependence on $y$ (i.e., whether $t \in \bfT_i$ or $\in \bfD_i$) implicit unless required for notational simplicity.
 
 
 \subsection{Estimation of~$\beta(s)$}
@@ -298,13 +298,13 @@ where $\hat c^{(y)}_{i,k} (t) = \int_{t-\Delta}^t \tilde X_i (s,t) \hat \psi^{(y
 
 The next step of our method is modeling~$\beta(s)$. Here, we leverage ideas from the penalized spline literature~\citep{Ruppert2003, Wood2006book}. Let~$\mathbold{\phi} (s) = \{ \phi_1 (s), \ldots, \phi_{K_b} (x) \}$ be a spline basis and assume that~$\beta(s) = \sum_{j=1}^{K_b} b_j \phi_{j} (s) = \mathbold{\phi} (t) {\bf b}$ where~${\bf b} = [b_1, \ldots, b_{K_b}]^{\top}$. Thus, the integral in~\eqref{eq:hazardlinear} can be restated as
 \begin{align*}
-\int_{t-\Delta}^t X(s,t) \beta(s) ds
-  &\approx \int_{t-\Delta}^t \left[ \hat \mu(s,t) + {\bf c} (t)^\top
+\int_{t-\Delta}^t X(t,s) \beta(s) ds
+  &\approx \int_{t-\Delta}^t \left[ \hat \mu(t,s) + {\bf c} (t)^\top
     \mathbold{\hat \psi} (s) \right] \times \left[
-    \mathbold{\phi} (s) {\bf b} \right] \\
-  &= [ ( M_{i,t} )^\top + (C_{i,t})^\top J_{\hat \psi, \phi} ] {\bf b}
+    \mathbold{\phi} (s) {\bf b} \right] ds \\
+  &= [ M_{i,t}^\top + {\bf c} (t)^\top J_{\hat \psi, \phi} ] {\bf b}
 \end{align*}
-where~$M_{i,t} = (M_{i,1,t}, \ldots, M_{i,K_b,t})$, $M_{i,j,t} = \int_{t-\Delta}^t \hat \mu (s,t) \phi_j (s)$, and~$J_{\hat \psi, \phi}$ is a $K_x \times K_b$ dimensional matrix with the~$(k,l)$th entry is equal to~$\int_{0}^\Delta \hat \psi_k (s) \phi_l (s) ds$~\citep{RamsaySilverman2005}.
+where~$M_{t} = (M_{1,t}, \ldots, M_{K_b,t})$, $M_{j,t} = \int_{t-\Delta}^t \hat \mu (t,s) \phi_j (s)$, and~$J_{\hat \psi, \phi}$ is a $K_x \times K_b$ dimensional matrix with the~$(k,l)$th entry is equal to~$\int_{0}^\Delta \hat \psi_k (s) \phi_l (s) ds$~\citep{RamsaySilverman2005}.
 
 Given the basis for~$\beta(t)$, the model depends on choice of both~$K_b$ and~$K_x$.  We follow~\cite{Ruppert2002} by choosing $K_b$ large enough to prevent under-smoothing and~$K_x \geq K_b$ to satisfy identifiability constraints. While our theoretical analysis considers truncation levels that depend on~$n$, in practice, we follow the simple rule of thumb and set~$K_b = K_x = 35$. As long as the choices of~$K_x$ and $K_b$ are large enough, their impact on estimation is typically negligible. Below, we will exploit a connection between~\eqref{eq:approxscore} and score equations for a logistic regression model.  Before moving on, we introduce some additional notation. Define
 \begin{equation}
@@ -324,7 +324,7 @@ We next establish a connection between the above approximate score equations~$\t
 \label{lemma:logistic}
 Under weights~\eqref{eq:waage_weights} and the log-linear intensity function~\eqref{eq:approx_hazard}, the approximate score function~$\tilde U_n (\theta)$ is equivalent to
 \[
-\sum_{i=1}^n \sum_{t \in \bfT_i \cup D_i } \left[ {\bf 1}[t \in D_i]
+\sum_{i=1}^n \sum_{t \in \bfT_i \cup \bfD_i } \left[ {\bf 1}[t \in D_i]
   - \frac{1}{1 + \exp \left[- \left( \tilde{W}_{i,t}^\top \theta +
         \log \pi_i (t) \right) \right]} \right] \tilde{W}_{i,t}
 \]
@@ -337,9 +337,9 @@ This connection established by Lemma~\ref{lemma:logistic} between our proposed m
 Given observed recurrent event and high frequency data~$\{ \bfT_i, \bfx_i \}_{i=1}^n$,
 \begin{enumerate}
 \item For each $i \in [n]$, sample non-event times as a time-inhomogeneous Poisson point process with intensity according to~$\pi_i (t)$
-\item Estimate mean~$\mu_y (t,s)$ for $0 \leq s \leq \Delta$ at all event times~$t \in \cup_{i=1}^n \bfT_i$ and sampled non-event times~$t \in \cup_{i=1}^n \bfD_i$.
-\item Compute marginal covariance across event times,~$\Sigma_1$, and non-event times and~$\Sigma_0$.
-\item Compute eigendecomposition~$\{ \hat \psi_k^{(y)}, \hat \lambda_k^{()} \}$ of marginal covariance~$\Sigma_y$
+\item \label{p2} Estimate mean~$\mu_y (t,s)$ for $0 \leq s \leq \Delta$ at all event times~$t \in \cup_{i=1}^n \bfT_i$ and sampled non-event times~$t \in \cup_{i=1}^n \bfD_i$.
+\item \label{p3} Compute marginal covariance across event times,~$\Sigma_1$, and non-event times,~$\Sigma_0$.
+\item \label{p4} Compute eigendecomposition~$\{ \hat \psi_k^{(y)}, \hat \lambda_k^{()} \}$ of marginal covariance~$\Sigma_y$
 \item Use the eigendecomposition to construct~$W_{i,t}$ for all $i \in [n]$ and $t \in \bfD_i \cup \bfT_i$
 \item \label{point:log} Perform logistic regression with binary outcome~$\{ \Y_i (t) \}$  and offset of~$\log \pi_i (t)$.
 \end{enumerate}
@@ -376,24 +376,21 @@ as $n \to \infty$.
 \end{enumerate}
 \end{assumption}
 
-We also require several assumptions due to the truncation of the Karhunen-Lo{\`e}ve decomposition that represents~$X(s,t)$.
+We also require several assumptions due to the truncation of the Karhunen-Lo{\`e}ve decomposition that represents~$X(t,s)$.
 \begin{assumption}[Functional assumptions~\citep{Park2018}] \normalfont
 \label{assumption:truncation}
 The following assumptions are standard in prior work on longitudinal functional data analysis~\citep{Park2018, Yao2005, ChenMuller2012}:
 \begin{enumerate}[label=(A.\arabic*)]
-\item\label{A1} $X = \{ X(s, t) : (s,t) \in \mathcal{S} \times
-  \mathcal{T} \}$ is a square integrable element of the $L^2 (
-  \mathcal{S} \times \mathcal{T})$
+\item\label{A1} $X = \{ X(t, s) : (t,s) \in \mathcal{T} \times
+  \mathcal{S} \}$ is a square integrable element of the $L^2 (
+  \mathcal{T} \times \mathcal{S})$
 \item\label{A2} The subsampling and conditional intensity rate functions~$f_y(T)$ are continuous and~$\sup |f_y(T)| < \infty$.
-\item\label{A3} $\E[X(s,t) X(s^\prime, t) X(s,t^\prime)
-  X(s^\prime, t^\prime) ] < \infty$ for
-  each $s,s^\prime \in [0,\Delta]$ and~$0 < t, t^\prime < \tau$.
-\item\label{A4} $\E[\|X(\cdot, t)\|^4] < \infty$ for each~$0< t < \tau$.
+\item\label{A3} {\color{red}$\E[X(t,s) X(t,s^\prime) X(t^\prime,s)
+  X(s^\prime, t^\prime) ] < \infty$ for each $s,s^\prime \in [0,\Delta]$ and~$0 < t, t^\prime < \tau$.}
+\item\label{A4} $\E[\|X(t,\cdot)\|^4] < \infty$ for each~$0< t < \tau$.
 \end{enumerate}
 \end{assumption}
 Finally, for simplicity, we assume that there exists~$b^\star$ such that~$\beta(t) = \mathbold{\phi} (t) b^\star$; that is, the true function~$\beta(t)$ sits in the span of the spline basis expansion. With the necessary assumptions stated, we can now state Lemma~\ref{lemma:simpleasym}, which provides asymptotic theory.
-
-Assumption~\ref{A3} is guaranteed by~\ref{E1} and~\ref{E3}, but is stated here to emphasize its importance for the marginal covariance procedure of~\cite{Park2018}. Finally, for simplicity, we assume that there exists~$b^\star$ such that~$\beta(t) = \mathbold{\phi} (t) b^\star$; that is, the true function~$\beta(t)$ sits in the span of the spline basis expansion. With the necessary assumptions stated, we can now state Lemma~\ref{lemma:simpleasym}, which provides asymptotic theory.
 
 \begin{lemma} \normalfont
 \label{lemma:simpleasym}
