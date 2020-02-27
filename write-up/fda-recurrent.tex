@@ -767,10 +767,40 @@ X(t,s) - \sum_{k=1}^{K_x} \hat c_{i,k} (t) \psi_k (s) \overset{P}{\to} 0
 \]
 as~$K_x \to \infty$, which implies the third term goes to zero as the truncation level goes to infinity. The same argument can be used in conjunction under assumptions~\ref{E1} and~\ref{E4} to prove~\eqref{eq:andersen2}.
 
-To prove~\eqref{eq:andersen3},
+To prove~\eqref{eq:andersen3}, we start with equation~\eqref{eq:approxscore}, which we rewrite here for completeness:
 \[
-\left | n^{-1}  \right | \leq \frac{1}{n} \sum_{i=1}^n \int_0^\tau H_{in} (t) dN_i
+\hat{U}_n (\theta) = \sum_{i=1}^n \left[ \sum_{u \in \bfT_i} w_i(u; \theta)
+  \frac{h^{(1)} (u; \theta)}{ h ( u; \theta)}  - \sum_{u \in \bfD_i} w_i(u;
+  \theta) \frac{h_i^{(1)} (u; \theta)}{ \pi_i (u) } \right].
 \]
+Let~$N_i^{(e)} (t)$ and $N_i^{(s)} (t)$ be the event and subsampling counting processes with jumps at $t \in \bfT_i$ and $\bfD_i$ respectively.  Then
+\begin{equation}
+\label{eqapp:upperbound}
+\left | n^{-1} \frac{d^2}{d \theta_j d \theta_k} \tilde U_n (\theta)  \right | \leq \frac{1}{n} \sum_{i=1}^n \int_0^\tau w_i (t;\theta) \times H_{in} (t) R_i (t) dN_i^{(e)} (t) +
+\frac{1}{n} \sum_{i=1}^n \int_0^\tau \frac{w_i (t;\theta)}{\pi_i (t)} \times G_{in} (t) R_i (t) dN_i^{(e)} (t)
+\end{equation}
+where $H_{in}(t)$ and $G_{in}(t)$ are from Condition VI.1.1(E) in~\cite[pp. 421]{Andersen1993}. The first term converges in probability to a finite quantity by~\cite{Andersen1993}.  Since~$w_i(t;\theta)/\pi_i (t) = (\pi_i(t)+h_i(t;\theta))^{-1}$, the second term which simplifies to
+\[
+\frac{1}{n} \sum_{i=1}^n \int_0^\tau \frac{G_{in} (t)}{\pi_i (t)+h_i(t;\theta)} R_i(t) dN_i^{(e)} (t)
+\leq
+\frac{1}{L \cdot n} \sum_{i=1}^n \int_0^\tau G_{in} (t) R_i (t) dN_i^{(e)} (t)
+\]
+by Assumption~\ref{E1} (i.e., the subsampling rate is lower bounded by $L$). The right hand side is the optional variation of the local square integrable martingale
+$$
+\frac{1}{L \cdot n} \sum_{i=1}^n \int_0^t G^{1/2}_{in} (s) dN_i^{(e)} (s)
+$$
+This martingale has predicable variation process
+$$
+\frac{1}{L \cdot n} \sum_{i=1}^n \int_0^t G_{in} (s) \pi_i (s) R_i (s) ds
+$$
+Since both processes have the same limits, conditions VI.1.1(E) in~\cite{Andersen1993} and Assumption~\ref{E1} imply that the second term on the right hand side of~\eqref{eqapp:upperbound} also converges to a finite quantity as $n\ to \infty$ for every $K_x$ which completes the proof.
+
+This proves~$\hat \theta_n \overset{P}{\to} \theta_0$ as $n \to \infty$ and $K_x \to \infty$. Note that the argument holds for any choice of weight functions~$w_i (t;\theta)$; implying convergence holds more broadly for all approximate score equations in~\eqref{eq:approxscore}.
+\end{proof}
+
+\begin{proof}[Proof of Asymptotic Normality]
+Consider the weighted estimating equations given by~\eqref{eq:approxscore}. We have shown that afjlakfjlakfj
+Then
 \end{proof}
 
 \begin{proof}[Proof of Proposition~\ref{prop:optimal}]
