@@ -50,7 +50,7 @@
 
 \usepackage{soul,color, mathtools, fixmath}
 \usepackage{multirow}
-\usepackage{enumitem}
+\usepackage[shortlabels]{enumitem}
 \def\pr{\mathop{\text{pr}}\nolimits}
 
 \def\Bka{{\it Biometrika}}
@@ -335,7 +335,7 @@ This connection established by Lemma~\ref{lemma:logistic} between our proposed m
 
 \begin{rmk}[Inference procedure review] \normalfont
 Given observed recurrent event and high frequency data~$\{ \bfT_i, \bfx_i \}_{i=1}^n$,
-\begin{enumerate}
+\begin{enumerate}[(a)]
 \item For each $i \in [n]$, sample non-event times as a time-inhomogeneous Poisson point process with intensity according to~$\pi_i (t)$
 \item \label{p2} Estimate mean~$\mu_y (t,s)$ for $0 \leq s \leq \Delta$ at all event times~$t \in \cup_{i=1}^n \bfT_i$ and sampled non-event times~$t \in \cup_{i=1}^n \bfD_i$.
 \item \label{p3} Compute marginal covariance across event times,~$\Sigma_1$, and non-event times,~$\Sigma_0$.
@@ -359,11 +359,7 @@ We assume the following holds:
 \item\label{E1} The subsampling rate is both lower and upper bounded for all at-risk times; that is,~$0 < L < \pi_i (t) < U < \infty$ for all~$i=1,2,\ldots$ and~$t \in [0,\tau]$ such that $R_i (t) = 1$
 \item\label{E2} There exists a nonnegative definite matrix~$\Xi (\theta)$ such that
   \[
-    n^{-1} \Xi_n (\theta) = n^{-1} \sum_{i=1}^n \int_0^\tau w_i (t;
-    \theta) (1 - w_i (t; \theta)) \left[ \frac{h_i^{(1)}(t;
-        \theta)}{h_i (t; \theta)} \right] \times  \left [
-      \frac{h_i^{(1)} (t;\theta)}{h_i(t; \theta)} \right]^\top R_i (t)
-    dt \overset{P}{\to} \Xi (\theta).
+    n^{-1} \Xi_n (\theta) = n^{-1} \sum_{i=1}^n \int_0^\tau w_i (t; \theta) \times \left[ \frac{h_i^{(1)}(t; \theta) h_i^{(1)} (t;\theta)^\top}{h_i (t; \theta)} \right] \times   R_i (t) dt \overset{P}{\to} \Xi (\theta).
   \]
 \item\label{E3} There exists~$M$ such that $|W_{i,j,t}| < M$ for all~$(i,j,t)$.
 \item\label{E4} For all~$j,k$
@@ -385,8 +381,7 @@ The following assumptions are standard in prior work on longitudinal functional 
   \mathcal{S} \}$ is a square integrable element of the $L^2 (
   \mathcal{T} \times \mathcal{S})$
 \item\label{A2} The subsampling and conditional intensity rate functions~$f_y(T)$ are continuous and~$\sup |f_y(T)| < \infty$.
-\item\label{A3} {\color{red}$\E[X(t,s) X(t,s^\prime) X(t^\prime,s)
-  X(s^\prime, t^\prime) ] < \infty$ for each $s,s^\prime \in [0,\Delta]$ and~$0 < t, t^\prime < \tau$.}
+\item\label{A3} $\E[X(t,s) X(t,s^\prime) X(t^\prime,s) X(t^\prime, s^\prime) ] < \infty$ for each $s,s^\prime \in [0,\Delta]$ and~$0 < t, t^\prime < \tau$.
 \item\label{A4} $\E[\|X(t,\cdot)\|^4] < \infty$ for each~$0< t < \tau$.
 \end{enumerate}
 \end{assumption}
@@ -400,7 +395,7 @@ Under Assumption~\ref{assumption:events}, Assumption~\ref{assumption:truncation}
 \]
 where
 \[
-  \Xi (\theta) = \int_{0}^{\tau} w(s; \theta) \left[ \frac{h^{(1)}(s;
+  \Xi (\theta) = \int_{0}^{\tau} w(s; \theta) \times \left[ \frac{h^{(1)}(s;
       \theta) \times  h^{(1)} (s;\theta)^{\top}}{h(s; \theta)} \right]
   ds.
 \]
@@ -425,22 +420,22 @@ If the event process is an inhomogeneous Poisson point process with intensity~$h
 \noindent Proposition~\ref{prop:optimal} ensures the only loss of statistical efficiency is due to subsampling and not using a suboptimal estimation procedure given subsampling.
 % This result follows from the probability-based sampling design literature~\cite{Rathbun2012}.
 
+% \subsection{Computation versus statistical efficiency tradeoff}
+
+% Under assumption~\ref{assumption:truncation}, we next consider the statistical efficiency of our proposed estimator when compared to complete-data maximum likelihood estimation. While subsampling introduces additional variation, it may significantly reduce the overall computational burden. It is this trade-off that we next make precise. To start, we consider the subsampling rate~$\pi(t) = c \times h(t; \theta)$ for $c>0$, i.e., the subsampling rate proportional to the intensity function with time-independent constant~$c > 0$. Under this subsampling rate, the weight function~\eqref{eq:waage_weights} is equal to $c / (c+1)$. Under Lemma~\ref{lemma:simpleasym},
+
+% For the log-linear intensity model, the sampling-unbiased estimator for~$\hat \Xi(\theta)$ is equivalent to the Fisher information for the previously described logistic regression model. This implies that subsampling from an inhomogeneous Poisson process, standard logistic regression software can be used to fit the recurrent event model by specifying an offset equal to~$\log \pi_i (t)$. Not only this, Lemma~\ref{prop:optimal} shows weights~\eqref{eq:waage_weights} are optimal within a particular class of weighted estimating equations.
+
+% \begin{prop} \normalfont
+% \label{prop:optimal}
+% If the event process is an inhomogeneous Poisson point process with intensity~$h(t; \theta)$ and subsampling occurs via an independent, inhomogeneous Poisson point process with intensity~$\pi (t)$, then~$\hat U_n (\theta)$ are optimal estimating functions (i.e., most efficient) in the class of weighted estimating functions given by~\eqref{eq:approxscore} replacing~\eqref{eq:waage_weights} by any weight function~$w_i (t; \theta)$. This class includes the Horvitz-Thompson estimator under~$w(s; \theta) = 1$.
+% \end{prop}
+
+% \noindent Proposition~\ref{prop:optimal} ensures the only loss of statistical efficiency is due to subsampling and not using a suboptimal estimation procedure given subsampling.
+
 \subsection{Computation versus statistical efficiency tradeoff}
 
-Under assumption~\ref{assumption:truncation}, we next consider the statistical efficiency of our proposed estimator when compared to complete-data maximum likelihood estimation. While subsampling introduces additional variation, it may significantly reduce the overall computational burden. It is this trade-off that we next make precise. To start, we consider the subsampling rate~$\pi(t) = c \times h(t; \theta)$ for $c>0$, i.e., the subsampling rate proportional to the intensity function with time-independent constant~$c > 0$. Under this subsampling rate, the weight function~\eqref{eq:waage_weights} is equal to $c / (c+1)$. Under Lemma~\ref{lemma:simpleasym},
-
-For the log-linear intensity model, the sampling-unbiased estimator for~$\hat \Xi(\theta)$ is equivalent to the Fisher information for the previously described logistic regression model. This implies that subsampling from an inhomogeneous Poisson process, standard logistic regression software can be used to fit the recurrent event model by specifying an offset equal to~$\log \pi_i (t)$. Not only this, Lemma~\ref{prop:optimal} shows weights~\eqref{eq:waage_weights} are optimal within a particular class of weighted estimating equations.
-
-\begin{prop} \normalfont
-\label{prop:optimal}
-If the event process is an inhomogeneous Poisson point process with intensity~$h(t; \theta)$ and subsampling occurs via an independent, inhomogeneous Poisson point process with intensity~$\pi (t)$, then~$\hat U_n (\theta)$ are optimal estimating functions (i.e., most efficient) in the class of weighted estimating functions given by~\eqref{eq:approxscore} replacing~\eqref{eq:waage_weights} by any weight function~$w_i (t; \theta)$. This class includes the Horvitz-Thompson estimator under~$w(s; \theta) = 1$.
-\end{prop}
-
-\noindent Proposition~\ref{prop:optimal} ensures the only loss of statistical efficiency is due to subsampling and not using a suboptimal estimation procedure given subsampling.
-
-\subsection{Computation versus statistical efficiency tradeoff}
-
-Under assumption~\ref{assumption:truncation}, we next consider the statistical efficiency of our proposed estimator when compared to complete-data maximum likelihood estimation. While subsampling introduces additional variation, it may significantly reduce the overall computational burden. It is this trade-off that we next make precise. In particular, we consider the following choice of subsampling rate,~$\pi(t) = c \times h(t; \theta)$ for $c>0$. That is, the subsampling rate is proportional to the intensity function with time-independent constant~$c > 0$. Under this subsampling rate, the weight function~\eqref{eq:waage_weights} is equal to $c / (c+1)$. Under Lemma~\ref{lemma:simpleasym},
+Under assumption~\ref{assumption:truncation}, we next consider the statistical efficiency of our proposed estimator when compared to complete-data maximum likelihood estimation. While subsampling introduces additional variation, it may significantly reduce the overall computational burden. It is this trade-off that we next make precise. In particular, we consider the following choice of subsampling rate,~$\pi(t) = c \times h(t; \theta)$ for $c>0$. That is, the subsampling rate is proportional to the intensity function with time-independent constant~$c > 0$. Under this subsampling rate, the weight function~\eqref{eq:waage_weights} is equal to $c/ (c+1)$. Under Lemma~\ref{lemma:simpleasym},
 \[
 \Xi (\theta) = \frac{c}{c+1} \int_0^\tau \frac{ h^{(1)} (t; \theta)
   h^{(1)} (t; \theta)^\top}{h (t; \theta)} dt = \frac{c}{c+1} \Sigma (\theta)
@@ -448,25 +443,29 @@ Under assumption~\ref{assumption:truncation}, we next consider the statistical e
 where~$\Sigma(\theta)$ is the Fisher information of the complete-data maximum likelihood estimator.
 Therefore the relative efficiency is~$c/(1+c)$. For an upper bound~$H = \max_{t \in (0,\tau)} h(t;\theta)$, if we set~$\pi (t) = c \times H$, then the relative efficiency can be lower bounded by~$c / (c+1)$.
 
-Recall sensor measurements occur on the order of multiple times per second.  Suppose the intensity rate is bounded above by $3$ and the unit time scale was hours. If we can subsample the data at~$30$ times per hour, then we have a lower bound on the efficiency of $0.909$. For a 4Hz sensor, this reduces the number of samples per hour from~$4 \times 60 \times 60 = 14,400$ per hour to on average $30$. While the computational complexity of logistic regression is linear in the number of samples, we get $480$ times reduction in the data size at the cost of a $0.909$ statistical efficiency. If we sample~$300$ times per hour, then the efficiency loss is only $0.999$, with a $48$ times reduction in data size. Table~\ref{tab:compvseff} provides additional examples for a 4Hz sensor.  The data reduction depends on the sensor measurement rate; however, the lower bound on statistical efficiency does not.  This is because the subsampling rate only depends on the upper bound of the intensity function. That is, if the events are rare then the amount of data we need to subsample is greatly reduced with no impact to statistical efficiency.
-
-Recall sensor measurements occur on the order of multiple times per second.  Suppose the intensity rate is bounded above by $3$ and the unit time scale was hours. If we can subsample the data at~$30$ times per hour, then we have a lower bound on the efficiency of $0.909$. For a 4Hz sensor, this reduces the number of samples per hour from~$4 \times 60 \times 60 = 14,400$ per hour to on average $30$. While the computational complexity of logistic regression is linear in the number of samples, we get $480$ times reduction in the data size at the cost of a $0.909$ statistical efficiency. If we sample~$300$ times per hour, then the efficiency loss is only $0.999$, with a $48$ times reduction in data size. Table~\ref{tab:compvseff} provides additional examples for a 4Hz sensor.  The data reduction depends on the sensing rate; however, the lower bound on statistical efficiency does not.  This is because the subsampling rate only depends on the upper bound of the intensity function. That is, if the events are rare then the amount of data we need to subsample is greatly reduced with no impact to statistical efficiency.
+Sensor measurements occur multiple times per second.  If the intensity rate is bounded above by $1$ and the unit time scale was hours. If we can subsample the data at~$10$ times per hour, then we have a lower bound on the efficiency of $0.909$. For a 4Hz sensor, this reduces the number of samples per hour from~$4 \times 60 \times 60 = 14,400$ per hour to on average $10$. While the computational complexity of logistic regression is linear in the number of samples, we get $1440$ times reduction in the data size at the cost of a $0.909$ statistical efficiency. If we sample~$100$ times per hour, then the efficiency loss is only $0.999$, with a $144$ times reduction in data size. Table~\ref{tab:compvseff} provides additional examples for a 4Hz and 32Hz sensor rate respectively.  The data reduction depends on this rate; however, the lower bound on statistical efficiency does not because the subsampling rate only depends on the upper bound of the intensity function. In particular, if the events are rare then subsampling rate can be greatly reduced with no impact to statistical efficiency.
 
 \begin{table}[!th]
 \centering
-\begin{tabular}{l r r r r r | c}
+\begin{tabular}{l l r r r r r | c}
+\multirow{2}{2.5cm}{Sensor rate} &
 \multirow{2}{2.5cm}{Subsampling constant ($c$)}
   & \multicolumn{5}{c}{Upper bound on intensity rate per
     hour}
-  & \multirow{2}{2cm}{Statistical efficiency}\\ \cline{2-6}
-& 0.5 & 1 & 3 & 5 & 10 \\ \hline
-1 & 28800.0 & 14400.0 & 4800.0 & 2880.0 & 1440.0 & 0.500 \\
-5 & 5760.0 & 2880.0 & 960.0 & 576.0 & 288.0 & 0.833 \\
-10 & 2880.0 & 1440.0 & 480.0 & 288.0 & 144.0 & 0.909 \\
-100 & 288.0 & 144.0 & 48.0 & 28.8 & 14.4 & 0.990 \\
-500 & 57.6 & 28.8 & 9.6 & 5.8 & 2.9 & 0.999 \\ \hline
+  & \multirow{2}{2cm}{Statistical efficiency}\\ \cline{3-7}
+& & 0.5 & 1 & 3 & 5 & 10 \\ \hline
+% 1 & 28800.0 & 14400.0 & 4800.0 & 2880.0 & 1440.0 & 0.500 \\
+\multirow{3}{*}{4Hz (EDA)}
+& 5 & 5760 & 2880 & 960 & 576 & 288 & 0.833 \\
+& 10 & 2880 & 1440 & 480 & 288 & 144 & 0.909 \\
+& 100 & 288 & 144 & 48 & 29 & 14 & 0.990 \\ \hline
+\multirow{3}{*}{32Hz (ACC)}
+& 5 & 46080 & 23040 & 7680 & 4608 & 2304 & 0.833 \\
+& 10 & 23040 & 11520 & 3840 & 2304 & 1152 & 0.909 \\
+& 100 & 2304 & 1152 & 384 & 230 & 115 & 0.990 \\ \hline
+% 500 & 57.6 & 28.8 & 9.6 & 5.8 & 2.9 & 0.999 \\ \hline
 \end{tabular}
-\caption{Data reduction (total number of measurements divided by expected number of subsampled measurements) given 4Hz sensor, subsampling constant~$c$ and an upper bound on the intensity rate per hour~$H$. The subsampling rate is set at~$c \times H$; note, lower bound on statistical efficiency only depends on the subsampling rate.}
+\caption{Data reduction (total \# of measurements divided by expected number of subsampled measurements) given sensor rate, subsampling constant and an upper bound on the intensity rate.}
 \label{tab:compvseff}
 \end{table}
 
@@ -477,12 +476,6 @@ Recall theoretical results were proven under the assumption that there exists~$b
 \subsection{Confidence intervals for~$\beta(t)$}
 
 Due to the connection with generalized mixed effects models, we can leverage existing inferential machinery to obtain variance-covariance estimates of model parameters. That is, if~$\hat \Sigma_{bb}$ is the $K_b \times K_b$ dimensional matrix obtained by plugging in the estimates of variance components into the formula for the variance of~$\hat b$, then the standard error for estimate at time~$t_0$ -- i.e., ~$\hat \beta (t_0) = \phi(t_0) \hat {\bf b}$ -- is given by~$\sqrt{ \phi (t_0 ) \hat \Sigma_{bb} \phi(t_0)^\top}$.  Then the approximate 95\% confidence interval can be constructed as~$\hat \beta (t_0) \pm 1.96 \sqrt{\phi (t_0) \hat \Sigma_{bb} \phi(t_0)^\top}$.
-
-Recall theoretical results were proven under the assumption that there exists~$b^\star$ such that~$\beta(t) = \phi(t) {\bf b}^\star$. To make this assumption plausible, we set~$K_b$ large enough (but less than~$K_x$ to ensure identifiability) such that the spline basis expansion is sufficiently expressive. However, in practice, such a choice of~$K_b$ may lead to overfitting the data. We therefore, in the remainder of this paper, follow~\cite{GoldSmith2015} and induce smoothing by assuming that~$\{ b_k \}_{k=3}^{K_b} \sim N(0, \sigma_b^2 I)$. Incorporating penalization is simple due to the connection between with the score functions for logistic regression.
-
-\subsection{Confidence intervals for~$\beta(t)$}
-
-Due to the connection with generalized mixed effects models, we can leverage existing inferential machinery to obtain variance-covariance estimates of model parameters. That is, if~$\hat \Sigma_{bb}$ is the $K_b \times K_b$ deimnsional matrix obtained by plugging in the REML estimates of variance components into the formula for the variance of~$\hat b$, then the standard error for estimate at time~$t_0$ -- i.e., ~$\hat \beta (t_0) = \phi(t_0) \hat {\bf b}$ -- is given by~$\sqrt{ \phi (t_0 ) \hat \Sigma_{bb} \phi(t_0)^\top}$.  Then the approximate 95\% confidence interval can be constructed as~$\hat \beta (t_0) \pm 1.96 \sqrt{\phi (t_0) \hat \Sigma_{bb} \phi(t_0)^\top}$.
 
 We acknowledge two important limitations of confidence intervals obtained via this approach. First, penalization may lead to confidence intervals that perform poorly in regions where~$\hat \beta(t)$ is oversmoothed. Second, we ignore the variability inherent in the longitudinal functional principal component analysis; that is, our estimates ignore the variability in estimation of eigenfunctions~$\hat \psi$ as well as the coefficients~$\hat c_{i,k}(t)$. Joint modeling could be considered as in~\cite{Crainiceanu2010}, however, this is beyond the scope of this article.
 
@@ -543,7 +536,7 @@ $\Delta=$ & 0.5 & 1 & 5 & 25 & 50 \\ \hline
 
 \section{Extensions}
 
-In this section, we demonstrate the flexibility of our approach by exploring extensions in several important directions to ensure these methods are robust for practical use. This section will continue to leverage the connection to generalized functional linear models provided by Lemma~\ref{lemma:logistic}.
+In this section, we demonstrate the flexibility of our approach by exploring extensions in several important directions to ensure these methods are robust for practical use in mobile health. This section will continue to leverage the connection to generalized functional linear models provided by Lemma~\ref{lemma:logistic}.
 
 \subsection{Missing data}
 \label{section:missingdata}
@@ -619,13 +612,9 @@ Simple version compared to the von Hippel's boot MI proposal.
 \end{itemize}
 
 
-\newpage
-
 \subsection{Multilevel models}
 
-\subsection{Multiple sensors and availability}
-
-\subsection{Online estimation}
+\subsection{Multiple sensors}
 
 \section{A worked example: Adolescent psychiatric inpatient mHealth study} \label{section:example}
 
@@ -682,6 +671,7 @@ patient~$u$ had eight appointments with prothrombin values as follows:
 \bibliographystyle{plainnat}
 \bibliography{si-fda-refs}
 
+\newpage
 \appendix
 
 \section{Derivation of the design-unbiased score equations}
@@ -741,7 +731,7 @@ n^{-1} \tilde U_n (\theta_0) = n^{-1} U_n (\theta_0 )  + n^{-1} \left(
   \hat U_n (\theta_0) - U_n (\theta) \right) + n^{-1} \left(\tilde U_n
   (\theta_0) - \hat U_n (\theta_0) \right)
 \]
-where, recall,~$\hat U_n (\theta_0)$ are the logistic score equations with $\int_0^\infty X_i(t-s) \beta(s) ds$ and~$\tilde U_n (\theta_0)$ with the approximation~$C_{i,t}^\top J_{\phi, \psi} {\bf b}$. \cite{Andersen1993} (Theorem VI.1.1) show that~$n^{-1} U_n (\theta_0)
+where, recall,~$\hat U_n (\theta_0)$ are the logistic score equations with $\int_0^\infty X_i(t,s) \beta(s) ds$ and~$\tilde U_n (\theta_0)$ with the approximation~$C_{i,t}^\top J_{\phi, \psi} {\bf b}$. \cite{Andersen1993} (Theorem VI.1.1) show that~$n^{-1} U_n (\theta_0)
 \to 0$. The second term
 \begin{align*}
 n^{-1} \left( \hat U_n (\theta_0) - U_n (\theta_0) \right) =
@@ -763,23 +753,17 @@ where~$h(\cdot; \theta_0)$ is given by~\eqref{eq:hazardlinear}. Lenglart's inequ
   \right \| \\
 &= \frac{M}{4} n^{-1} \sum_{i=1}^n \sum_{t \in \bfT_i \cup \bfD_i}
   \times \sum_{l=1}^{K_b} \left \| \int_{t-\Delta}^t
-  \left( X(s,t) - \sum_{k=1}^{K_x} \hat c_{i,k} (t) \psi_k (s) \right)
+  \left( X(t,s) - \sum_{k=1}^{K_x} \hat c_{i,k} (t) \psi_k (s) \right)
   \phi_l (s) b_l\right \| \\
 &\to \frac{M}{4} \int_0^\tau \sum_{l=1}^{K_b} \left \| \int_{t-\Delta}^t
-  \left( X(s,t) - \sum_{k=1}^{K_x} \hat c_{i,k} (t) \psi_k (s) \right)
+  \left( X(t,s) - \sum_{k=1}^{K_x} \hat c_{i,k} (t) \psi_k (s) \right)
   \phi_l (s) b_l\right \| (f_0(t) + f_1(t)) dt
 \end{align*}
 where~$M = \sup \| \tilde W_{i,t} \|$,~$g(x) = 1/(1+\exp(-x))$ is the
 expit function.
-The second inequality is due to the Taylor remainder theorem.
-The third is due to~$g^\prime (x) = e^x/(1+e^x)^2 \leq e^0/(1+e^0)^2 =
-1/4$, reordering the summation, and rewriting the error term in terms
-of the difference between~$X(s,t)$ and the approximation with
-truncation level~$K_x$. Letting~$n \to \infty$ allows us to re-write
-the outside sums in terms of the integrated difference where the
-integral is with respect to the joint event and sampling distributions~$(f_0(t) + f_1 (t))$. Finally, under Assumptions~\ref{assumption:truncation}, \cite{Park2018} show
+The second inequality is due to the Taylor remainder theorem. The third is due to~$g^\prime (x) = e^x/(1+e^x)^2 \leq e^0/(1+e^0)^2 = 1/4$, reordering the summation, and rewriting the error term in terms of the difference between~$X(t,s)$ and the approximation with truncation level~$K_x$. Letting~$n \to \infty$ allows us to re-write the outside sums in terms of the integrated difference where the integral is with respect to the joint event and sampling distributions~$(f_0(t) + f_1 (t))$. Finally, under Assumptions~\ref{assumption:truncation}, \cite{Park2018} show
 \[
-X(s,t) - \sum_{k=1}^{K_x} \hat c_{i,k} (t) \psi_k (s) \overset{p}{\to} 0
+X(t,s) - \sum_{k=1}^{K_x} \hat c_{i,k} (t) \psi_k (s) \overset{P}{\to} 0
 \]
 as~$K_x \to \infty$, which implies the third term goes to zero as the truncation level goes to infinity. The same argument can be used in conjunction under assumptions~\ref{E1} and~\ref{E4} to prove~\eqref{eq:andersen2}.
 
