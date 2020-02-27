@@ -726,11 +726,12 @@ and
 \end{equation}
 To prove~\eqref{eq:andersen1}, we decompose~$\tilde U_n (\theta_0)$ into
 three terms
-\[
+\begin{equation}
+\label{eq:decomp}
 n^{-1} \tilde U_n (\theta_0) = n^{-1} U_n (\theta_0 )  + n^{-1} \left(
   \hat U_n (\theta_0) - U_n (\theta) \right) + n^{-1} \left(\tilde U_n
   (\theta_0) - \hat U_n (\theta_0) \right)
-\]
+\end{equation}
 where, recall,~$\hat U_n (\theta_0)$ are the logistic score equations with $\int_0^\infty X_i(t,s) \beta(s) ds$ and~$\tilde U_n (\theta_0)$ with the approximation~$C_{i,t}^\top J_{\phi, \psi} {\bf b}$. \cite{Andersen1993} (Theorem VI.1.1) show that~$n^{-1} U_n (\theta_0)
 \to 0$. The second term
 \begin{align*}
@@ -799,9 +800,22 @@ This proves~$\hat \theta_n \overset{P}{\to} \theta_0$ as $n \to \infty$ and $K_x
 \end{proof}
 
 \begin{proof}[Proof of Asymptotic Normality]
-Consider the weighted estimating equations given by~\eqref{eq:approxscore}. We have shown that afjlakfjlakfj
-Then
+Consider a Taylor-expansion of $\tilde U_n (\theta)$ centered at $\theta_0$ when $\hat \theta_n \in \Theta_0$.  We can write as
+\begin{align*}
+\tilde U_n (\hat \theta_n) &= \tilde U_n (\theta_0) -  (\hat \theta_n - \theta_0) \frac{\partial}{\partial \theta} \tilde U_n (\theta) \mid_{\theta=\theta_0} - (\hat \theta_n - \theta_0) \sum_{l=1}^p (\hat \theta_{ln} - \theta_{l0}) \frac{\partial^2}{\partial \theta \partial \theta_l} \tilde U_n (\theta) \mid_{\theta=\theta^\star} \\
+0 &= \tilde U_n (\theta_0) + (\hat \theta_n - \theta_0) \left[ \frac{\partial}{\partial \theta} \tilde U_n (\theta) \mid_{\theta=\theta_0} + (\hat \theta_n - \theta_0)^2 \frac{\partial}{\partial \theta} \tilde U_n (\theta) \mid_{\theta=\theta^\star} \right] \\
+\end{align*}
+where~$\theta^\star$ s on the line segment between $\hat \theta_n$ and $\theta_0$.
+
+Now $\tilde U_n (\theta_0 )$ can be decomposed into three terms as in~\eqref{eq:decomp}. Here, we assume $K_x \to \infty$ so the only two terms are
+$$
+U_n (\theta_0) = \sum_{i=1}^n
+$$ and
+$$
+n^{-1} (\hat U_n - U_n (\theta_0) ) = \frac{1}{n} \sum_{i=1}^n \int_0^\tau \frac{h^{(1)}(s; \theta_0)}{\pi_i (s) + h(s; \theta_0)} dM_i (s)
+$$
 \end{proof}
+
 
 \begin{proof}[Proof of Proposition~\ref{prop:optimal}]
 Consider the weighted estimating equations given by~\eqref{eq:approxscore}.
