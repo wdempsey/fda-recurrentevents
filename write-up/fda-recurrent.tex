@@ -803,7 +803,7 @@ This proves~$\hat \theta_n \overset{P}{\to} \theta_0$ as $n \to \infty$ and $K_x
 Consider a Taylor-expansion of $\tilde U_n (\theta)$ centered at $\theta_0$ when $\hat \theta_n \in \Theta_0$.  We can write as
 \begin{align*}
 \tilde U_n (\hat \theta_n) &= \tilde U_n (\theta_0) -  (\hat \theta_n - \theta_0) \frac{\partial}{\partial \theta} \tilde U_n (\theta) \mid_{\theta=\theta_0} - (\hat \theta_n - \theta_0) \sum_{l=1}^p (\hat \theta_{ln} - \theta_{l0}) \frac{\partial^2}{\partial \theta \partial \theta_l} \tilde U_n (\theta) \mid_{\theta=\theta^\star} \\
-0 &= \tilde U_n (\theta_0) + (\hat \theta_n - \theta_0) \left[ \frac{\partial}{\partial \theta} \tilde U_n (\theta) \mid_{\theta=\theta_0} + (\hat \theta_n - \theta_0)^2 \frac{\partial}{\partial \theta} \tilde U_n (\theta) \mid_{\theta=\theta^\star} \right] \\
+0 &= \tilde U_n (\theta_0) + (\hat \theta_n - \theta_0) \left[ \frac{\partial}{\partial \theta} \tilde U_n (\theta) \mid_{\theta=\theta_0} + \sum_{l=1}^p (\hat \theta_{ln} - \theta_{l0}) \frac{\partial^2}{\partial \theta \partial \theta_l} \tilde U_n (\theta) \mid_{\theta=\theta^\star} \right] \\
 \end{align*}
 where~$\theta^\star$ s on the line segment between $\hat \theta_n$ and $\theta_0$.
 
