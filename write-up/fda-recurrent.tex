@@ -702,7 +702,7 @@ for logistic regression with offset~$\log \pi_i (t)$.
 
 \begin{proof}[Proof of Lemma~\ref{lemma:simpleasym}]
 % Lemma~\ref{lemma:simpleasym} will be proven under regularity conditions A-E in~\cite[pp. 420--421]{Andersen1993} along with the following assumptions related to the subsampling rate~$\pi_i (t)$.
-We define the joint counting process
+Define the joint counting process
 \[
 M_i (t) = N_i (t) - \int_0^t (h_i (s; \theta) + \pi_i (s)) R_i (s) ds.
 \]
@@ -794,7 +794,7 @@ This martingale has predicable variation process
 $$
 \frac{1}{L \cdot n} \sum_{i=1}^n \int_0^t G_{in} (s) \pi_i (s) R_i (s) ds
 $$
-Since both processes have the same limits, conditions VI.1.1(E) in~\cite{Andersen1993} and Assumption~\ref{E1} imply that the second term on the right hand side of~\eqref{eqapp:upperbound} also converges to a finite quantity as $n\ to \infty$ for every $K_x$ which completes the proof.
+Since both processes have the same limits, conditions VI.1.1(E) in~\cite{Andersen1993} and Assumption~\ref{E1} imply that the second term on the right hand side of~\eqref{eqapp:upperbound} also converges to a finite quantity as $n \to \infty$ for every $K_x$ which completes the proof.
 
 This proves~$\hat \theta_n \overset{P}{\to} \theta_0$ as $n \to \infty$ and $K_x \to \infty$. Note that the argument holds for any choice of weight functions~$w_i (t;\theta)$; implying convergence holds more broadly for all approximate score equations in~\eqref{eq:approxscore}.
 \end{proof}
@@ -804,15 +804,21 @@ Consider a Taylor-expansion of $\tilde U_n (\theta)$ centered at $\theta_0$ when
 \begin{align*}
 \tilde U_n (\hat \theta_n) &= \tilde U_n (\theta_0) -  (\hat \theta_n - \theta_0) \frac{\partial}{\partial \theta} \tilde U_n (\theta) \mid_{\theta=\theta_0} - (\hat \theta_n - \theta_0) \sum_{l=1}^p (\hat \theta_{ln} - \theta_{l0}) \frac{\partial^2}{\partial \theta \partial \theta_l} \tilde U_n (\theta) \mid_{\theta=\theta^\star} \\
 0 &= \tilde U_n (\theta_0) + (\hat \theta_n - \theta_0) \left[ \frac{\partial}{\partial \theta} \tilde U_n (\theta) \mid_{\theta=\theta_0} + \sum_{l=1}^p (\hat \theta_{ln} - \theta_{l0}) \frac{\partial^2}{\partial \theta \partial \theta_l} \tilde U_n (\theta) \mid_{\theta=\theta^\star} \right] \\
+n^{1/2} (\hat \theta_n - \theta_0) &= \left[ \frac{1}{n} \frac{\partial}{\partial \theta} \tilde U_n (\theta) \mid_{\theta=\theta_0} + \frac{1}{n} \sum_{l=1}^p (\hat \theta_{ln} - \theta_{l0}) \frac{\partial^2}{\partial \theta \partial \theta_l} \tilde U_n (\theta) \mid_{\theta=\theta^\star} \right]^{-1} n^{-1/2} \tilde U_n (\theta_0)
 \end{align*}
-where~$\theta^\star$ s on the line segment between $\hat \theta_n$ and $\theta_0$.
+where~$\theta^\star$ is on the line segment between $\hat \theta_n$ and $\theta_0$. First, the term
+$$
+\frac{\partial}{\partial \theta} \tilde U_n (\theta) \mid_{\theta=\theta_0} + \sum_{l=1}^p (\hat \theta_{ln} - \theta_{l0}) \frac{\partial^2}{\partial \theta \partial \theta_l} \tilde U_n (\theta) \mid_{\theta=\theta^\star}
+\overset{P}{\to} \Xi(\theta_0)
+$$
+under conditions VI.1.1(A)--(E) in~\cite{Andersen1993} and Assumptions~\ref{E1}--\ref{E4}.  To see this, note the first term converges to $\Xi(\theta_0)$ while the second term is bounded in probability by $p M \| \theta^\star - \theta_0 \|$ for some finite constant~$M$ independent of~$\theta^\star$ where $\| \cdot \|$ is the Euclidean norm.  This goes to zero since $\| \theta^\star - \theta_0 \| \to 0$.
 
-Now $\tilde U_n (\theta_0 )$ can be decomposed into three terms as in~\eqref{eq:decomp}. Here, we assume $K_x \to \infty$ so the only two terms are
+Now $\tilde U_n (\theta_0 )$ can be decomposed into three terms as in~\eqref{eq:decomp}. Here, we assume $K_x \to \infty$ so the final term is negligible.  This leaves two terms
 $$
 U_n (\theta_0) = \sum_{i=1}^n
 $$ and
 $$
-n^{-1} (\hat U_n - U_n (\theta_0) ) = \frac{1}{n} \sum_{i=1}^n \int_0^\tau \frac{h^{(1)}(s; \theta_0)}{\pi_i (s) + h(s; \theta_0)} dM_i (s)
+n^{-1} (\hat U_n (\theta_0) - U_n (\theta_0) ) = \frac{1}{n} \sum_{i=1}^n \int_0^\tau \frac{h^{(1)}(s; \theta_0)}{\pi_i (s) + h(s; \theta_0)} dM_i (s)
 $$
 \end{proof}
 
