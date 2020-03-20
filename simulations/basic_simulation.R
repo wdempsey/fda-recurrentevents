@@ -1,4 +1,4 @@
-## Source the 
+## Source the functions
 source("./basic_simulation_functions.R")
 
 ### Matern covariance parameters
