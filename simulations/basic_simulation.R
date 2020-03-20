@@ -41,7 +41,7 @@ set.seed("134163")
 base_num_events = 5
 base_rate = logit(5/length(times))
 sampling_rate = 10/1000
-dataset = generate_complete_data(N = 1000, Cov_X, C, times, eig_Sigma, beta_1t)
+dataset = generate_complete_data(N = 1000, Cov_X, C, times, eig_Sigma, beta_1t, sampling_rate, base_rate)
 rm(abs_diff, C, Cov_X, x)
 
 dataset =data.frame(dataset)
