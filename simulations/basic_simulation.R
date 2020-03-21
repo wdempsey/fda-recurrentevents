@@ -37,7 +37,8 @@ eig_Sigma = eigen(Sigma)
 K_x = 35  # Pick first 35 eigen-vectors
 cumsum(eig_Sigma$values)[K_x]/sum(eig_Sigma$values) # Explains most of the variation
 
-set.seed("134163")
+# set.seed("134163")
+set.seed("131312")
 base_num_events = 5
 base_rate = logit(5/length(times))
 sampling_rate = 10/1000
@@ -82,12 +83,18 @@ lambdapath <- round(exp(seq(log(lambda_max), log(lambda_max*epsilon),
                             length.out = K)), digits = 10)
 
 set.seed("97139817")
+# Start the clock!
+ptm <- proc.time()
+
 ridge.fit.cv <- cv.glmnet(w, dataset$Y, alpha = 0, intercept = TRUE, 
                           penalty.factor = p.fac, standardize = FALSE,
                           lambda = lambdapath, nfolds = 20,
                           family = "binomial")
+# Stop the clock
+proc.time() - ptm
+
 ridge.fit.lambda <- ridge.fit.cv$lambda.min
-plot(ridge.fit.cv)
+# plot(ridge.fit.cv)
 
 # Extract coefficient values for lambda.1se (without intercept)
 ridge.coef <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[-1]
@@ -104,4 +111,3 @@ mtext("Time until event", side = 1, line = 2)
 mtext(expression(paste(beta, "(s)")),side = 2, line = 1)
 
 mise_calc(beta_1t, betaHat.net)
-

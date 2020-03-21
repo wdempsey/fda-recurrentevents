@@ -501,11 +501,14 @@ Since we are primarily interested in accuracy of the final estimates~$\hat \beta
 
 \begin{table}[!th]
 \begin{tabular}{c | c c c c c}
-Sampling rate & 0.5 & 1 & 5 & 25 & 50 \\ \hline
+& \multicolumn{5}{c}{Sampling rate} \\ \cline{2-6}
+ & 0.5 & 1 & 5 & 25 & 50 \\ \hline
+Subsampling variance & (10,12) & - & - & - & - \\
 Variance & (10,12) & - & - & - & - \\
 Squared Bias & - & - & - & - & -  \\
 MISE & - & - & - & - & -  \\ \hline
 Type I error & - & - & - & - & -  \\ \hline
+Avg runtime & - & - & - & - & - \\
 \end{tabular}
 \caption{Mean-integrated squared error and type I error as a function of sampling rate for $\beta(s)$ given by (1) and (2) respectively.}
 \label{tab:mise}
