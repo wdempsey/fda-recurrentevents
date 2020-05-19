@@ -1,4 +1,4 @@
-\documentclass[12pt]{amsart}
+\documentclass[11pt]{amsart}
 \usepackage{amsmath}
 \usepackage{tikz}
 \usetikzlibrary{matrix,arrows}
@@ -869,6 +869,21 @@ The argument
 
 \end{proof}
 
+\section{Penalized mixed effects logistic model}
+
+Here we derive a penalized adaptive Gaussian quadrature (PADQ) to fit the   penalized logistic mixed-effects model.  Here, for clarity, we write $Y_{ij} \ in \{ 0, 1 \}$ to be the sequence of binary indicators for participant $i = 1,\ldots,n$ and $j$ indexes the event and subsampled times.  We write $W_{ij}$ to denote the time-varying covariate.  Then the score equations for the penalized logistic regression with offset $\log(\pi_{ij})$ is written as
+$$
+\sum_{i=1}^n \sum_{j=1}^{k_i} \left( y_{ij} - \frac{1}{1+\exp (- W_{ij} \theta + \log (\pi_{ij}) )} \right) - \frac{1}{2 \sigma^2} \sum_{k=3}^{K_b} \beta_k^2 - \frac{1}{2 \sigma^2} (K_b - 3).
+$$
+We derive the iteratively re-weighted least squares algorithm next.
+
+\subsection{Penalized adaptive Gaussian quadrature}
+
+In standard logistic mixed-effects model, the likelihood is given by
+$$
+\sum_{i=1}^n \int \left( \frac{\exp(W_{ij} \theta + Z_{ij} b_i + \log \pi_{ij})}{1 + \exp(W_{ij} \beta + Z_{ij} b_i + \log \pi_{ij})} \right)^{y_{ij}} \left( \frac{1}{1 + \exp(W_{ij} \beta + Z_{ij} b_i + \log \pi_{ij})} \right)^{1-y_{ij}} \phi (b_i; \sigma_b^2) db_i
+$$
+
 
 \end{document}
 
@@ -932,4 +947,5 @@ w_i (t; \theta) = \frac{h_i(t;\theta)}{\pi_i (t) + h_i (t;\theta)}.
 Under weights~\eqref{eq:waage_weight} and log-linear intensity
 function,~\eqref{eq:weighted_esteq} is the
 \end{itemize}
+
 
