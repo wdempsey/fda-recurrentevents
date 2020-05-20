@@ -53,6 +53,7 @@
 \usepackage[shortlabels]{enumitem}
 \def\pr{\mathop{\text{pr}}\nolimits}
 
+\def\W{{\bf W}}
 \def\Bka{{\it Biometrika}}
 \def\AIC{\textsc{aic}}
 \def\T{{ \mathrm{\scriptscriptstyle T} }}
@@ -869,83 +870,59 @@ The argument
 
 \end{proof}
 
-\section{Penalized mixed effects logistic model}
+\section{Penalized logistic mixed-effects model}
 
-Here we derive a penalized adaptive Gaussian quadrature (PADQ) to fit the   penalized logistic mixed-effects model.  Here, for clarity, we write $Y_{ij} \ in \{ 0, 1 \}$ to be the sequence of binary indicators for participant $i = 1,\ldots,n$ and $j$ indexes the event and subsampled times.  We write $W_{ij}$ to denote the time-varying covariate.  Then the score equations for the penalized logistic regression with offset $\log(\pi_{ij})$ is written as
+Here we derive a penalized adaptive Gaussian quadrature (PADQ) to fit the   penalized logistic mixed-effects model.  Here, for clarity, we write $Y_{ij} \in \{ 0, 1 \}$ to be the sequence of binary indicators for participant $i = 1,\ldots,n$ and $j$ indexes the event and subsampled times.  We write $W_{ij}$ to denote the time-varying covariate.  Then the score equations for the penalized logistic regression with offset $\log(\pi_{ij})$ is written as
 $$
-\sum_{i=1}^n \sum_{j=1}^{k_i} \left( y_{ij} - \frac{1}{1+\exp (- W_{ij} \theta + \log (\pi_{ij}) )} \right) - \frac{1}{2 \sigma^2} \sum_{k=3}^{K_b} \beta_k^2 - \frac{1}{2 \sigma^2} (K_b - 3).
+\sum_{i=1}^n \sum_{j=1}^{k_i} \left( y_{ij} - \frac{1}{1+\exp (- W_{ij} \theta - \log (\pi_{ij}) )} \right) W_{ij} - \frac{1}{\sigma^2} \sum_{k=3}^{K_b} \beta_k
 $$
-We derive the iteratively re-weighted least squares algorithm next.
+Let $B$ be the matrix that extracts the entries in $\theta$ corresponding to $\{ \beta_k\}_{k=3}^{K_b}$ (i.e., $B \theta = ({\bf 0}, \beta_3, \ldots, \beta_{K_b},{\bf 0})$).  Let $\W_i$ be a $k_i \times p$ matrix with the $j$th row equal to $W_{ij}$. Let $\mu(\W_i; \theta, \pi_i)$ be the vector of length $k_i$ with the $j$th entry equal to $\mu(W_{ij}; \theta, \pi_{ij}) = \frac{1}{1+\exp(-W \theta - \log(\pi))}$.  Finally, let $Y_i = (y_{i1},\ldots, y_{i k_i}$ and $E_i (\theta) = Y_i - \mu(\W_i; \theta, \pi_i)$. Then we can succinctly write the above as $\sum_{i=1}^n \W_i^\top E_i (\theta)- \frac{1}{\sigma^2} B \theta$.
 
-\subsection{Penalized adaptive Gaussian quadrature}
-
-In standard logistic mixed-effects model, the likelihood is given by
+We derive the iteratively re-weighted least squares algorithm next. First, take the derivative with respect to $\theta$ to construct the Hessian
 $$
-\sum_{i=1}^n \int \left( \frac{\exp(W_{ij} \theta + Z_{ij} b_i + \log \pi_{ij})}{1 + \exp(W_{ij} \beta + Z_{ij} b_i + \log \pi_{ij})} \right)^{y_{ij}} \left( \frac{1}{1 + \exp(W_{ij} \beta + Z_{ij} b_i + \log \pi_{ij})} \right)^{1-y_{ij}} \phi (b_i; \sigma_b^2) db_i
+- \left[ \sum_{i=1}^n \sum_{j=1}^{k_i} \frac{W_{ij} W_{ij}^\top}{(1+\exp (- W_{ij} \theta - \log (\pi_{ij}) ))^2} \exp(-W_{ij} \theta - \log (\pi_{ij})) + \frac{B}{\sigma^2} \right].
+$$
+Define the matrix $V_i (\theta)$ be the diagonal matrix with the $(j,j)$th entry equal to $\mu(W_{ij}; \theta, \pi_{ij}) \cdot (1-\mu(W_{ij}; \theta, \pi_{ij})$. Then we can express the Hessian more succinctly as $- \left[ \sum_{i=1}^n \W_i^\top V_i (\theta) \W_i + \frac{B}{\sigma^2} \right]$.  Combining these, starting at an initial estimate, the Newton-Rhapson update given current parameter value $\hat \theta_k$ is given by
+$$
+\hat \theta_{k+1} = \hat \theta_{k} + \left[ \sum_{i=1}^n \W_i^\top V_i (\hat \theta_k) \W_i + \frac{B}{\sigma^2} \right]^{-1} \left(\sum_{i=1}^n \W_i^\top E_i (\hat \theta_k) - \frac{1}{\sigma^2} B \hat \theta_k \right)
 $$
 
+To learn $\sigma^2$, we use the connection to the mixed-effects literature.
+Fixing $\theta$, the log-likelihood components related to $\sigma^2$ is given by $-\frac{1}{2\sigma^2} \theta^\top B \theta - \frac{B {\bf 1}}{2} \log (\sigma^2)$.  Differentiating and setting equal to zero yields the estimator
+$\hat \sigma^2 = \frac{\theta^\top B \theta}{B {\bf 1}}$.  The complete algorithm is then alternating between Netwon-Rhapson for fixed $\sigma^2$ to estimate $\theta$ and then estimating $\sigma^2$ for fixed $\theta$ using the above formula.
+
+\subsection{Estimation of random-effects via Newton-Rhapson}
+
+In standard logistic mixed-effects model, with $b_i \sim N(0, \Psi)$ and $b_i \in \mathbb{R}^q$, then the likelihood is given by
+$$
+\begin{aligned}
+& \prod_{i=1}^n \int \prod_{j=1}^{k_i} \left( \frac{\exp(W_{ij} \theta + Z_{ij} b_i + \log \pi_{ij})}{1 + \exp(W_{ij} \beta + Z_{ij} b_i + \log \pi_{ij})} \right)^{y_{ij}} \left( \frac{1}{1 + \exp(W_{ij} \beta + Z_{ij} b_i + \log \pi_{ij})} \right)^{1-y_{ij}} \phi (b_i; \sigma_b^2) db_i \\
+\propto & \prod_{i=1}^n \int \exp \left[ \sum_{j=1}^{k_i} \left( y_{ij} \left( W_{ij} \theta + Z_{ij} b_i + \log \pi_{ij} \right) - \log \left( 1 + \exp \left( W_{ij} \theta + Z_{ij} b_i + \log \pi_{ij} \right) \right) \right) - b_i^\top \Psi^{-1} b_i /2 \right] db_i \\
+\propto& \prod_{i=1}^n \int \exp \left[ g(\theta, b_i, \pi_{ij}, \Psi) \right] db_i,
+\end{aligned}
+$$
+where the second and third line ignore the constant $(2\pi)^{q/2} |\Psi|^{-1/2}$. Differentiating the function $g(\theta, b_i, \pi_{ij}, \Psi)$ with respect to $b_i$ yields
+$$
+\begin{aligned}
+\frac{\partial g(\theta, b_i, \pi_{ij}, \Psi)}{\partial b_i} &= \sum_{j=1}^{k_i} \left( y_{ij} Z_{ij} - \frac{Z_{ij}}{1+\exp(-W_{ij}^\top \theta - Z_{ij}^\top b_i - \log \pi_{ij}}\right) - \Psi^{-1} b_i \\
+\frac{\partial g(\theta, b_i, \pi_{ij}, \Psi)}{\partial b_i^2} &= - \sum_{j=1}^{k_i} \frac{Z_{ij}Z_{ij}^\top}{(W_{ij}^\top \theta + Z_{ij}^\top b_i + \log \pi_{ij})^2} - \Psi^{-1}
+\end{aligned}
+$$
+Redefining terms from the prior section, we can express the above as
+$$
+\begin{aligned}
+\frac{\partial g(\theta, b_i, \pi_{ij}, \Psi)}{\partial b_i} &= Z_i E_i (\theta, b_i) - \Psi^{-1} b_i \\
+\frac{\partial g(\theta, b_i, \pi_{ij}, \Psi)}{\partial b_i^2} &= - \left[ Z_i V_i (\theta, b_i) Z_i + \Psi^{-1} \right]
+\end{aligned}
+$$
+
+For fixed $\theta$, the function $g$ is stictly concave function of $b_i$ and therefore we can estimate the unique maximum $\hat b_i$ via Newton-Rhapson method as follows:
+$$
+\hat b_i^{(k+1)} = \hat b_i^{(k)} + \left( \sum_{j=1}^{k_i} \frac{Z_{ij}Z_{ij}^\top}{(W_{ij}^\top \theta + Z_{ij}^\top \hat b_i^{(k)} + \log \pi_{ij})^2} + \Psi^{-1} \right)^{-1} \left( \sum_{j=1}^{k_i} \left( y_{ij} Z_{ij} - \frac{Z_{ij}}{W_{ij}^\top \theta + Z_{ij}^\top \hat b_i^{(k)} + \log \pi_{ij}}\right) - \Psi^{-1} \hat b_i^{(k)} \right)
+$$
+Fixing $\hat b_i$, we then need to estimate $\Psi$ and $\theta$. We employ adaptive gaussian quadrature (cites) as it has been shown that for infrequent events the Laplace approximation tends to underestimate effects (cites).
+To this end, we
+
+We write this as $\prod_{i=1}^n l_{ij} (\theta, b_i, \pi_{ij}) $
 
 \end{document}
-
-\item {\bf Step 1}: Estimate~$\hat \mu(s,t)$ via sandwich smoother for
-  all~$s \in [0,\Delta]$ and~$t \in \cup_{i=1}^n \left( D_i \cup N_i
-  \right)$. Define~$\tilde X (s,t) = X(s,t) - \hat \mu(s,t)$ to be a
-  mean-zero process for each~$t$.
-\item {\bf Step 2}: Compute the pooled sample covariance
-\[
-\hat \Xi (s , s^\prime) =
-\left( \sum_{i=1}^n \left | N_i \cup D_i \right |\right)^{-1}
-\left( \sum_{i=1}^n \sum_{t \in N_i \cup D_i} \tilde X (s,t) \tilde X
-  (s^\prime, t) \right).
-\]
-Compute at a fine set of grid points. This is an estimate of
-\[
-\Xi (s, s^\prime) = \int_{\mathcal{T}} c( (s,T), (s^\prime, T) ) f(T) dT
-\]
-where~$f(T)$ is a superposition of the event process and the
-subsampling process.
-\item {\bf Step 3}: Take spectral decomposition~$\{ \hat \phi_k (s),
-  \hat \lambda_k \}_{k \geq 1}$. Choose~$K_x \geq K_b$ large enough.
-\item {\bf Step 4}: Compute
-\[
-\hat c_{i,k} (t) = \int_{t-\Delta}^t \tilde X_i (s,t) \hat \phi_k (s) ds
-\]
-Then
-\[
-X(s,t) \approx \hat \mu(s,t) + \sum_{k=1}^{K_x} \hat c_{i,k} (t)
-\phi_k (s).
-\]
-\item {\bf Step 5}: Plugging both the spline and KL decomposition we
-  have
-\begin{align*}
-\int_{t-\Delta}^t X(s,t) \beta(s) ds
-  &= \int_{t-\Delta}^t \left[ \hat \mu(s,t) + \sum_{k=1}^{K_x}
-    c_{i,t,k} \phi_k (s) \right] \times \left[ \sum_{k^\prime=1}^{K_b}
-    \beta_k \psi_k (s) \right] \\
-  &= [ M_{i,t}^\prime + C_{i,t}^\prime J_{\phi, \psi} ] \beta
-\end{align*}
-where~$M_{i,t}$ is a vector with~$i$th entry equal
-to~$\int_{t-\Delta}^t \hat \mu(s,t) \psi_k (s) ds$, $C_{i,t} =
-(c_{i,t,1}, \ldots, c_{i,t,K_x}) \in \mathbb{R}^{K_x \times 1}$,
-$\beta = (\beta_1, \ldots, \beta_{K_b}) \in \mathbb{R}^{K_b \times 1}$
-and~$J_{\phi, \psi} \in \mathbb{R}^{K_x \times K_b}$ where the~$(i,j)$
-entry is given by
-\[
-\int_{t-\Delta}^t \phi_{i} (s) \psi_{j} (s) ds.
-\]
-\item {\bf Step 6}: The approximate score equations
-\begin{equation}
-\label{eq:weighted_esteq}
-\hat U_n (\theta) = \sum_{i=1}^n \left \{ \sum_{t \in N_i} w_{i} (t; \theta) W_{i,t} -
-    \sum_{u \in D_i} (1 - w_i (u; \theta)) W_{i,u} \right \}
-\end{equation}
-where
-\begin{equation}
-\label{eq:waage_weight}
-w_i (t; \theta) = \frac{h_i(t;\theta)}{\pi_i (t) + h_i (t;\theta)}.
-\end{equation}
-Under weights~\eqref{eq:waage_weight} and log-linear intensity
-function,~\eqref{eq:weighted_esteq} is the
-\end{itemize}
-
-
