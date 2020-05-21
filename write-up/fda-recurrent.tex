@@ -53,6 +53,8 @@
 \usepackage[shortlabels]{enumitem}
 \def\pr{\mathop{\text{pr}}\nolimits}
 
+\def\k{{\bf k}}
+\def\z{{\bf z}}
 \def\W{{\bf W}}
 \def\Bka{{\it Biometrika}}
 \def\AIC{\textsc{aic}}
@@ -901,28 +903,47 @@ $$
 \propto& \prod_{i=1}^n \int \exp \left[ g(\theta, b_i, \pi_{ij}, \Psi) \right] db_i,
 \end{aligned}
 $$
-where the second and third line ignore the constant $(2\pi)^{q/2} |\Psi|^{-1/2}$. Differentiating the function $g(\theta, b_i, \pi_{ij}, \Psi)$ with respect to $b_i$ yields
+where the second and third line ignore the constant $(2\pi)^{q/2} |\Psi|^{-1/2}$. Differentiating the function $g(\theta, b_i, \pi_{ij}, \Psi)$ with respect to $b_i$, the connection to the prior section can be used.  Re-defining terms appropriately allows us to express the derivatives as
 $$
 \begin{aligned}
-\frac{\partial g(\theta, b_i, \pi_{ij}, \Psi)}{\partial b_i} &= \sum_{j=1}^{k_i} \left( y_{ij} Z_{ij} - \frac{Z_{ij}}{1+\exp(-W_{ij}^\top \theta - Z_{ij}^\top b_i - \log \pi_{ij}}\right) - \Psi^{-1} b_i \\
-\frac{\partial g(\theta, b_i, \pi_{ij}, \Psi)}{\partial b_i^2} &= - \sum_{j=1}^{k_i} \frac{Z_{ij}Z_{ij}^\top}{(W_{ij}^\top \theta + Z_{ij}^\top b_i + \log \pi_{ij})^2} - \Psi^{-1}
+\frac{\partial g(\theta, b_i, \pi_{i}, \Psi)}{\partial b_i} &= Z_i E_i (\theta, b_i) - \Psi^{-1} b_i \\
+\frac{\partial g(\theta, b_i, \pi_{i}, \Psi)}{\partial b_i^2} &= - \left[ Z_i V_i (\theta, b_i) Z_i + \Psi^{-1} \right]
 \end{aligned}
 $$
-Redefining terms from the prior section, we can express the above as
-$$
-\begin{aligned}
-\frac{\partial g(\theta, b_i, \pi_{ij}, \Psi)}{\partial b_i} &= Z_i E_i (\theta, b_i) - \Psi^{-1} b_i \\
-\frac{\partial g(\theta, b_i, \pi_{ij}, \Psi)}{\partial b_i^2} &= - \left[ Z_i V_i (\theta, b_i) Z_i + \Psi^{-1} \right]
-\end{aligned}
-$$
-
 For fixed $\theta$, the function $g$ is stictly concave function of $b_i$ and therefore we can estimate the unique maximum $\hat b_i$ via Newton-Rhapson method as follows:
 $$
-\hat b_i^{(k+1)} = \hat b_i^{(k)} + \left( \sum_{j=1}^{k_i} \frac{Z_{ij}Z_{ij}^\top}{(W_{ij}^\top \theta + Z_{ij}^\top \hat b_i^{(k)} + \log \pi_{ij})^2} + \Psi^{-1} \right)^{-1} \left( \sum_{j=1}^{k_i} \left( y_{ij} Z_{ij} - \frac{Z_{ij}}{W_{ij}^\top \theta + Z_{ij}^\top \hat b_i^{(k)} + \log \pi_{ij}}\right) - \Psi^{-1} \hat b_i^{(k)} \right)
+\hat b_i^{(k+1)} = \hat b_i^{(k)} + \left[ Z_i V_i (\theta, \hat b_i^{(k)}) Z_i + \Psi^{-1} \right]^{-1}  \left( Z_i E_i (\theta, \hat b_i^{(k)}) - \Psi^{-1} \hat b_i^{(k)} \right)
 $$
-Fixing $\hat b_i$, we then need to estimate $\Psi$ and $\theta$. We employ adaptive gaussian quadrature (cites) as it has been shown that for infrequent events the Laplace approximation tends to underestimate effects (cites).
-To this end, we
 
-We write this as $\prod_{i=1}^n l_{ij} (\theta, b_i, \pi_{ij}) $
+Fixing $\hat b_i$, we then need to estimate $\Psi$ and $\theta$. Here we employ adaptive gaussian quadrature (cites) as it has been shown that for infrequent events the Laplace approximation tends to underestimate effects (cites).  Let $R_i^\top R_i = Z_i^\top V_i (\theta, b_i) Z_i + \Psi^{-1}$, $z_j$ and $w_j$ for $j=1,\ldots, N_{GQ}$ be the weights for the one-dimensional Gaussian quadrature rule.  Let $\z_\k = (z_{k_1},\ldots, z_{k_q})$, $\tilde b_{i \k} = \hat b_i + R_i^{-1} \z_\k$, and $W_{\k} = \exp ( \| \z_\k \|^2 ) \prod_{l=1}^{q} w_{k_l}$.  Then the AGQ rule is given by
+$$
+\begin{aligned}
+&\int \exp \left[ g(\theta, b_i, \pi_{i}, \Psi) \right] db_i \\
+=& \int | R_i |^{-1} \exp \left[ g(\theta, \hat b_i + R_i^{-1} \z, \pi_{i}, \Psi) + \| \z \|^2 / 2 \right] \exp ( - \| \z \|^2 / 2 ) d\z \\
+=& (2 \pi)^{q/2} | R_i |^{-1} \sum_{j_1 =1}^{N_{GQ}} \cdots \sum_{j_q =1}^{N_{GQ}} \exp \left[ g(\theta, \tilde b_{i \k}, \pi_{i}, \Psi) \right] W_{\k}
+\end{aligned}
+$$
+The score equations
+$$
+\sum_{j_1 =1}^{N_{GQ}} \cdots \sum_{j_q =1}^{N_{GQ}}
+\left( \sum_{j_1 =1}^{N_{GQ}} \cdots \sum_{j_q =1}^{N_{GQ}} \exp \left[ g(\theta, \tilde b_{i \k}, \pi_{i}, \Psi) \right] W_{\k} \right)^{-1}
+\left( \exp \left[ g(\theta, \tilde b_{i \k}, \pi_{i}, \Psi) \right] W_{\k} \right) \frac{\partial}{\partial \theta} g(\theta, \tilde b_{i \k}, \pi_i, \Psi)
+$$
+Define $\omega(\theta, \tilde b_{i \k}, \pi_i, \Psi)$ to be the weights.  Then we can express score and Hessian as:
+$$
+\begin{aligned}
+&\sum_{\k} \omega(\theta, \tilde b_{i \k}, \pi_i, \Psi) \cdot \frac{\partial}{\partial \theta} g(\theta, \tilde b_{i \k}, \pi_i, \Psi) \\
+&\sum_{\k}
+\omega(\theta, \tilde b_{i \k}, \pi_i, \Psi) \cdot \frac{\partial^2}{\partial \theta \partial \theta^\top} g(\theta, \tilde b_{i \k}, \pi_i, \Psi) +
+\sum_{\k} \omega(\theta, \tilde b_{i \k}, \pi_i, \Psi) \cdot \left [\frac{\partial}{\partial \theta} g(\theta, \tilde b_{i \k}, \pi_i, \Psi) \right] \left [\frac{\partial}{\partial \theta} g(\theta, \tilde b_{i \k}, \pi_i, \Psi) \right]^\top \\
+&- \left[ \sum_{\k} \omega(\theta, \tilde b_{i \k}, \pi_i, \Psi) \frac{\partial}{\partial \theta} g(\theta, \tilde b_{i \k}, \pi_i, \Psi) \right] \left[ \sum_{\k} \omega(\theta, \tilde b_{i \k}, \pi_i, \Psi) \frac{\partial}{\partial \theta} g(\theta, \tilde b_{i \k}, \pi_i, \Psi) \right]^\top
+\end{aligned}
+$$
+
+
+
+When $N_{GQ} = 1$, the AGQ approximation is equivalent to a Laplacian approximation.
+
+
 
 \end{document}
