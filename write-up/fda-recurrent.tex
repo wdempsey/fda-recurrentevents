@@ -546,6 +546,9 @@ $\Delta=$ & 0.5 & 1 & 5 & 25 & 50 \\ \hline
 
 In this section, we demonstrate the flexibility of our approach by exploring extensions in several important directions to ensure these methods are robust for practical use in mobile health. This section will continue to leverage the connection to generalized functional linear models provided by Lemma~\ref{lemma:logistic}.
 
+\subsection{Multiple sensors}
+\label{section:multiplesensors}
+
 \subsection{Missing data}
 \label{section:missingdata}
 \walt{Question: How to perform multiple imputation for~$X(\cdot,t)$
@@ -602,7 +605,7 @@ M^{-1} \sum_{m=1}^M \hat \Xi^{(m)} (\theta) + \frac{1}{M-1}
 where~$\hat \Xi^{(m)}$ is the estimator~\eqref{eq:fisher} for
 the~$m$th imputated dataset.
 
-\subsection{Bootstrap and multiple imputation under uncongenial }
+\subsubsection{Bootstrap and multiple imputation under uncongenial }
 
 Positives: (1) our imputation model is ``approximately'' congenial; (2) our imputatoin model is simple and easy to use.
 Negatives: (1) clearly not congenial under many events and/or high sampling rates. (2) difficult when we overlap due to over-sampling.
@@ -622,57 +625,49 @@ Simple version compared to the von Hippel's boot MI proposal.
 
 \subsection{Multilevel models}
 
-\subsection{Multiple sensors}
-
 \section{A worked example: Adolescent psychiatric inpatient mHealth study} \label{section:example}
 
-During a XX month period in 2019, 91 psychiatric inpatients admitted for suicidal risk to Franciscan Children's Hospital  were enrolled in
- with histologically verified liver cirrhosis were recu
-those presenting to a psychiatric hospital with suicide ideation
-and/or a recent suicide attempt) during a high risk time period (i.e.,
-post-hospitalization)
+During a XX month period in 2019, 91 psychiatric inpatients admitted for suicidal risk to Franciscan Children's Hospital were enrolled in an observational study.  Study data were graciously provided by Evan Kleiman and his study team ({\tt https://kleimanlab.org}). Each study participant wore an Empatica E4~\cite{empaticae3}, a medical-grade wearable device that offers real-time physiological data.  One of the primary study goals was to assess the association between sensor-based physiological measurements and self-identified
 
-Currently, only 51 patients for whom the initial biopsy could be
-reevaluated using more restrictive criteria were available for
-analysis.
-One of the goals of the study was to assess the association between sensor-based covariate information can used to identify distress early prior in the process of escalation by monitoring physiological correlates of distress -- in particular, electrodermal activity (EDA), a measure of skin conductance, and ``gACC'', a coordinate-free feature built from accelerometer data that measures physical movement. The scientific hypothesis to be tested is whether a spike in EDA and/or gACC
+can used to identify distress early prior in the process of escalation by monitoring physiological correlates of distress -- in particular, electrodermal activity (EDA), a measure of skin conductance, and ``gACC'', a coordinate-free feature built from accelerometer data that measures physical movement. The scientific hypothesis to be tested is whether a spike in EDA and/or gACC
 
-The goal of the sutyd
+To avoid, we focus on the study window 9AM to 8PM each study day.
 
-
-
-EDA and ACC sensor data along with buttonpress timestamps were
-graciously provided by Evan Kleiman and his study team {\tt
-https://kleimanlab.org}.
-At the end of the study period, the mortality rate was 292/488, or
+At the end of the study period, the base rate of button pressing  rate was 292/488, or
 approximately 60\%.
+
+\begin{figure}[!th]
+\caption{Button press distribution across study days (include number of people).}
+\end{figure}
 
 The focus here is on two EDA and the  prothrombin index, a composite
 blood coagulation index
 related to liver function, measured initially at three-month intervals
 and subsequently at roughly twelve-month intervals.
-The individual prothrombin trajectories are highly variable,
-both in forward and in reverse time,
-which tends to obscure patterns and trends.
-In Figure~\ref{fig:mean_traj}a the mean trajectory is plotted against time from recruitment
-for two patient groups placebo/prednisone and censored/not censored.
-Naturally, only those patients who are still alive are included in the average
+The individual EDA and AI trajectories are highly variable, both in forward and when considering reverse time from event timepoints, which tends to obscure patterns and trends.  In Figure~XX, the mean trajectory is plotted against time from recruitment for two patient groups placebo/prednisone and censored/not censored. Naturally, only those patients who are still alive are included in the average
 for that time.
-Figure~\ref{fig:mean_traj}b shows the same plots in reverse alignment.
+Figure XX hows the same plots in reverse alignment.
 While there are certain similarities in the two plots,
 the differences in temporal trends are rather striking.
 In particular, prothrombin levels in the six months prior to censoring are fairly stable,
 which is in marked contrast with levels in the six months prior to failure,
 as seen in the lower pair of curves.
 
-Inspection of the graphs for uncensored patients in the right panel of Figure~\ref{fig:mean_traj} suggests
-beginning with the simplest revival model in which the sequences
-for distinct patients are independent Gaussian with moments
+\begin{figure}[!th]
+\caption{EDA and ACC plots for average at non-event and event times.}
+\end{figure}
 
-{\bf comparison over $\Delta$ and using imputation}
+Inspection of the graphs for uncensored patients in the right panel of Figure XX suggests beginning with the simplest revival model in which the sequences
+for distinct patients are independent Gaussian with moments {\bf comparison over $\Delta$ and using imputation}
 
+\begin{figure}[!th]
+\caption{$\beta (t)$ for ACC and EDA with 95\% CI.}
+\end{figure}
 
-\subsection{Effect of electrodermal activity on prognosis}
+\subsection{Accounting for missing data and heterogeneity}
+
+\subsection{Effect of electrodermal activity and activity index on moments of distress}
+
 Over a period of 5~years and one month following recruitment,
 patient~$u$ had eight appointments with prothrombin values as follows:
 
