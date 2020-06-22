@@ -12,10 +12,9 @@ covariates via random subsampling},
 year = {2019}}
 ```
 
-The goal of this project is to build subsampling-unbiased likelihood-based estimators, that trade-off statistical efficiency for computational efficiency.
-Standard error estimates can be decomposed to understand the relative statistical efficiency, and whether further subsampling may be required.
-Methods allow for fast model fitting to help scientists interested in exploratory data analysis for recurrent event models in the presence
-of functional covariates.
+The goal of this project is to build subsampling-unbiased likelihood-based estimators that trade off statistical and  computational efficiency.
+Standard error estimates can be decomposed to understand the relative statistical efficiency and whether further subsampling may be required.
+Methods allow for fast model fitting to help scientists interested in exploratory data analysis for recurrent event models in the presence of functional covariates.
 
 ## Code Description ##
 
