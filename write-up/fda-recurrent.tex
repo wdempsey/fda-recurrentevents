@@ -500,6 +500,15 @@ h(t; \theta) = \exp \left( \theta_0 + \int_{0}^{\Delta} X(t-s) \beta(s) ds \righ
 \]
 We set~$\Delta = 1/(12*2)$ to mimic a $30$-minute window for a $12$-hour day.  We set~$\theta_0 = \log(5/1000)$ to set a baseline risk of approximately 5 events per day. We consider two choices of~$\beta(s)$: (1) $\beta_0 + \exp(- \beta_1 s) $, and (2) $\beta_1  * \sin \left( 2 \pi \frac{s}{\Delta} - \pi/2 \right)$
 
+\begin{itemize}
+\item Sample every 0.5 hours; then subsample at each subrate. Estimates are given by $\hat \beta_{i,0.5} (t)$ and $\hat \beta_{i,1} (t)$.
+\item Bias is average over the estimates $\bar \hat \beta_{0.5} (t) = 100^{-1} \sum_{i=1}^100 \hat \beta_{i, 0.5} (t)$ compared to truth.
+\item Take squared difference integrated to get variance.
+\item To get the subsampling variance take $1/1000 \sum_{i=1}^1000 (\hat \beta_{i,0.5} (t) - \hat \beta_{i,1} (t))^2$.
+\item Normalize everything by squared function!
+\end{itemize}
+
+
 We sample non-events at rates of 1 per 12/6/1/0.5 hours.
 
 Since we are primarily interested in accuracy of the final estimates~$\hat \beta(s)$, we report the mean integrated squared error (MISE) of~$\hat \beta (s)$, defined as~$\frac{1}{100} \sum_{j=1}^{100} \int_{0}^{\Delta^\prime} ( \hat \beta_j (s) - \beta(s))^2 ds$ where~$\beta(s) \equiv 0$ for $s > \Delta$.  We define the MISE in this manner to account for settings where~$\Delta$ is unknown. Table~\ref{tab:mise} show the MISE decomposed into the variance and squared biase
@@ -548,6 +557,13 @@ In this section, we demonstrate the flexibility of our approach by exploring ext
 
 \subsection{Multiple sensors}
 \label{section:multiplesensors}
+
+\begin{equation}
+\label{eq:multihazardlinear}
+h_i \left( t \given  H_{i,t}^{NX} ; \theta \right) =
+h_0 (t; \gamma) \exp \left( g_t \left( H_{i,t}^{N} \right)^{\prime} \alpha
+  + \int_{t-\Delta}^t x_{1i} (s) \beta_1(s) ds + \int_{t-\Delta}^t x_{2i} (s) \beta_2(s) ds  \right)
+\end{equation}
 
 \subsection{Missing data}
 \label{section:missingdata}
@@ -624,6 +640,14 @@ Simple version compared to the von Hippel's boot MI proposal.
 
 
 \subsection{Multilevel models}
+
+\begin{equation}
+\label{eq:multilevel}
+h_i \left( t \given  H_{i,t}^{NX} ; \theta, b_i \right) \approx
+\exp \left( Z_{t}^\top \gamma + g_t \left( H_{i,t}^{N} \right)^{\prime} \alpha
+  + \left[ M_{i,t}^\top + C_{i,t}^\top J_{\hat \psi, \phi}\right] (\beta + b_i) \right)
+= \exp \left( W_{i,t}^\top \theta  + Z_{i,t}^\top b_i \right),
+\end{equation}
 
 \section{A worked example: Adolescent psychiatric inpatient mHealth study} \label{section:example}
 
@@ -891,6 +915,8 @@ Fixing $\theta$, the log-likelihood components related to $\sigma^2$ is given by
 $\hat \sigma^2 = \frac{\theta^\top B \theta}{B {\bf 1}}$.  The complete algorithm is then alternating between Netwon-Rhapson for fixed $\sigma^2$ to estimate $\theta$ and then estimating $\sigma^2$ for fixed $\theta$ using the above formula.
 
 \subsection{Estimation of random-effects via Newton-Rhapson}
+
+\textcolor{red}{Assume fixed $\lambda$.}
 
 In standard logistic mixed-effects model, with $b_i \sim N(0, \Psi)$ and $b_i \in \mathbb{R}^q$, then the likelihood is given by
 $$

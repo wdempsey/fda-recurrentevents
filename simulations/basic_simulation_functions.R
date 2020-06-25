@@ -60,7 +60,7 @@ generate_userday <- function(Cov_X, C, times, eig_Sigma, beta_1t, sampling_rate,
 generate_complete_data <- function(N = 500, Cov_X, C, times, eig_Sigma, beta_1t, sampling_rate, base_rate) {
   full_data = rep(0,0)
   for (i in 1:N) {
-    print(paste("On userday", i))
+    # print(paste("On userday", i))
     userday_data = cbind(i, generate_userday(Cov_X, C, times, eig_Sigma, beta_1t, sampling_rate, base_rate))
     full_data = rbind(full_data, userday_data)
   }

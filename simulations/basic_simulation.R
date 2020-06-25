@@ -38,11 +38,11 @@ K_x = 35  # Pick first 35 eigen-vectors
 cumsum(eig_Sigma$values)[K_x]/sum(eig_Sigma$values) # Explains most of the variation
 
 # set.seed("134163")
-set.seed("131312")
+# set.seed("131312")
 base_num_events = 5
 base_rate = logit(5/length(times))
 sampling_rate = 10/1000
-dataset = generate_complete_data(N = 1000, Cov_X, C, times, eig_Sigma, beta_1t, sampling_rate, base_rate)
+dataset = generate_complete_data(N = 4000, Cov_X, C, times, eig_Sigma, beta_1t, sampling_rate, base_rate)
 rm(abs_diff, C, Cov_X, x)
 
 dataset =data.frame(dataset)
@@ -82,7 +82,7 @@ K <- 100
 lambdapath <- round(exp(seq(log(lambda_max), log(lambda_max*epsilon), 
                             length.out = K)), digits = 10)
 
-set.seed("97139817")
+# set.seed("97139817")
 # Start the clock!
 ptm <- proc.time()
 
