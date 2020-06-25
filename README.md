@@ -21,6 +21,7 @@ Methods allow for fast model fitting to help scientists interested in explorator
 Below we list important details in order use this repository:
 
 0. **Dependencies**: All code is written in R. The code currently does not have dependencies beyond core R packages. The code was run on the research computing system managed by SLURM.
+* Key functions depend on [RCPP](https://teuder.github.io/rcpp4everyone_en/)
 1. **Data**: Data is from 91 suicidal-inpatients at Franciscan Children's Hospital.
 * Data is stored on Harvard's Sharepoint system; access to data is managed by [Evan Kleiman](https://kleimanlab.org)
 * Data used in this paper consists of three data frames per participant:
