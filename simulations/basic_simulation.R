@@ -1,5 +1,6 @@
-## Source the functions
+## Source the functions and necessary packages
 source("./basic_simulation_functions.R")
+require("glmnet")
 
 ### Matern covariance parameters
 nu = 1/2 # controls smoothness
@@ -37,12 +38,12 @@ eig_Sigma = eigen(Sigma)
 K_x = 35  # Pick first 35 eigen-vectors
 cumsum(eig_Sigma$values)[K_x]/sum(eig_Sigma$values) # Explains most of the variation
 
-# set.seed("134163")
 # set.seed("131312")
+id = runif(1, min = 0, max = 100000)
 base_num_events = 5
 base_rate = logit(5/length(times))
-sampling_rate = 10/1000
-dataset = generate_complete_data(N = 4000, Cov_X, C, times, eig_Sigma, beta_1t, sampling_rate, base_rate)
+max_sampling_rate = 12/1000 # Max sampling rate is 1 obs every 1/2 hour
+dataset = generate_complete_data(N = 500, Cov_X, C, times, eig_Sigma, beta_1t, max_sampling_rate, base_rate)
 rm(abs_diff, C, Cov_X, x)
 
 dataset =data.frame(dataset)
@@ -50,64 +51,18 @@ names(dataset)[1] = "userday"
 names(dataset)[2] = "Y"
 
 agg_results = aggregate(Y~userday,dataset, sum)
-table(agg_results[,2])
+agg_summary = c(mean(agg_results[,2]),var(agg_results[,2])) # Report the mean and variance of number of events per day 
+write.table(agg_summary, file = "aggregate_summary.csv", append = TRUE)
 
-## Construct the J matrix
-K_b = 35
-local_times = times[1:44]
-num=K_b-3
-qtiles <- seq(0, local_times[length(local_times)], length = num + 2)[-c(1, num + 2)]
-knots <- quantile(local_times, qtiles)
-## Basis = bs(t, kb)
-Basis = cbind(1, local_times, local_times^2, sapply(knots, function(k) ((local_times - k > 0) * (local_times - k)) ^ 2))
-Psi = t(eig_Sigma$vectors[,1:K_x])
-Phi = Basis
-J = Psi%*%Phi
-model.matrix = dataset[,3:ncol(dataset)]
-new.model.matrix = as.matrix(model.matrix)%*%J*gap
-w = cbind(new.model.matrix)
-X=as.matrix(w[,1:3])
-Z=as.matrix(w[,4:dim(w)[2]])
+thinning_rates = c(1/1, 1/2, 1/4, 1/8)
 
-n.tmp = length(dataset$Y)
-p.tmp = ncol(w)
+for(rates in thinning_rates) {
+  subdataset = subsample_dataset(dataset, thinning_rate = rates) 
+  w = construct_J(times, eig_Sigma, subdataset)
+  output = runglmnet(max_sampling_rate*rates, dataset, w, epsilon = 0.0001)
 
-library("glmnet")
-subsample_offset = rep(log(10/1000),nrow(dataset))
-p.fac = rep(1, ncol(w))
-p.fac[1:4] = 0 #no penalty on the first 4 variables
-lambda_max <- 1/n.tmp
-epsilon <- .0001
-K <- 100
-lambdapath <- round(exp(seq(log(lambda_max), log(lambda_max*epsilon), 
-                            length.out = K)), digits = 10)
+write.table(output$betahat, file = "betahat.csv", append = TRUE)
+write.table(output$runtime, file = "runtime.csv", append = TRUE)
+write.table(sampling_rate, file = "samplingrate.csv", append = TRUE)
+write.table(id, file = "ids.csv", append = TRUE)
 
-# set.seed("97139817")
-# Start the clock!
-ptm <- proc.time()
-
-ridge.fit.cv <- cv.glmnet(w, dataset$Y, alpha = 0, intercept = TRUE, 
-                          penalty.factor = p.fac, standardize = FALSE,
-                          lambda = lambdapath, nfolds = 20,
-                          family = "binomial")
-# Stop the clock
-proc.time() - ptm
-
-ridge.fit.lambda <- ridge.fit.cv$lambda.min
-# plot(ridge.fit.cv)
-
-# Extract coefficient values for lambda.1se (without intercept)
-ridge.coef <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[-1]
-
-betaHat.net <- Basis %*% ridge.coef
-par(mar = c(4,2.5,1,1)+0.1)
-plot(max(local_times)-local_times, betaHat.net, col = "blue", type = "l", 
-     ylim = range(beta_1t,betaHat.net),
-     axes = FALSE, xlab = "", ylab = "")
-axis(side = 1); axis(side = 2, labels = FALSE)
-# lines(local_times, betaHat.net.star, col = "red")
-lines(local_times, beta_1t)
-mtext("Time until event", side = 1, line = 2)
-mtext(expression(paste(beta, "(s)")),side = 2, line = 1)
-
-mise_calc(beta_1t, betaHat.net)
