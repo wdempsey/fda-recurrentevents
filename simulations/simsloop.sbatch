@@ -5,6 +5,7 @@
 #SBATCH --partition=standard
 #SBATCH --mem-per-cpu=1000m
 #SBATCH --time= 00-1:00:00              # Runtime in D-HH:MM
+#SBATCH --output=/home/wdem/fda-recurrentevents/simulations/%u/%x-%j.log
 
 cd $SLURM_SUBMIT_DIR
 
