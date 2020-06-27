@@ -42,7 +42,7 @@ cumsum(eig_Sigma$values)[K_x]/sum(eig_Sigma$values) # Explains most of the varia
 id = runif(1, min = 0, max = 100000)
 base_num_events = 5
 base_rate = logit(5/length(times))
-max_sampling_rate = 12/1000 # Max sampling rate is 1 obs every 1/2 hour
+max_sampling_rate = 12*4/1000 # Max sampling rate is 1 obs every 1/2 hour
 dataset = generate_complete_data(N = 500, Cov_X, C, times, eig_Sigma, beta_1t, max_sampling_rate, base_rate)
 rm(abs_diff, C, Cov_X, x)
 
@@ -57,12 +57,13 @@ write.table(agg_summary, file = "aggregate_summary.csv", append = TRUE)
 thinning_rates = c(1/1, 1/2, 1/4, 1/8)
 
 for(rates in thinning_rates) {
+  print(paste("On rate", rates*max_sampling_rate))
   subdataset = subsample_dataset(dataset, thinning_rate = rates) 
-  w = construct_J(times, eig_Sigma, subdataset)
-  output = runglmnet(max_sampling_rate*rates, dataset, w, epsilon = 0.0001)
-
-write.table(output$betahat, file = "betahat.csv", append = TRUE)
-write.table(output$runtime, file = "runtime.csv", append = TRUE)
-write.table(sampling_rate, file = "samplingrate.csv", append = TRUE)
-write.table(id, file = "ids.csv", append = TRUE)
+  intermediate_step = construct_J(times, eig_Sigma, subdataset)
+  output = runglmnet(max_sampling_rate*rates, subdataset, intermediate_step$w, intermediate_step$Basis, epsilon = 0.0001)
+  write.table(t(output$betahat), file = "betahat.csv", row.names = F, col.names = F, append = T, sep = ",")
+  write.table(output$runtime, file = "runtime.csv", row.names = F, col.names = F, append = T, sep = ",")
+  write.table(rates, file = "samplingrate.csv", row.names = F, col.names = F, append = T, sep = ",")
+  write.table(id, file = "ids.csv", row.names = F, col.names = F, append = T, sep = ",")
+}
 

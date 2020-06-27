@@ -79,7 +79,7 @@ mise_calc <- function(beta_1t, betaHat.net) {
 
 subsample_dataset <- function(dataset, thinning_rate) {
   keep_obs = rbinom(nrow(dataset), size = 1, prob = thinning_rate*(1-dataset$Y) + dataset$Y)
-  return(dataset[keep_obs,])
+  return(dataset[keep_obs==1,])
 }
 
 construct_J <- function(times, eig_Sigma, dataset) {
@@ -97,10 +97,10 @@ construct_J <- function(times, eig_Sigma, dataset) {
   model.matrix = dataset[,3:ncol(dataset)]
   new.model.matrix = as.matrix(model.matrix)%*%J*gap
   w = cbind(new.model.matrix)
-  return(w)
+  return(list("Basis" = Basis, "w" = w))
 }
 
-runglmnet <- function(sampling_rate, dataset, w, epsilon = 0.0001) {
+runglmnet <- function(sampling_rate, dataset, w, Basis, epsilon = 0.0001) {
   n.tmp = length(dataset$Y)
   p.tmp = ncol(w)
   subsample_offset = rep(log(sampling_rate),nrow(dataset))
