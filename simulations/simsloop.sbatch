@@ -21,7 +21,7 @@ source new-modules.sh
 # Load required software modules
 
 # Simple R setup
-module load R/3.6.3-fasrc01
+module load R/3.6.1
 
 # Run program
 Rscript basic_simulation.R
