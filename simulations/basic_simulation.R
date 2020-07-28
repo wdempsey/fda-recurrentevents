@@ -15,8 +15,8 @@ constant = sigma_sq / (gamma(nu) * 2^(nu-1))
 M = 1000 # Num of time points
 times = seq(0,1, length.out = M) # Equally spaced timepoints in [0,1]
 gap = diff(times)[1] # What is assumed gap times
-abs_diff = abs(outer(times, times, "-")) # Absolute distance 
-x = sqrt(2 * nu) * abs_diff/ rho 
+abs_diff = abs(outer(times, times, "-")) # Absolute distance
+x = sqrt(2 * nu) * abs_diff/ rho
 Cov_X = constant * x^nu * besselK(x, nu) # Matern Covariance
 diag(Cov_X) = 1
 C = chol(Cov_X) # Cholesky decomposition
@@ -52,14 +52,14 @@ names(dataset)[1] = "userday"
 names(dataset)[2] = "Y"
 
 agg_results = aggregate(Y~userday,dataset, sum)
-agg_summary = c(mean(agg_results[,2]),var(agg_results[,2])) # Report the mean and variance of number of events per day 
+agg_summary = matrix(c(mean(agg_results[,2]),var(agg_results[,2])), nrow = 1, ncol = 2) # Report the mean and variance of number of events per day
 write.table(agg_summary, file = "aggregate_summary.csv", append = TRUE)
 
 thinning_rates = c(1/1, 1/2, 1/4, 1/8)
 
 for(rates in thinning_rates) {
   print(paste("On rate", rates*max_sampling_rate))
-  subdataset = subsample_dataset(dataset, thinning_rate = rates) 
+  subdataset = subsample_dataset(dataset, thinning_rate = rates)
   intermediate_step = construct_J(times, eig_Sigma, subdataset)
   output = runglmnet(max_sampling_rate*rates, subdataset, intermediate_step$w, intermediate_step$Basis, epsilon = 0.0001)
   write.table(t(output$betahat), file = "betahat.csv", row.names = F, col.names = F, append = T, sep = ",")
