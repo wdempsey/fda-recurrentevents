@@ -1,6 +1,7 @@
 ## Source the functions and necessary packages
 source("./basic_simulation_functions.R")
-require("glmnet")
+if(!require("glmnet")){install.packages('glmnet')}
+library('glmnet')
 
 ### Matern covariance parameters
 nu = 1/2 # controls smoothness
