@@ -53,7 +53,7 @@ names(dataset)[2] = "Y"
 
 agg_results = aggregate(Y~userday,dataset, sum)
 agg_summary = matrix(c(mean(agg_results[,2]),var(agg_results[,2])), nrow = 1, ncol = 2) # Report the mean and variance of number of events per day
-write.table(agg_summary, file = "aggregate_summary.csv", append = TRUE)
+write.table(agg_summary, file = "./output_csv/aggregate_summary.csv",  row.names = F, col.names = F, append = T, sep = ",")
 
 thinning_rates = c(1/1, 1/2, 1/4, 1/8)
 
@@ -62,9 +62,9 @@ for(rates in thinning_rates) {
   subdataset = subsample_dataset(dataset, thinning_rate = rates)
   intermediate_step = construct_J(times, eig_Sigma, subdataset)
   output = runglmnet(max_sampling_rate*rates, subdataset, intermediate_step$w, intermediate_step$Basis, epsilon = 0.0001)
-  write.table(t(output$betahat), file = "betahat.csv", row.names = F, col.names = F, append = T, sep = ",")
-  write.table(output$runtime, file = "runtime.csv", row.names = F, col.names = F, append = T, sep = ",")
-  write.table(rates, file = "samplingrate.csv", row.names = F, col.names = F, append = T, sep = ",")
-  write.table(id, file = "ids.csv", row.names = F, col.names = F, append = T, sep = ",")
+  write.table(t(output$betahat), file = "./output_csv/betahat.csv", row.names = F, col.names = F, append = T, sep = ",")
+  write.table(output$runtime, file = "./output_csv/runtime.csv", row.names = F, col.names = F, append = T, sep = ",")
+  write.table(rates, file = "./output_csv/samplingrate.csv", row.names = F, col.names = F, append = T, sep = ",")
+  write.table(id, file = "./output_csv/ids.csv", row.names = F, col.names = F, append = T, sep = ",")
 }
 
