@@ -53,18 +53,26 @@ names(dataset)[2] = "Y"
 
 agg_results = aggregate(Y~userday,dataset, sum)
 agg_summary = matrix(c(mean(agg_results[,2]),var(agg_results[,2])), nrow = 1, ncol = 2) # Report the mean and variance of number of events per day
-write.table(agg_summary, file = "./output_csv/aggregate_summary.csv",  row.names = F, col.names = F, append = T, sep = ",")
+# write.table(agg_summary, file = "./output_csv/aggregate_summary.csv",  row.names = F, col.names = F, append = T, sep = ",")
 
 thinning_rates = c(1/1, 1/2, 1/4, 1/8)
+col_names = as.vector(c("ids", "runtime", "rates", "mean_count", "var_count", paste0(rep("beta",44), as.character(1:44))))
 
 for(rates in thinning_rates) {
   print(paste("On rate", rates*max_sampling_rate))
   subdataset = subsample_dataset(dataset, thinning_rate = rates)
   intermediate_step = construct_J(times, eig_Sigma, subdataset)
   output = runglmnet(max_sampling_rate*rates, subdataset, intermediate_step$w, intermediate_step$Basis, epsilon = 0.0001)
-  write.table(t(output$betahat), file = "./output_csv/betahat.csv", row.names = F, col.names = F, append = T, sep = ",")
-  write.table(output$runtime, file = "./output_csv/runtime.csv", row.names = F, col.names = F, append = T, sep = ",")
-  write.table(rates, file = "./output_csv/samplingrate.csv", row.names = F, col.names = F, append = T, sep = ",")
-  write.table(id, file = "./output_csv/ids.csv", row.names = F, col.names = F, append = T, sep = ",")
+  results = matrix(c(id, output$runtime, rates, agg_summary, output$beta), nrow = 1)
+  colnames(results) = col_names
+  # write.table(t(output$betahat), file = "./output_csv/betahat.csv", row.names = F, col.names = F, append = T, sep = ",")
+  # write.table(output$runtime, file = "./output_csv/runtime.csv", row.names = F, col.names = F, append = T, sep = ",")
+  # write.table(rates, file = "./output_csv/samplingrate.csv", row.names = F, col.names = F, append = T, sep = ",")
+  # write.table(id, file = "./output_csv/ids.csv", row.names = F, col.names = F, append = T, sep = ",")
+  if(!file.exists("./output_csv/results.csv")) {
+    write.table(results, file = "./output_csv/results.csv", row.names = F, col.names = T, append = T, sep = ",")
+  } else {
+    write.table(results, file = "./output_csv/results.csv", row.names = F, col.names = F, append = T, sep = ",")
+  }
 }
 
