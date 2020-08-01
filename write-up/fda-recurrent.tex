@@ -1,4 +1,4 @@
-\documentclass[11pt]{amsart}
+\documentclass[12pt]{amsart}
 \usepackage{amsmath}
 \usepackage{tikz}
 \usetikzlibrary{matrix,arrows}
@@ -498,8 +498,9 @@ where~$K_v$ is the modified Bessel function of the second kind.  We set~$\nu = 1
 \[
 h(t; \theta) = \exp \left( \theta_0 + \int_{0}^{\Delta} X(t-s) \beta(s) ds \right).
 \]
-We set~$\Delta = 1/(12*2)$ to mimic a $30$-minute window for a $12$-hour day.  We set~$\theta_0 = \log(5/1000)$ to set a baseline risk of approximately 5 events per day. We consider two choices of~$\beta(s)$: (1) $\beta_0 + \exp(- \beta_1 s) $, and (2) $\beta_1  * \sin \left( 2 \pi \frac{s}{\Delta} - \pi/2 \right)$
+We set~$\Delta$ to mimic a 30-minute window for a $12$-hour day.  We set~$\theta_0 = \log(5/1000)$ to set a baseline risk of approximately 5 events per day. We consider two choices of~$\beta(s)$: (1) $\beta_0 + \exp(- \beta_1 s) $, and (2) $\beta_1  * \sin \left( 2 \pi \frac{s}{\Delta} - \pi/2 \right)$.
 
+Given each simulated user-day, we then
 \begin{itemize}
 \item Sample every 0.5 hours; then subsample at each subrate. Estimates are given by $\hat \beta_{i,0.5} (t)$ and $\hat \beta_{i,1} (t)$.
 \item Bias is average over the estimates $\bar \hat \beta_{0.5} (t) = 100^{-1} \sum_{i=1}^100 \hat \beta_{i, 0.5} (t)$ compared to truth.
@@ -509,28 +510,28 @@ We set~$\Delta = 1/(12*2)$ to mimic a $30$-minute window for a $12$-hour day.  W
 \end{itemize}
 
 
-We sample non-events at rates of 1 per 12/6/1/0.5 hours.
+We sample non-events at rates of 1 per 4/2/1/0.5 hours.
 
-Since we are primarily interested in accuracy of the final estimates~$\hat \beta(s)$, we report the mean integrated squared error (MISE) of~$\hat \beta (s)$, defined as~$\frac{1}{100} \sum_{j=1}^{100} \int_{0}^{\Delta^\prime} ( \hat \beta_j (s) - \beta(s))^2 ds$ where~$\beta(s) \equiv 0$ for $s > \Delta$.  We define the MISE in this manner to account for settings where~$\Delta$ is unknown. Table~\ref{tab:mise} show the MISE decomposed into the variance and squared biase
+Since we are primarily interested in accuracy of the final estimates~$\hat \beta(s)$, we report the mean integrated squared error (MISE) of~$\hat \beta (s)$, defined as~$\frac{1}{1000} \sum_{j=1}^{1000} \int_{0}^{\Delta^\prime} ( \hat \beta_j (s) - \beta(s))^2 ds$ where~$\beta(s) \equiv 0$ for $s > \Delta$.  We define the MISE in this manner to account for settings where~$\Delta$ is unknown. Table~\ref{tab:mise} show the MISE decomposed into the variance and squared biase
 
 \begin{table}[!th]
-\begin{tabular}{c | c c c c c}
-& \multicolumn{5}{c}{Sampling rate} \\ \cline{2-6}
- & 0.5 & 1 & 5 & 25 & 50 \\ \hline
-Subsampling variance & (10,12) & - & - & - & - \\
-Variance & (10,12) & - & - & - & - \\
-Squared Bias & - & - & - & - & -  \\
-MISE & - & - & - & - & -  \\ \hline
-Type I error & - & - & - & - & -  \\ \hline
-Avg runtime & - & - & - & - & - \\
+\begin{tabular}{c | p{2cm} p{2cm} p{2cm} p{2cm}}
+& \multicolumn{4}{c}{Sampling rate} \\ \cline{2-5}
+ & 0.5 & 1 & 2 & 4 \\ \hline
+Subsampling variance & - & $9.0 \times 10^{-7}$ & $2.9 \times 10^{-6}$ & $5.8 \times 10^{-6}$  \\
+Variance & $7.9 \times 10^{-3}$ & $9.2 \times 10^{-3}$ & $1.0 \times 10^{-2}$ & $1.30 \times 10^{-2}$ \\
+Squared Bias & $9.8 \times 10^{-2}$ & $9.5 \times 10^{-2}$ & $9.3 \times 10^{-2}$ & $9.2 \times 10^{-2}$   \\
+MISE & $1.1 \times 10^{-1}$ & $1.0 \times 10^{-1}$ & $1.0 \times 10^{-1}$ & $1.0 \times 10^{-1}$ \\ \hline
+Avg. runtime (secs) & 317 & 177 & 104 & 68 \\ \hline
+Subsampling variance & - & $2.9 \times 10^{-6}$ & $8.9 \times 10^{-6}$ & $2.0 \times 10^{-5}$  \\
+Variance & $1.0 \times 10^{-2}$ & $1.3 \times 10^{-2}$ & $2.0 \times 10^{-2}$ & $3.1 \times 10^{-2}$ \\
+Squared Bias & $6.9 \times 10^{-2}$ & $6.5 \times 10^{-2}$ & $6.0 \times 10^{-2}$ & $5.4 \times 10^{-2}$   \\
+MISE & $7.9 \times 10^{-2}$ & $7.9 \times 10^{-2}$ & $8.0 \times 10^{-2}$ & $8.4 \times 10^{-2}$ \\ \hline
+Avg. runtime (secs) & 36 & 23 & 15 & 12 \\ \hline
 \end{tabular}
 \caption{Mean-integrated squared error and type I error as a function of sampling rate for $\beta(s)$ given by (1) and (2) respectively.}
 \label{tab:mise}
 \end{table}
-
-\subsection{Coverage properties}
-
-We simulate the system $1000$ times under $\beta \equiv 0$ and check the type I error.
 
 \subsection{Impact of $\Delta$}
 
@@ -694,6 +695,11 @@ for distinct patients are independent Gaussian with moments {\bf comparison over
 
 Over a period of 5~years and one month following recruitment,
 patient~$u$ had eight appointments with prothrombin values as follows:
+
+\section{Discussion}
+We abide by the comment of Robert Gentleman on big data: (1) make the data as small as possible as fast as possible. Statistics works!  With subsampling and proper re-weighting the analysis is converted to well-known territory. (2) Make the software and tools as fast and as maintanable as possible.  This is exactly teh benefit of subsampling.  we convert to penalized logistic regression on a smaller but still relatively efficient dataset. This means we can use all the existing tools!
+
+Extensions to online and sampling over and over as we improve estimators.
 
 \bibliographystyle{plainnat}
 \bibliography{si-fda-refs}
