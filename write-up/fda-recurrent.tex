@@ -274,7 +274,7 @@ The approximate score equations given by~\eqref{eq:approxscore} arise in design-
 Probabilistic subsampling converts the single sensor stream~$\bfx_i$ into a sequence of functions observed repeatedly at sampled times~$\bfD_i$ and event times~$\bfT_i$. Such a data structure is commonly referred to as \emph{longitudinal functional data}~\citep{Xiao2013, GoldSmith2015}. Given the large increase in longitudinal functional data in recent years, corresponding analysis has received much recent attention~\citep{Morris2003, MorrisCarroll2006, Baladandayuthapani2008, Di2009, Greven2010, Staicu2010, ChenMuller2012, LiGuan2014}. Here, we combine work by~\cite{Park2018} and~\cite{Goldsmith2011} to construct a computationally efficient penalized functional method for solving the estimation equations~$\hat U_n (\theta)$.
 
 \subsection{Estimation of the windowed covariate history}
-
+\label{sec:margcov}
 We start by defining~$X(t,s) = x(t-s)$ to be the sensor measurement~$0 \leq s \leq \Delta$ time units prior to time~$t \in \bfT_i \cup \bfD_i$. We use the sandwich smoother~\citep{Xiao2013} to estimate the mean~$\mu_y(t,s) = \E_y [ X(t,s)]$ where the expectation is indexed by whether $t$ is an event ($y=1$) or subsampled ($y=0$) time respectively. Alternative bivariate smoothers exist, such as the kernel-based local linear smoother~\citep{Hastie2009} bivariate tensor product splines~\citep{Wood2006} and the bivariate penalized spline smoother~\citep{MarxEilers2005}. The sandwich smoother was chosen for its computational efficiency and estimation accuracy. We then define~$\tilde X(t,s) = X(t,s) - \hat \mu_y(t,s)$ to be the mean-zero process at each time~$t \in \bfT_i \cup \bfD_i$.
 
 As in~\cite{Park2018}, define the \emph{marginal covariance} by
@@ -320,6 +320,7 @@ h_i \left( t \given  H_{i,t}^{NX} ; \theta \right) \approx
 where~$\theta = (\gamma, \alpha, {\bf b})$ and~$\exp ( Z_{t}^\top \gamma) =: h_0 (t)$ is the parameterized baseline intensity function. We write~$\tilde U_n (\theta)$ to denote the approximate score function when substituting in~\eqref{eq:approx_hazard} for~\eqref{eq:hazardlinear}.
 
 \subsection{Connection to logistic score functions}
+\label{eq:logistication}
 
 We next establish a connection between the above approximate score equations~$\tilde U_n (\theta)$ and the score equations for a logistic regression model. We can then exploit this connection to allow the model to be fit robustly using standard mixed effects software~\citep{Ruppert2002, McCulloch2001}.
 
@@ -486,7 +487,6 @@ We acknowledge two important limitations of confidence intervals obtained via th
 
 \section{Simulation study} \label{section:simstudy}
 
-
 We next assess the proposed methodology via a simulation study. Here, we assume each individual is observed over five days where each day is defined on the unit interval~$[0,1]$ with $1000$ equally spaced observation times per day. We define~$X(t)$ at the grid of observations as a mean-zero Gaussian process with covariance
 \[
   \Sigma (t, t^\prime) =
@@ -500,19 +500,11 @@ h(t; \theta) = \exp \left( \theta_0 + \int_{0}^{\Delta} X(t-s) \beta(s) ds \righ
 \]
 We set~$\Delta$ to mimic a 30-minute window for a $12$-hour day.  We set~$\theta_0 = \log(5/1000)$ to set a baseline risk of approximately 5 events per day. We consider two choices of~$\beta(s)$: (1) $\beta_0 + \exp(- \beta_1 s) $, and (2) $\beta_1  * \sin \left( 2 \pi \frac{s}{\Delta} - \pi/2 \right)$.
 
-Given each simulated user-day, we then
-\begin{itemize}
-\item Sample every 0.5 hours; then subsample at each subrate. Estimates are given by $\hat \beta_{i,0.5} (t)$ and $\hat \beta_{i,1} (t)$.
-\item Bias is average over the estimates $\bar \hat \beta_{0.5} (t) = 100^{-1} \sum_{i=1}^100 \hat \beta_{i, 0.5} (t)$ compared to truth.
-\item Take squared difference integrated to get variance.
-\item To get the subsampling variance take $1/1000 \sum_{i=1}^1000 (\hat \beta_{i,0.5} (t) - \hat \beta_{i,1} (t))^2$.
-\item Normalize everything by squared function!
-\end{itemize}
+We generate $1000$ datasets, each consisting of $500$ user-days.  For a given simulated user-day, we randomly sample non-event times using a Poisson process with rate of a halfhour.  We use the proposed methodology to construct the estimate $\hat \beta_{i,0.5} (t)$ for the $i$th simulated dataset; we then subsample the sampled non-event times with thinning probability $1/2$, $1/4$ and $1/8$.  This results in randomly sampled non-event times given by a Poisson process with rates of an hour, two hours, and four hours.  We can construct the corresponding estimates: $\hat \beta_{i,1} (t)$, $\hat \beta_{i,2} (t)$, and $\hat \beta_{i,4} (t)$ respectively. Subsampling allows us to compare the variance due to subsampling as compared to the variance due to sampling fewer non-event times.
 
+Since we are primarily interested in accuracy, we report the mean integrated squared error (MISE) defined as~$\frac{1}{1000} \sum_{i=1}^{1000} \int_{0}^{\infty} ( \hat \beta_{i,j} (s) - \beta(s))^2 ds$ for $j=0.5,1,2,4$ where~$\beta(s) \equiv 0$ for $s > \Delta$.  The MISE is defined in this manner to account for settings where~$\Delta$ is unknown.  Next, let $\bar \beta_{j} (t) = \frac{1}{1000} \sum_{i=1}^{1000} \hat \beta_{i,j} (t)$ denote the average estimate for $j=0.5,1,2,4$.  Then the squared bias is given by $\int_{0}^{\infty} ( \bar \beta_{j} (s) - \beta (s))^2 ds$ and the variance is given by $\frac{1}{1000} \sum_{j=1}^{1000} \int_{0}^{\infty} ( \hat \beta_{i,j} (s) - \bar \beta_j(s))^2 ds$.  The subsampling variance is defined as $\frac{1}{1000} \sum_{i=1}^{1000} \int_{0}^{\infty} ( \hat \beta_{i,j} (s) - \hat \beta_{i,0.5} (s))^2 ds$.  Table~\ref{tab:mise} show the MISE decomposed into the variance and squared biased as well as the subsampling variance.  To allow fair comparisons across the two choices of $\beta(s)$, all reported numbers are scaled by the integrated square of the true function $\int_{0}^{\infty} \beta(s)^2 ds$. The average runtime (in seconds) is also reported.
 
-We sample non-events at rates of 1 per 4/2/1/0.5 hours.
-
-Since we are primarily interested in accuracy of the final estimates~$\hat \beta(s)$, we report the mean integrated squared error (MISE) of~$\hat \beta (s)$, defined as~$\frac{1}{1000} \sum_{j=1}^{1000} \int_{0}^{\Delta^\prime} ( \hat \beta_j (s) - \beta(s))^2 ds$ where~$\beta(s) \equiv 0$ for $s > \Delta$.  We define the MISE in this manner to account for settings where~$\Delta$ is unknown. Table~\ref{tab:mise} show the MISE decomposed into the variance and squared biase
+Table~\ref{tab:mise} demonstrates that the variance does increase as the sampling rate decreases.  However, the rate of increase in the MISE is quite low relative.  In the second case study, for example, the MISE increases by 6\% while the run time is 3 times faster.  In the first case study, the MISE remains roughly constant but the run time is 4.7 times faster.  This highlights the efficiency-computation trade-off.  Extrapolating to a complete data analysis, we can see that the run time will continue to increase significantly with minimal improvement in the mean integrated squared error.
 
 \begin{table}[!th]
 \begin{tabular}{c | p{2cm} p{2cm} p{2cm} p{2cm}}
@@ -529,7 +521,7 @@ Squared Bias & $6.9 \times 10^{-2}$ & $6.5 \times 10^{-2}$ & $6.0 \times 10^{-2}
 MISE & $7.9 \times 10^{-2}$ & $7.9 \times 10^{-2}$ & $8.0 \times 10^{-2}$ & $8.4 \times 10^{-2}$ \\ \hline
 Avg. runtime (secs) & 36 & 23 & 15 & 12 \\ \hline
 \end{tabular}
-\caption{Mean-integrated squared error and type I error as a function of sampling rate for $\beta(s)$ given by (1) and (2) respectively.}
+\caption{Mean-integrated squared error, varaince, squared bias, and subsampling variance for $\beta(s)$ given by (1) and (2) respectively.}
 \label{tab:mise}
 \end{table}
 
@@ -554,27 +546,38 @@ $\Delta=$ & 0.5 & 1 & 5 & 25 & 50 \\ \hline
 
 \section{Extensions}
 
-In this section, we demonstrate the flexibility of our approach by exploring extensions in several important directions to ensure these methods are robust for practical use in mobile health. This section will continue to leverage the connection to generalized functional linear models provided by Lemma~\ref{lemma:logistic}.
+In this section, we demonstrate the flexibility of the proposed approach by exploring extensions in several important directions to ensure these methods are robust for practical use with high frequency data. This section will continue to leverage the connection to generalized functional linear models provided by Lemma~\ref{lemma:logistic}.
 
-\subsection{Multiple sensors}
+\subsection{Multivariate extensions}
 \label{section:multiplesensors}
 
+In this section, we extend our model to the case of multiple functional regressors.  That is, suppose $L$ health processes, i.e., $\bfx_i = \{ \bfx_i (t) = (x_{i,1} (t), \ldots, x_{i,L} (t)) \}_{0 < s < \tau_i}$, for each participant is measured at a dense grid of time points. In the suicidal ideation case study, for example, accelerometer is measured at a rate of 32Hz while electrodermal activity (EDA) is measured at a rate of 4Hz.  A multivariate extension of our model~\eqref{eq:hazard} is given by
 \begin{equation}
 \label{eq:multihazardlinear}
 h_i \left( t \given  H_{i,t}^{NX} ; \theta \right) =
 h_0 (t; \gamma) \exp \left( g_t \left( H_{i,t}^{N} \right)^{\prime} \alpha
-  + \int_{t-\Delta}^t x_{1i} (s) \beta_1(s) ds + \int_{t-\Delta}^t x_{2i} (s) \beta_2(s) ds  \right)
+  + \int_{t-\Delta}^t x_{i,1} (s) \beta_1(s) ds + \cdots + \int_{t-\Delta}^t x_{i,L} (s) \beta_2(s) ds  \right)
 \end{equation}
+The approach given in Section~\ref{eq:logistication} extends naturally to the multivariate functional setting. For each functional regressor, we estimate the pooled sample covariance $\Sigma_{y,l}$ for $y \in \{0,1\}$ and $l=1,\ldots,L$ as in Section~\ref{sec:margcov}.  Let $\sum_{k=1}^\infty \hat \lambda^{(y)}_{k,l} \hat \psi^{(y)}_{k,l} (s) \hat \psi_{k,l}(t)$ be the spectral decomposition of $\hat \Sigma_{y,l}$.  Then $x_{i,j}(t)$ is approximated using a truncated Karhunen-Loeve
+
+
+, the coefficient is expressed using separate marginal covaraiance
+$$
+\int_0^\Delta x_{il} \beta(t) =
+$$
+
+Note that we express each coefficient function in the same spline basis; however, different basis expansions are used for each health process as defined by the marginal covariance calculation in Section~\ref{sec:margcov}.
+
 
 \subsection{Missing data}
 \label{section:missingdata}
-\walt{Question: How to perform multiple imputation for~$X(\cdot,t)$
-  and $X(\cdot, t^\prime)$ for~$|t - t^\prime| <\Delta$? That is, how
-  do you perform multiple imputation with this overlapping structure?}
+% \walt{Question: How to perform multiple imputation for~$X(\cdot,t)$
+%   and $X(\cdot, t^\prime)$ for~$|t - t^\prime| <\Delta$? That is, how
+%   do you perform multiple imputation with this overlapping structure?}
 
-A core concern in mHealth is that sensor data can often be missing for intervals of time due to sensor wearing issue (e.g., sensor band becomes loose, turns off accidentally, data packets lost, or battery dies). In the suicidal ideation case study, for example, there are 2139 self-identified moments of distress across all 91 participants. Of these, 1289 event times had complete data for the prior thirty minutes, 1984 had fraction of missing data on a fine grid less than 30\%, and 1998 had fraction of missing data on a fine grid less than 10\%.
+A core concern in mHealth is that sensor data can often be missing for intervals of time due to sensor wearing issues (e.g., sensor band becomes loose, turns off accidentally, data packets lost, or battery dies). In the suicidal ideation case study, for example, there are 2139 self-identified moments of distress across all 91 participants. Of these, 1289 event times had complete data for the prior thirty minutes, 1984 had fraction of missing data on a fine grid less than 30\%, and 1998 had fraction of missing data on a fine grid less than 10\%.
 
-Missing data is a critical issue because~$c_{i,k} (t)$ cannot be estimated if~$X(s,t)$ is not observed for all~$s \in [0,\Delta]$. Moreover, we want standard errors to reflect the uncertainty in these coefficients when missing data is prevalent. \cite{Goldsmith2011} suggest using best linear unbiased predictors (BLUP) or posterior modes in the mixed effects model to estimate~$c_{i,k} (t)$; however, one criticism would be when there is substantial variability in these estimates.  To deal with this, \cite{Crainiceanu2010} take a full Bayesian analysis. \cite{Yao2005} introduced PACE as an alternative frequentist method. However,~\cite{Petrovich2018} shows that for sparse, irregular longitudinal, the imputation model should not ignore the outcome variable~$Y_i (t)$.
+Missing data is a critical issue because~$c_{i,k} (t)$ cannot be estimated if~$X(s,t)$ is not observed for all~$s \in [0,\Delta]$. Moreover, standard errors should reflect the uncertainty in these coefficients when missing data is prevalent. \cite{Goldsmith2011} suggest using best linear unbiased predictors (BLUP) or posterior modes in the mixed effects model to estimate~$c_{i,k} (t)$; however, one criticism would be when there is substantial variability in these estimates.  To deal with this, \cite{Crainiceanu2010} take a full Bayesian analysis. \cite{Yao2005} introduced PACE as an alternative frequentist method. However,~\cite{Petrovich2018} shows that for sparse, irregular longitudinal, the imputation model should not ignore the outcome variable~$Y_i (t)$.
 
 Here we present an extension of~\cite{Petrovich2018} to our setting by leveraging Lemma~\ref{lemma:logistic} and the marginal covariance estimation procedure to construct a multiple imputation procedure. Let~$\bfx_{i} (t)$ denote incomplete sensor data at time~$t$ (i.e., at times~$\{ s_{i,r} \}_{r=1}^{k_{it}} \}$ in~$[0,\Delta]$. Then
 \begin{align}
@@ -624,12 +627,16 @@ the~$m$th imputated dataset.
 
 \subsubsection{Bootstrap and multiple imputation under uncongenial }
 
+The above procedure is
+
 Positives: (1) our imputation model is ``approximately'' congenial; (2) our imputatoin model is simple and easy to use.
 Negatives: (1) clearly not congenial under many events and/or high sampling rates. (2) difficult when we overlap due to over-sampling.
 
 Congeniality matters because we want to ensure good coverage
 Q: Can we derive a variance that provides coverage
 We know our imputation models are uncongenial albeit simple to implement.  Impact should be small if events are rare as impute only in ranges where 1,0 labels give you everything.  To be careful, we investigate alternatives and assess impact.
+
+Recommendation from~\cite{Bartlett2020}.
 
 Simple version compared to the von Hippel's boot MI proposal.
 \begin{itemize}
