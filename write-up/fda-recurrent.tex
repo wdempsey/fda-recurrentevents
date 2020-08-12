@@ -559,13 +559,9 @@ h_0 (t; \gamma) \exp \left( g_t \left( H_{i,t}^{N} \right)^{\prime} \alpha
   + \int_{t-\Delta}^t x_{i,1} (s) \beta_1(s) ds + \cdots + \int_{t-\Delta}^t x_{i,L} (s) \beta_2(s) ds  \right)
 \end{equation}
 The approach given in Section~\ref{eq:logistication} extends naturally to the multivariate functional setting. For each functional regressor, we estimate the pooled sample covariance $\Sigma_{y,l}$ for $y \in \{0,1\}$ and $l=1,\ldots,L$ as in Section~\ref{sec:margcov}.  Let $\sum_{k=1}^\infty \hat \lambda^{(y)}_{k,l} \hat \psi^{(y)}_{k,l} (s) \hat \psi_{k,l}(t)$ be the spectral decomposition of $\hat \Sigma_{y,l}$.  Then $x_{i,j}(t)$ is approximated using a truncated Karhunen-Loeve
-
-
-, the coefficient is expressed using separate marginal covaraiance
 $$
-\int_0^\Delta x_{il} \beta(t) =
+\int_{t-\Delta}^t X_{l} (t,s) \beta(t) = \left[M_{l,t} + {\bf c}_l (t)^\top J_{\hat \psi_l^{(y)}, \phi} \right] {\bf b}_l
 $$
-
 Note that we express each coefficient function in the same spline basis; however, different basis expansions are used for each health process as defined by the marginal covariance calculation in Section~\ref{sec:margcov}.
 
 
@@ -579,7 +575,7 @@ A core concern in mHealth is that sensor data can often be missing for intervals
 
 Missing data is a critical issue because~$c_{i,k} (t)$ cannot be estimated if~$X(s,t)$ is not observed for all~$s \in [0,\Delta]$. Moreover, standard errors should reflect the uncertainty in these coefficients when missing data is prevalent. \cite{Goldsmith2011} suggest using best linear unbiased predictors (BLUP) or posterior modes in the mixed effects model to estimate~$c_{i,k} (t)$; however, one criticism would be when there is substantial variability in these estimates.  To deal with this, \cite{Crainiceanu2010} take a full Bayesian analysis. \cite{Yao2005} introduced PACE as an alternative frequentist method. However,~\cite{Petrovich2018} shows that for sparse, irregular longitudinal, the imputation model should not ignore the outcome variable~$Y_i (t)$.
 
-Here we present an extension of~\cite{Petrovich2018} to our setting by leveraging Lemma~\ref{lemma:logistic} and the marginal covariance estimation procedure to construct a multiple imputation procedure. Let~$\bfx_{i} (t)$ denote incomplete sensor data at time~$t$ (i.e., at times~$\{ s_{i,r} \}_{r=1}^{k_{it}} \}$ in~$[0,\Delta]$. Then
+Here we present an extension of~\cite{Petrovich2018} to our setting by leveraging Lemma~\ref{lemma:logistic} and the marginal covariance estimation procedure to construct a multiple imputation procedure. Let~$\bfx_{i} (t)$ denote incomplete sensor data at time~$t$ (i.e., at times~$\{ s_{i,r} \}_{r=1}^{k_{it}}$ in~$[0,\Delta]$. Then
 \begin{align}
 \label{eq:impute}
 \E [ X_i (s,t) \given Y_i(t) = y, \bfx_i (t) ]
@@ -616,7 +612,7 @@ These covariances can be estimated using the methods considered by
 % inappropriate when the covariance structure changes significantly with
 % time~$t$.
 
-The imputation strategy generalizes the procedure introduced by~\cite{Petrovich2018} to the longitudinal functional data setting.  This is only possible due to the connection established with logistic regression by Lemma~\ref{lemma:logistic}. We could consider a multiple imputation estimate with~$M$ imputations; the likelihood estimate is given by~$\bar \theta = M^{-1} \sum_{m=1}^M \hat \theta^{(m)}$ where~$\theta^{(m)}$ is the estimate from the~$m$th imputated dataset; the covariance matrix can be estimated by
+The imputation strategy generalizes the procedure introduced by~\cite{Petrovich2018} to the longitudinal functional data setting.  This is possible due to the connection established with logistic regression by Lemma~\ref{lemma:logistic}. We could then consider a multiple imputation estimate with~$M$ imputations; the likelihood estimate is given by~$\bar \theta = M^{-1} \sum_{m=1}^M \hat \theta^{(m)}$ where~$\theta^{(m)}$ is the estimate from the~$m$th imputated dataset; the covariance matrix can be estimated by
 \[
 M^{-1} \sum_{m=1}^M \hat \Xi^{(m)} (\theta) + \frac{1}{M-1}
 \sum_{m=1}^M (\hat \theta^{(m)} - \bar \theta) (\hat \theta^{(m)} -
@@ -625,19 +621,15 @@ M^{-1} \sum_{m=1}^M \hat \Xi^{(m)} (\theta) + \frac{1}{M-1}
 where~$\hat \Xi^{(m)}$ is the estimator~\eqref{eq:fisher} for
 the~$m$th imputated dataset.
 
-\subsubsection{Bootstrap and multiple imputation under uncongenial }
+\subsubsection{Multiple imputation under uncongeniality}
 
-The above procedure is
+Multiple imputation yields valid frequentist inferences when the imputation and analysis procedure are congenial~\citep{Meng1994};  the above procedure was derived for function-on-scalar multiple imputation for binary outcomes, which ignored the joint nature of recurrent event analysis in the presence of high frequency sensor data. Consider, for example, two non-events sampled five minutes apart.  If there is missing data in the overlapping part of the temporal windows, then the above procedure imputes different values for each record.  Moreover, the imputatoin does not depend on whether one of the two were an event rather than non-event.
 
-Positives: (1) our imputation model is ``approximately'' congenial; (2) our imputatoin model is simple and easy to use.
-Negatives: (1) clearly not congenial under many events and/or high sampling rates. (2) difficult when we overlap due to over-sampling.
+The main positive of the above procedure is that the above imputation framework is simple and approximately congenial when events are rare and the sampling rate is low as well as under the null of $\beta (s) \equiv 0$.  The main negative is that the model is clearly uncongenial under many events and/or high sampling rates. Again, congeniality ensures goo frequentist coverage properties.  A key question is whether we can use the above imputation methods within a general procedure to handle uncongeniality.
 
-Congeniality matters because we want to ensure good coverage
-Q: Can we derive a variance that provides coverage
-We know our imputation models are uncongenial albeit simple to implement.  Impact should be small if events are rare as impute only in ranges where 1,0 labels give you everything.  To be careful, we investigate alternatives and assess impact.
+Here we highlight the recommendation from~\cite{Bartlett2020}, and employ a boostrap
 
-Recommendation from~\cite{Bartlett2020}.
-
+Here we
 Simple version compared to the von Hippel's boot MI proposal.
 \begin{itemize}
 \item Bootstrap $B$ times
@@ -646,9 +638,21 @@ Simple version compared to the von Hippel's boot MI proposal.
 \item Compute $\text{Var}_{BootMI} = (B-1)^{-1} \sum_{b=1}^B (\hat \theta_b - \hat \theta_{BM})^2$ where $\hat \theta_{BM} = B^{-1} \sum_{b=1}^B \hat \theta_b$.
 \end{itemize}
 
+\cite{vonHippel2019}
+
+To be careful, we investigate alternatives and assess impact.
+
+Reapply simulation and study only the coverage 95\% confidence interval under the null hypothesis.
+
+
+
+For a small loss in statistical efficiency, random sampling reduces the computation time considerably, which permits imputations closer to congeniality and less computation when performing bootstrap and multiple imputation.
+
+
 
 \subsection{Multilevel models}
 
+In this section, we extend our model to the case of multilevel models with  functional regressors. Multilevel models are critical in mobile health where we expect high degree of individual variation.  In this case, we suppose that there is individual variation $b_i \sim N(0, \sigma_{b}^2)$ such that the multilevel extension of our model~\eqref{eq:hazard} is given by
 \begin{equation}
 \label{eq:multilevel}
 h_i \left( t \given  H_{i,t}^{NX} ; \theta, b_i \right) \approx
@@ -981,5 +985,6 @@ $$
 When $N_{GQ} = 1$, the AGQ approximation is equivalent to a Laplacian approximation.
 
 
+\section{Optimal weights}
 
 \end{document}
