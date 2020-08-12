@@ -627,26 +627,9 @@ Multiple imputation yields valid frequentist inferences when the imputation and 
 
 The main positive of the above procedure is that the above imputation framework is simple and approximately congenial when events are rare and the sampling rate is low as well as under the null of $\beta (s) \equiv 0$.  The main negative is that the model is clearly uncongenial under many events and/or high sampling rates. Again, congeniality ensures goo frequentist coverage properties.  A key question is whether we can use the above imputation methods within a general procedure to handle uncongeniality.
 
-Here we highlight the recommendation from~\cite{Bartlett2020}, and employ a boostrap
+To address this, we use the recommendation from~\cite{Bartlett2020} and consider a method that first bootstraps a sample from the randomly sampled dataset and then apply multiple imputation to each bootstrap sample.  This general approach was originally proposed by~\cite{Shao1994} and~\cite{Little2002}. We suppose $B$ bootstraps and $M$ imputations per bootstrap; let $\hat \theta_{b,m}$ denote the estimator for the $m$th imputation of the $b$th bootstrap.  The point estimator is given by $(B)^{-1} \sum_{b=1}^B \hat \theta_{b}$ where $\hat \theta_b = M^{-1} \sum_{m=1}^M \hat \theta_{b,m}$. To construct the confidence interval, we require mean sum of squares with and between boostraps, i.e., $MSW = \frac{1}{B(M-1)} \sum_{b=1}^B \sum_{m=1}^M (\hat \theta_{b,m} - \hat \theta_b )^2$ and $MSB = \frac{1}{B-1} \sum_{b=1}^B M \cdot (\hat \theta_b - \hat \theta)^2$ respectively. Then the estimator of the variance of $\hat \theta$ is given by $\left( \frac{B+1}{BM} \right) MSB - MSW/M$.
 
-Here we
-Simple version compared to the von Hippel's boot MI proposal.
-\begin{itemize}
-\item Bootstrap $B$ times
-\item For $b = 1, \ldots, B$, impute $M$ times
-\item Let~$\hat \theta_b = M^{-1} \sum_m \hat \theta_{b,m}$
-\item Compute $\text{Var}_{BootMI} = (B-1)^{-1} \sum_{b=1}^B (\hat \theta_b - \hat \theta_{BM})^2$ where $\hat \theta_{BM} = B^{-1} \sum_{b=1}^B \hat \theta_b$.
-\end{itemize}
-
-\cite{vonHippel2019}
-
-To be careful, we investigate alternatives and assess impact.
-
-Reapply simulation and study only the coverage 95\% confidence interval under the null hypothesis.
-
-
-
-For a small loss in statistical efficiency, random sampling reduces the computation time considerably, which permits imputations closer to congeniality and less computation when performing bootstrap and multiple imputation.
+The bootstrap followed by multiple imputation procedure has been studied extensively by~\cite{Bartlett2020} and is robust to uncongeniality.  The main disadvantage of this approach is its considerable computational intensity.  Recall likelihood calculations were computationally prohibitive by themselves, so combining with bootstrap and MI would further increase this large-scale computation.  The random subsampling framework thus simplifies handling of missing data via connections to function-on-scalar multiple imputation by~\cite{Petrovich2018} as well as to bootstrap to handle uncongeniality by~\cite{Bartlett2020}.
 
 
 
@@ -660,10 +643,13 @@ h_i \left( t \given  H_{i,t}^{NX} ; \theta, b_i \right) \approx
   + \left[ M_{i,t}^\top + C_{i,t}^\top J_{\hat \psi, \phi}\right] (\beta + b_i) \right)
 = \exp \left( W_{i,t}^\top \theta  + Z_{i,t}^\top b_i \right),
 \end{equation}
+where $Z_Pi,t$
+
+Ignoring the computational time of bootstrap sampling, the computational time of $200$ boostraps and $2$ imputations per boostrap leads to $35$ hours compared to $7$ hours.  Again, this highlights the substantial benefits of
 
 \section{A worked example: Adolescent psychiatric inpatient mHealth study} \label{section:example}
 
-During a XX month period in 2019, 91 psychiatric inpatients admitted for suicidal risk to Franciscan Children's Hospital were enrolled in an observational study.  Study data were graciously provided by Evan Kleiman and his study team ({\tt https://kleimanlab.org}). Each study participant wore an Empatica E4~\cite{empaticae3}, a medical-grade wearable device that offers real-time physiological data.  One of the primary study goals was to assess the association between sensor-based physiological measurements and self-identified
+During a XX month period in 2019, 91 psychiatric inpatients admitted for suicidal risk to Franciscan Children's Hospital were enrolled in an observational study.  Study data were graciously provided by Evan Kleiman and his study team ({\tt https://kleimanlab.org}). Each study participant wore an Empatica E4~\cite{empaticae3}, a medical-grade wearable device that offers real-time physiological data.  One of the primary study goals was to assess the association between sensor-based physiological measurements and self-identified moments of suicidal distress.
 
 can used to identify distress early prior in the process of escalation by monitoring physiological correlates of distress -- in particular, electrodermal activity (EDA), a measure of skin conductance, and ``gACC'', a coordinate-free feature built from accelerometer data that measures physical movement. The scientific hypothesis to be tested is whether a spike in EDA and/or gACC
 
