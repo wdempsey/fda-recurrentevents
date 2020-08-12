@@ -629,7 +629,8 @@ The main positive of the above procedure is that the above imputation framework 
 
 To address this, we use the recommendation from~\cite{Bartlett2020} and consider a method that first bootstraps a sample from the randomly sampled dataset and then apply multiple imputation to each bootstrap sample.  This general approach was originally proposed by~\cite{Shao1994} and~\cite{Little2002}. We suppose $B$ bootstraps and $M$ imputations per bootstrap; let $\hat \theta_{b,m}$ denote the estimator for the $m$th imputation of the $b$th bootstrap.  The point estimator is given by $(B)^{-1} \sum_{b=1}^B \hat \theta_{b}$ where $\hat \theta_b = M^{-1} \sum_{m=1}^M \hat \theta_{b,m}$. To construct the confidence interval, we require mean sum of squares with and between boostraps, i.e., $MSW = \frac{1}{B(M-1)} \sum_{b=1}^B \sum_{m=1}^M (\hat \theta_{b,m} - \hat \theta_b )^2$ and $MSB = \frac{1}{B-1} \sum_{b=1}^B M \cdot (\hat \theta_b - \hat \theta)^2$ respectively. Then the estimator of the variance of $\hat \theta$ is given by $\left( \frac{B+1}{BM} \right) MSB - MSW/M$.
 
-The bootstrap followed by multiple imputation procedure has been studied extensively by~\cite{Bartlett2020} and is robust to uncongeniality.  The main disadvantage of this approach is its considerable computational intensity.  Recall likelihood calculations were computationally prohibitive by themselves, so combining with bootstrap and MI would further increase this large-scale computation.  The random subsampling framework thus simplifies handling of missing data via connections to function-on-scalar multiple imputation by~\cite{Petrovich2018} as well as to bootstrap to handle uncongeniality by~\cite{Bartlett2020}.
+The bootstrap followed by multiple imputation procedure has been studied extensively by~\cite{Bartlett2020} and is robust to uncongeniality.  The main disadvantage of this approach is its considerable computational intensity.  Recall likelihood calculations were computationally prohibitive by themselves, so combining with bootstrap and MI would further increase this large-scale computation.  The random subsampling framework thus simplifies handling of missing data via connections to function-on-scalar multiple imputation by~\cite{Petrovich2018} as well as to bootstrap to handle uncongeniality by~\cite{Bartlett2020}. Ignoring the computational time of bootstrap sampling, the computational time for the first choise in the simulation study with $B=200$ bootstraps and $M=2$ imputations per bootstrap leads to $35$ hours for a sampling rate of $0.5$ compared to $7$ hours for a sampling rate of $4$.  This is simply to highlight the substantial benefits of the subsampling framework.
+
 
 
 
@@ -643,9 +644,7 @@ h_i \left( t \given  H_{i,t}^{NX} ; \theta, b_i \right) \approx
   + \left[ M_{i,t}^\top + C_{i,t}^\top J_{\hat \psi, \phi}\right] (\beta + b_i) \right)
 = \exp \left( W_{i,t}^\top \theta  + Z_{i,t}^\top b_i \right),
 \end{equation}
-where $Z_Pi,t$
-
-Ignoring the computational time of bootstrap sampling, the computational time of $200$ boostraps and $2$ imputations per boostrap leads to $35$ hours compared to $7$ hours.  Again, this highlights the substantial benefits of
+where $Z_{i,t} = M_{i,t} + C_{i,t} J_{\hat \psi, \phi}$. Lemma~\ref{lemma:logistic} implies that the random subsampling framework applied to equation~\eqref{eq:multilevel} leads to a penalized logistic mixed-effects model.  As far as the authors are aware, the combination of mixed-effects and $L_2$-penalization on a subset of parameters has not been addressed in existing packages.  To address this, we derive a penalized adaptive Gaussian quadarture (PADQ) for estimation.  For conciseness, this derivation is presented in Appendix~\ref{app:penlogit}.
 
 \section{A worked example: Adolescent psychiatric inpatient mHealth study} \label{section:example}
 
@@ -897,6 +896,7 @@ The argument
 \end{proof}
 
 \section{Penalized logistic mixed-effects model}
+\label{app:penlogit}
 
 Here we derive a penalized adaptive Gaussian quadrature (PADQ) to fit the   penalized logistic mixed-effects model.  Here, for clarity, we write $Y_{ij} \in \{ 0, 1 \}$ to be the sequence of binary indicators for participant $i = 1,\ldots,n$ and $j$ indexes the event and subsampled times.  We write $W_{ij}$ to denote the time-varying covariate.  Then the score equations for the penalized logistic regression with offset $\log(\pi_{ij})$ is written as
 $$
