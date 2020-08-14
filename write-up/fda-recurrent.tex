@@ -17,7 +17,6 @@
 \usepackage{color}
 \usepackage{booktabs,caption,fixltx2e}
 \usepackage[flushleft]{threeparttable}
-
 \usepackage{amsmath}
 \usepackage{tikz}
 \usetikzlibrary{matrix,arrows}
@@ -32,10 +31,8 @@
 %\halign\bgroup\hfill$}
 %{##$\hfill\cr{\intop}\cr\diagup\cr\egroup\egroup}%
 %}\limits}
-
 %\newcommand{\sam}[1]{{\color{blue}{#1}}}
 \newcommand{\walt}[1]{\textcolor{blue}{[WD:\ #1]}}
-
 \setlength{\textwidth}{6.5in}
 \setlength{\textheight}{8.5in}
 \setlength{\topmargin}{-0.25in}
@@ -43,16 +40,12 @@
 \setlength{\oddsidemargin}{0in}
 %\setlength{\evensidemargin}{.25in}
 %\setlength{\oddsidemargin}{.25in}
-
-
 \usepackage{setspace}
 \doublespacing
-
 \usepackage{soul,color, mathtools, fixmath}
 \usepackage{multirow}
 \usepackage[shortlabels]{enumitem}
 \def\pr{\mathop{\text{pr}}\nolimits}
-
 \def\k{{\bf k}}
 \def\z{{\bf z}}
 \def\W{{\bf W}}
@@ -100,12 +93,8 @@
 \def\logit{\mathop{\text{logit}_{}}\nolimits}
 \def\EI{\mathop{\mathcal{E}_{\mathcal{I}}}\nolimits}
 \def\ES{\mathop{\mathfrak{E}_S}\nolimits}
-
-
-
 \DeclareRobustCommand{\citeext}[1]{\citeauthor{#1} (\citeyear{#1})}
 \DeclareRobustCommand{\citeint}[1]{(\citeauthor{#1}, \citeyear{#1})}
-
 \newtheorem{thm}{Theorem}[section]
 \newtheorem{lemma}[thm]{Lemma}
 \newtheorem{prop}[thm]{Proposition}
@@ -116,12 +105,8 @@
 \newtheorem{conj}[thm]{Conjecture}
 \newtheorem{assumption}[thm]{Assumption}
 \newtheorem{rmk}[thm]{Remark}%\endlocaldefs
-
-
 % change default numbering for enumerate environment to be in parentheses
-
 \makeatletter
-
 \def\S{\mathcal{S}}
 \def\indep{\mathrel{\rlap{$\perp$}\kern1.6pt\mathord{\perp}}}
 \def\R{\mathcal{R}}
@@ -149,14 +134,10 @@
 \newcommand{\dotminus}{\mathbin{\mathpalette\dotminussym{}}}
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
-
 \mathchardef\mhyphen="2D
-
 % display breaks
 
-
 \begin{document}
-
 
 \title[Recurrent event analysis with functional covariates via random subsampling]{Recurrent event analysis in the presence of real-time high frequency data via random subsampling}
 \author{Walter Dempsey}
@@ -170,7 +151,6 @@ Digital monitoring studies collect real-time high frequency data via mobile sens
 \end{abstract}
 
 \keywords{recurrent events; probabilistic subsampling; estimating equations; high frequency time series; logistic regression}
-
 
 \maketitle
 
@@ -571,9 +551,9 @@ Note that we express each coefficient function in the same spline basis; however
 %   and $X(\cdot, t^\prime)$ for~$|t - t^\prime| <\Delta$? That is, how
 %   do you perform multiple imputation with this overlapping structure?}
 
-A core concern in mHealth is that sensor data can often be missing for intervals of time due to sensor wearing issues (e.g., sensor band becomes loose, turns off accidentally, data packets lost, or battery dies). In the suicidal ideation case study, for example, there are 2139 self-identified moments of distress across all 91 participants. Of these, 1289 event times had complete data for the prior thirty minutes, 1984 had fraction of missing data on a fine grid less than 30\%, and 1998 had fraction of missing data on a fine grid less than 10\%.
+Sensor data can often be missing for intervals of time due to sensor wearing issues. In the suicidal ideation case study, for example, there are 2139 self-identified moments of distress across all 91 participants. Of these, 1289 event times had complete data for the prior thirty minutes, 1984 had fraction of missing data on a fine grid less than 30\%, and 1998 had fraction of missing data on a fine grid less than 10\%.
 
-Missing data is a critical issue because~$c_{i,k} (t)$ cannot be estimated if~$X(s,t)$ is not observed for all~$s \in [0,\Delta]$. Moreover, standard errors should reflect the uncertainty in these coefficients when missing data is prevalent. \cite{Goldsmith2011} suggest using best linear unbiased predictors (BLUP) or posterior modes in the mixed effects model to estimate~$c_{i,k} (t)$; however, one criticism would be when there is substantial variability in these estimates.  To deal with this, \cite{Crainiceanu2010} take a full Bayesian analysis. \cite{Yao2005} introduced PACE as an alternative frequentist method. However,~\cite{Petrovich2018} shows that for sparse, irregular longitudinal, the imputation model should not ignore the outcome variable~$Y_i (t)$.
+Missing data is a critical issue because~$c_{i,k} (t)$ cannot be estimated if~$X(s,t)$ is not observed for all~$s \in [0,\Delta]$. Moreover, standard errors should reflect the uncertainty in these coefficients when missing data is prevalent. \cite{Goldsmith2011} suggest using best linear unbiased predictors (BLUP) or posterior modes in the mixed effects model to estimate~$c_{i,k} (t)$; however, this is ineffective when there is substantial variability in these estimates.  To deal with this, \cite{Crainiceanu2010} take a full Bayesian analysis. \cite{Yao2005} introduced PACE as an alternative frequentist method. \cite{Petrovich2018} shows that for sparse, irregular longitudinal, the imputation model should not ignore the outcome variable~$Y_i (t)$.
 
 Here we present an extension of~\cite{Petrovich2018} to our setting by leveraging Lemma~\ref{lemma:logistic} and the marginal covariance estimation procedure to construct a multiple imputation procedure. Let~$\bfx_{i} (t)$ denote incomplete sensor data at time~$t$ (i.e., at times~$\{ s_{i,r} \}_{r=1}^{k_{it}}$ in~$[0,\Delta]$. Then
 \begin{align}
@@ -602,30 +582,10 @@ $\mathbold{\mu}_i (t) = \E [ \bfx_i (t) \given Y_i (t) = y] = \{
 from group~$y$, and~$\Sigma_t ( s^\prime, s)$ is the covariance
 between~$X(s^\prime,t)$ and $X(s,t)$ for $s^\prime, s \in [0, \Delta]$
 and~$t \in \mathbb{R}_+$.
-These covariances can be estimated using the methods considered by
-\cite{ChenMuller2012}.
-% Our imputation procedure instead uses the
-% marginal covariance~$\Xi$ as a proxy for the true covariance
-% function~$\Sigma_t(\cdot, \cdot)$.
-% We found this to work well in simulations as~$\Sigma_t$ was relatively
-% constant across~$t$; however, this imputation strategy may be
-% inappropriate when the covariance structure changes significantly with
-% time~$t$.
-
-The imputation strategy generalizes the procedure introduced by~\cite{Petrovich2018} to the longitudinal functional data setting.  This is possible due to the connection established with logistic regression by Lemma~\ref{lemma:logistic}. We could then consider a multiple imputation estimate with~$M$ imputations; the likelihood estimate is given by~$\bar \theta = M^{-1} \sum_{m=1}^M \hat \theta^{(m)}$ where~$\theta^{(m)}$ is the estimate from the~$m$th imputated dataset; the covariance matrix can be estimated by
-\[
-M^{-1} \sum_{m=1}^M \hat \Xi^{(m)} (\theta) + \frac{1}{M-1}
-\sum_{m=1}^M (\hat \theta^{(m)} - \bar \theta) (\hat \theta^{(m)} -
-\bar \theta)
-\]
-where~$\hat \Xi^{(m)}$ is the estimator~\eqref{eq:fisher} for
-the~$m$th imputated dataset.
 
 \subsubsection{Multiple imputation under uncongeniality}
 
-Multiple imputation yields valid frequentist inferences when the imputation and analysis procedure are congenial~\citep{Meng1994};  the above procedure was derived for function-on-scalar multiple imputation for binary outcomes, which ignored the joint nature of recurrent event analysis in the presence of high frequency sensor data. Consider, for example, two non-events sampled five minutes apart.  If there is missing data in the overlapping part of the temporal windows, then the above procedure imputes different values for each record.  Moreover, the imputatoin does not depend on whether one of the two were an event rather than non-event.
-
-The main positive of the above procedure is that the above imputation framework is simple and approximately congenial when events are rare and the sampling rate is low as well as under the null of $\beta (s) \equiv 0$.  The main negative is that the model is clearly uncongenial under many events and/or high sampling rates. Again, congeniality ensures goo frequentist coverage properties.  A key question is whether we can use the above imputation methods within a general procedure to handle uncongeniality.
+Multiple imputation yields valid frequentist inferences when the imputation and analysis procedure are congenial~\citep{Meng1994};  the above procedure was derived for function-on-scalar multiple imputation for binary outcomes, which ignored the joint nature of recurrent event analysis in the presence of high frequency sensor data. The main advantage of the above imputation framework is its simplicity and approximate congeniality when events are rare and the sampling rate is low.  The main disadvantage is that the above framework is uncongenial under many events and/or high sampling rates. Again, congeniality ensures good frequentist coverage properties.  A key question is whether we can use the above imputation methods within a general procedure to handle uncongeniality.
 
 To address this, we use the recommendation from~\cite{Bartlett2020} and consider a method that first bootstraps a sample from the randomly sampled dataset and then apply multiple imputation to each bootstrap sample.  This general approach was originally proposed by~\cite{Shao1994} and~\cite{Little2002}. We suppose $B$ bootstraps and $M$ imputations per bootstrap; let $\hat \theta_{b,m}$ denote the estimator for the $m$th imputation of the $b$th bootstrap.  The point estimator is given by $(B)^{-1} \sum_{b=1}^B \hat \theta_{b}$ where $\hat \theta_b = M^{-1} \sum_{m=1}^M \hat \theta_{b,m}$. To construct the confidence interval, we require mean sum of squares with and between boostraps, i.e., $MSW = \frac{1}{B(M-1)} \sum_{b=1}^B \sum_{m=1}^M (\hat \theta_{b,m} - \hat \theta_b )^2$ and $MSB = \frac{1}{B-1} \sum_{b=1}^B M \cdot (\hat \theta_b - \hat \theta)^2$ respectively. Then the estimator of the variance of $\hat \theta$ is given by $\left( \frac{B+1}{BM} \right) MSB - MSW/M$.
 
@@ -886,15 +846,6 @@ $$
 which completes the proof.
 \end{proof}
 
-
-\begin{proof}[Proof of Proposition~\ref{prop:optimal}]
-The above proof establishes asymptotic normality for all
-The main additional assumption is
-
-The argument
-
-\end{proof}
-
 \section{Penalized logistic mixed-effects model}
 \label{app:penlogit}
 
@@ -972,5 +923,14 @@ When $N_{GQ} = 1$, the AGQ approximation is equivalent to a Laplacian approximat
 
 
 \section{Optimal weights}
+
+\begin{proof}[Proof of Proposition~\ref{prop:optimal}]
+The above proof establishes asymptotic normality for all
+The main additional assumption is
+
+The argument
+
+\end{proof}
+
 
 \end{document}
