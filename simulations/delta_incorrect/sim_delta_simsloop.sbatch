@@ -9,7 +9,7 @@
 #SBATCH --time=01:00:00
 #SBATCH --account=wdem1
 #SBATCH --partition=standard
-#SBATCH --output=/home/wdem/fda-recurrentevents/simulations/%u/%x-%j.log
+#SBATCH --output=/home/wdem/fda-recurrentevents/simulations/simdelta/%u/%x-%j.log
 
 cd $SLURM_SUBMIT_DIR
 
@@ -24,4 +24,8 @@ source new-modules.sh
 module load R/3.6.1
 
 # Run program
-Rscript basic_simulation.R
+Rscript sim_delta.R 52
+Rscript sim_delta.R 48
+Rscript sim_delta.R
+Rscript sim_delta.R 40
+Rscript sim_delta.R 36
