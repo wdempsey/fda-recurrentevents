@@ -32,14 +32,16 @@ beta_1t = 100*sin(1:44/44*2*pi-pi/2)
 # plot(times[1:44],beta_1t+beta_2t)
 
 # test if there is at least one argument: if not, return an error
+print("Made it to window length")
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args)==0) {
   print("Using default value!")
   window_length = length(beta_1t)
 } else if (length(args)==1) {
   # default output file
-  window_length = args[1]
+  window_length = as.numeric(args[1])
 }
+print(paste("Window length is", window_length))
 
 ## Collect coefficients for first 35
 ## Take covariance in the 44 timeslots
@@ -71,7 +73,7 @@ col_names = as.vector(c("ids", "runtime", "rates", "mean_count", "var_count", pa
 for(rates in thinning_rates) {
   print(paste("On rate", rates*max_sampling_rate))
   subdataset = subsample_dataset(dataset, thinning_rate = rates)
-  intermediate_step = construct_J(times, eig_Sigma, subdataset)
+  intermediate_step = construct_J(times, eig_Sigma, subdataset, window_length)
   output = runglmnet(max_sampling_rate*rates, subdataset, intermediate_step$w, intermediate_step$Basis, epsilon = 0.0001)
   results = matrix(c(id, output$runtime, rates, agg_summary, output$beta), nrow = 1)
   colnames(results) = col_names
