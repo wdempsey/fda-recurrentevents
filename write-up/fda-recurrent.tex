@@ -21,6 +21,7 @@
 \usepackage{tikz}
 \usetikzlibrary{matrix,arrows}
 \usepackage{amsfonts,amssymb,amsthm, txfonts, pxfonts,amscd}
+\usepackage{multirow}
 %\usepackage[stretch=10]{microtype}
 %\usepackage{hyperref}
 %\def\struckint{\mathop{%
@@ -510,16 +511,21 @@ Avg. runtime (secs) & 36 & 23 & 15 & 12 \\ \hline
 Theorem~XX shows that if we keep~$K_x = K_b = 35$ and therefore have reconstruction error, we can expect a downward bias in parameter estimates. Moreover, if~$\Delta < \Delta^\star$ then we can expect a similar bias in the parameter estimates.  For the former, however, we can simply let~$K_x = K_b$ grow as a function of data size; for the latter, we can see if~$\hat \beta(s)$ is statistically significant for~$s$ near~$\Delta$. If so, we can set~$\Delta$ larger to ensure the condition holds.  In each simulation, we use $\Delta \in (18,21,24,27,30)$.
 
 \begin{table}[!th]
-\begin{tabular}{c c c c c c}
-& \multicolumn{5}{c}{Sampling rate} \\ \cline{2-6}
-$\Delta=$ & 0.5 & 1 & 5 & 25 & 50 \\ \hline
-18  & - & - & - & - & -  \\
-21 & - & - & - & - & -  \\
-24 & - & - & - & - & -  \\
-27 & - & - & - & - & -  \\
-30 & - & - & - & - & -  \\ \hline
+\begin{tabular}{c | c c c c c}
+& & \multicolumn{4}{c}{Sampling rate} \\ \cline{3-6}
+$\Delta=$ & & 0.5 & 1 & 2 & 4 \\ \hline
+\multirow{2}{*}{36} & MISE & 0.400 & 0.404 & 0.409, & 0.413 \\
+ & Variance & $1.1 \times 10^{-2}$ & $1.3 \times 10^{-2}$ & $1.5 \times 10^{-2}$ & $1.9 \times 10^{-2}$ \\ \hline
+\multirow{2}{*}{40} & MISE & 0.240 & 0.243 & 0.244, & 0.251 \\
+ & Variance & $9.2 \times 10^{-3}$ & $1.1 \times 10^{-2}$ & $1.2 \times 10^{-2}$ & $1.8 \times 10^{-2}$ \\ \hline
+\multirow{2}{*}{44} & MISE & 0.384 & 0.383 & 0.384, & 0.386 \\
+ & Variance & $7.0 \times 10^{-3}$ & $7.7 \times 10^{-3}$ & $9.3 \times 10^{-3}$ & $1.1 \times 10^{-2}$ \\ \hline
+\multirow{2}{*}{48} & MISE & 0.384 & 0.383 & 0.384, & 0.386 \\
+ & Variance & $7.0 \times 10^{-3}$ & $7.7 \times 10^{-3}$ & $9.3 \times 10^{-3}$ & $1.1 \times 10^{-2}$ \\ \hline
+\multirow{2}{*}{52} & MISE & 0.384 & 0.383 & 0.384, & 0.386 \\
+ & Variance & $7.0 \times 10^{-3}$ & $7.7 \times 10^{-3}$ & $9.3 \times 10^{-3}$ & $1.1 \times 10^{-2}$ \\ \hline
 \end{tabular}
-\caption{XXX}
+\caption{Mean-integrated squared error as a function of $\Delta^\star$ and sampling rate when true $\Delta = 30$ minutes.  Demonstrates the }
 \label{tab:mise}
 \end{table}
 
