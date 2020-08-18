@@ -33,16 +33,19 @@
 %{##$\hfill\cr{\intop}\cr\diagup\cr\egroup\egroup}%
 %}\limits}
 %\newcommand{\sam}[1]{{\color{blue}{#1}}}
-\newcommand{\walt}[1]{\textcolor{blue}{[WD:\ #1]}}
-\setlength{\textwidth}{6.5in}
-\setlength{\textheight}{8.5in}
-\setlength{\topmargin}{-0.25in}
-\setlength{\evensidemargin}{0in}
-\setlength{\oddsidemargin}{0in}
+% \newcommand{\walt}[1]{\textcolor{blue}{[WD:\ #1]}}
+% \setlength{\textwidth}{6.5in}
+% \setlength{\textheight}{8.5in}
+% \setlength{\topmargin}{-0.25in}
+% \setlength{\evensidemargin}{0in}
+% \setlength{\oddsidemargin}{0in}
 %\setlength{\evensidemargin}{.25in}
 %\setlength{\oddsidemargin}{.25in}
+\usepackage[margin=1in]{geometry}
 \usepackage{setspace}
 \doublespacing
+
+
 \usepackage{soul,color, mathtools, fixmath}
 \usepackage{multirow}
 \usepackage[shortlabels]{enumitem}
@@ -508,24 +511,31 @@ Avg. runtime (secs) & 36 & 23 & 15 & 12 \\ \hline
 
 \subsection{Impact of $\Delta$}
 
-Theorem~XX shows that if we keep~$K_x = K_b = 35$ and therefore have reconstruction error, we can expect a downward bias in parameter estimates. Moreover, if~$\Delta < \Delta^\star$ then we can expect a similar bias in the parameter estimates.  For the former, however, we can simply let~$K_x = K_b$ grow as a function of data size; for the latter, we can see if~$\hat \beta(s)$ is statistically significant for~$s$ near~$\Delta$. If so, we can set~$\Delta$ larger to ensure the condition holds.  In each simulation, we use $\Delta \in (18,21,24,27,30)$.
+A concern with the proposed approach is the selection of window-length, $\Delta$.  Here we investigate the impact of misspecification of the window length for $\beta(t) = \beta_1 \cdot \sin \left( 2 \pi s / \Delta - \pi /2 \right)$ and the true window length ($\Delta^\star$) is set to 32-minutes.  See Appendix~\ref{app:delta} for a similar discussion for $\beta(t) = \beta_0 \exp \left( - \beta_1 s \right)$.  As in the previous simulation, we generate 1000 datasets per condition each consisting of 500 user-days.  For each simulation, we analyze the data using window lengths $\Delta \in (26,29,32,35,37)$.
+
+When the window length is too large, i.e., $\Delta > \Delta^\star$, then asymptotically the estimation is unbiased as $\beta(t) \equiv 0$ for $t > \Delta$; however, we incur a penalty in finite samples, especially for settings where the function is far from zero near $t = \Delta$.  We find the MISE increases the absolute error $|\Delta - \Delta^\star|$ increases, while the variance decreases as a function of $\Delta$.  While the MISE increased for $\Delta < \Delta^\star$, the pointwise estimation error remains low for $t < \Delta$.  This does not hold for $\Delta > \Delta^\star$, where instead we see parameter attenuation, i.e., a bias towards zero in the estimates at each $0 < t< \Delta$.  To capture this, we define a partial MISE as $\frac{\Delta}{\tilde \Delta} \int_0^{\tilde \Delta} ( \hat \beta_{i,j} (s) - \hat \beta (s) )^2 ds$ where $\tilde \Delta = \min(\Delta, \Delta^\star)$, which is the MISE on the subset $0<t< \min (\Delta, \Delta^\star)$ and scaled for comparative purposes.
 
 \begin{table}[!th]
 \begin{tabular}{c | c c c c c}
 & & \multicolumn{4}{c}{Sampling rate} \\ \cline{3-6}
 $\Delta=$ & & 0.5 & 1 & 2 & 4 \\ \hline
-\multirow{2}{*}{36} & MISE & 0.400 & 0.404 & 0.409, & 0.413 \\
- & Variance & $1.1 \times 10^{-2}$ & $1.3 \times 10^{-2}$ & $1.5 \times 10^{-2}$ & $1.9 \times 10^{-2}$ \\ \hline
-\multirow{2}{*}{40} & MISE & 0.240 & 0.243 & 0.244, & 0.251 \\
- & Variance & $9.2 \times 10^{-3}$ & $1.1 \times 10^{-2}$ & $1.2 \times 10^{-2}$ & $1.8 \times 10^{-2}$ \\ \hline
-\multirow{2}{*}{44} & MISE & 0.384 & 0.383 & 0.384, & 0.386 \\
- & Variance & $7.0 \times 10^{-3}$ & $7.7 \times 10^{-3}$ & $9.3 \times 10^{-3}$ & $1.1 \times 10^{-2}$ \\ \hline
-\multirow{2}{*}{48} & MISE & 0.384 & 0.383 & 0.384, & 0.386 \\
- & Variance & $7.0 \times 10^{-3}$ & $7.7 \times 10^{-3}$ & $9.3 \times 10^{-3}$ & $1.1 \times 10^{-2}$ \\ \hline
-\multirow{2}{*}{52} & MISE & 0.384 & 0.383 & 0.384, & 0.386 \\
- & Variance & $7.0 \times 10^{-3}$ & $7.7 \times 10^{-3}$ & $9.3 \times 10^{-3}$ & $1.1 \times 10^{-2}$ \\ \hline
+\multirow{3}{*}{26} & MISE & 0.400 & 0.404 & 0.409 & 0.413 \\
+ & Variance & $1.1 \times 10^{-2}$ & $1.3 \times 10^{-2}$ & $1.5 \times 10^{-2}$ & $1.9 \times 10^{-2}$ \\
+  & P-MISE & 0.225 & 0.229 & 0.233 & 0.239 \\ \hline
+\multirow{3}{*}{29} & MISE & 0.240 & 0.243 & 0.244 & 0.251 \\
+ & Variance & $9.2 \times 10^{-3}$ & $1.1 \times 10^{-2}$ & $1.2 \times 10^{-2}$ & $1.8 \times 10^{-2}$ \\
+  & P-MISE & 0.107 & 0.109 & 0.111 & 0.117 \\ \hline
+\multirow{3}{*}{32} & MISE & 0.105 & 0.103 & 0.103 & 0.105 \\
+ & Variance & $8.0 \times 10^{-3}$ & $8.8 \times 10^{-3}$ & $1.0 \times 10^{-2}$ & $1.4 \times 10^{-2}$ \\
+  & P-MISE & 0.105 & 0.103 & 0.103 & 0.105 \\\hline
+\multirow{3}{*}{35} & MISE & 0.384 & 0.383 & 0.384 & 0.386 \\
+ & Variance & $7.0 \times 10^{-3}$ & $7.7 \times 10^{-3}$ & $9.3 \times 10^{-3}$ & $1.1 \times 10^{-2}$ \\
+  & P-MISE & 0.273 & 0.270 & 0.269, & 0.269 \\\hline
+\multirow{3}{*}{37} & MISE & 0.589 & 0.588 & 0.589 & 0.591 \\
+ & Variance & $6.0 \times 10^{-3}$ & $6.5 \times 10^{-3}$ & $7.9 \times 10^{-3}$ & $1.0 \times 10^{-2}$ \\
+  & P-MISE & 0.473 & 0.470 & 0.469 & 0.470 \\\hline
 \end{tabular}
-\caption{Mean-integrated squared error as a function of $\Delta^\star$ and sampling rate when true $\Delta = 30$ minutes.  Demonstrates the }
+\caption{Mean-integrated squared error (MISE), variance, and partial MISE as a function of $\Delta^\star$ and sampling rate when true $\Delta = 32$ minutes.}
 \label{tab:mise}
 \end{table}
 
@@ -614,14 +624,14 @@ where $Z_{i,t} = M_{i,t} + C_{i,t} J_{\hat \psi, \phi}$. Lemma~\ref{lemma:logist
 
 \section{A worked example: Adolescent psychiatric inpatient mHealth study} \label{section:example}
 
-During a XX month period in 2019, 91 psychiatric inpatients admitted for suicidal risk to Franciscan Children's Hospital were enrolled in an observational study.  Study data were graciously provided by Evan Kleiman and his study team ({\tt https://kleimanlab.org}). Each study participant wore an Empatica E4~\cite{empaticae3}, a medical-grade wearable device that offers real-time physiological data.  One of the primary study goals was to assess the association between sensor-based physiological measurements and self-identified moments of suicidal distress.
+During a XX month period in 2019, 91 psychiatric inpatients admitted for suicidal risk to Franciscan Children's Hospital were enrolled in an observational study.  Study data were graciously provided by Evan Kleiman and his study team ({\tt https://kleimanlab.org}). Each study participant wore an Empatica E4~\citep{empaticae3}, a medical-grade wearable device that offers real-time physiological data.  On each user-day, participants were asked to self-identify moments of suicidal distress.  At these times, the participant pressed a button on the Empatica E4 device and the moment was recorded.  One of the primary study goals was to assess the association between sensor-based physiological measurements and self-identified moments of suicidal distress.
 
-can used to identify distress early prior in the process of escalation by monitoring physiological correlates of distress -- in particular, electrodermal activity (EDA), a measure of skin conductance, and ``gACC'', a coordinate-free feature built from accelerometer data that measures physical movement. The scientific hypothesis to be tested is whether a spike in EDA and/or gACC
+The
+distress early prior in the process of escalation by monitoring physiological correlates of distress -- in particular, electrodermal activity (EDA), a measure of skin conductance, and ``gACC'', a coordinate-free feature built from accelerometer data that measures physical movement. The scientific hypothesis to be tested is whether a spike in EDA and/or gACC
 
 To avoid, we focus on the study window 9AM to 8PM each study day.
 
-At the end of the study period, the base rate of button pressing  rate was 292/488, or
-approximately 60\%.
+At the end of the study period, the base rate of button pressing  rate was 292/488, or approximately 60\%.
 
 \begin{figure}[!th]
 \caption{Button press distribution across study days (include number of people).}
@@ -937,6 +947,36 @@ The main additional assumption is
 The argument
 
 \end{proof}
+
+\section{Additional simulations and case study details}
+
+\subsection{Impact of $\Delta$}
+\label{app:delta}
+
+Here we investigate the impact of misspecification of the window length for $\beta(t) = \beta_0 \exp \left( - \beta_1 s \right)$.  To do this, we generate 1000 datasets per condition each consisting of 500 user-days.  For each simulation, we analyze the data using window lengths $\Delta \in (26,29,32,35,37)$.
+
+When the window length is too large, i.e., $\Delta > \Delta^\star$, then asymptotically the estimation is unbiased as $\beta(t) \equiv 0$ for $t > \Delta$ and therefore the true function is in the function space; however, in finite samples, we will incur a penalty, especially for settings where the function is far from zero near $t = \Delta$.
+
+we can expect a downward bias in parameter estimates. Moreover, if~$\Delta < \Delta^\star$ then we can expect a similar bias in the parameter estimates.  For the former, however, we can simply let~$K_x = K_b$ grow as a function of data size; for the latter, we can see if~$\hat \beta(s)$ is statistically significant for~$s$ near~$\Delta$. If so, we can set~$\Delta$ larger to ensure the condition holds.
+
+\begin{table}[!th]
+\begin{tabular}{c | c c c c c}
+& & \multicolumn{4}{c}{Sampling rate} \\ \cline{3-6}
+$\Delta=$ & & 0.5 & 1 & 2 & 4 \\ \hline
+\multirow{2}{*}{26} & MISE & 0.400 & 0.404 & 0.409 & 0.413 \\
+ & Variance & $1.1 \times 10^{-2}$ & $1.3 \times 10^{-2}$ & $1.5 \times 10^{-2}$ & $1.9 \times 10^{-2}$ \\ \hline
+\multirow{2}{*}{29} & MISE & 0.240 & 0.243 & 0.244 & 0.251 \\
+ & Variance & $9.2 \times 10^{-3}$ & $1.1 \times 10^{-2}$ & $1.2 \times 10^{-2}$ & $1.8 \times 10^{-2}$ \\ \hline
+\multirow{2}{*}{32} & MISE & 0.105 & 0.103 & 0.103 & 0.105 \\
+ & Variance & $8.0 \times 10^{-3}$ & $8.8 \times 10^{-3}$ & $1.0 \times 10^{-2}$ & $1.4 \times 10^{-2}$ \\ \hline
+\multirow{2}{*}{35} & MISE & 0.384 & 0.383 & 0.384 & 0.386 \\
+ & Variance & $7.0 \times 10^{-3}$ & $7.7 \times 10^{-3}$ & $9.3 \times 10^{-3}$ & $1.1 \times 10^{-2}$ \\ \hline
+\multirow{2}{*}{37} & MISE & 0.589 & 0.588 & 0.589, & 0.591 \\
+ & Variance & $6.0 \times 10^{-3}$ & $6.5 \times 10^{-3}$ & $7.9 \times 10^{-3}$ & $1.0 \times 10^{-2}$ \\ \hline
+\end{tabular}
+\caption{Mean-integrated squared error as a function of $\Delta^\star$ and sampling rate when true $\Delta = 30$ minutes.  Demonstrates the }
+\label{tab:mise}
+\end{table}
 
 
 \end{document}
