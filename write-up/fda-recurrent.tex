@@ -22,29 +22,13 @@
 \usetikzlibrary{matrix,arrows}
 \usepackage{amsfonts,amssymb,amsthm, txfonts, pxfonts,amscd}
 \usepackage{multirow}
-%\usepackage[stretch=10]{microtype}
-%\usepackage{hyperref}
-%\def\struckint{\mathop{%
-%\def\mathpalette##1##2{\mathchoice{##1\displaystyle##2}%
-% {##1\textstyle##2}{##1\scriptstyle##2}{##1\scriptscriptstyle##2}}%
-%\mathpalette
-%{\vbox\bgroup\baselineskip0pt\lineskiplimit-1000pt\lineskip-1000pt
-%\halign\bgroup\hfill$}
-%{##$\hfill\cr{\intop}\cr\diagup\cr\egroup\egroup}%
-%}\limits}
-%\newcommand{\sam}[1]{{\color{blue}{#1}}}
-% \newcommand{\walt}[1]{\textcolor{blue}{[WD:\ #1]}}
-% \setlength{\textwidth}{6.5in}
-% \setlength{\textheight}{8.5in}
-% \setlength{\topmargin}{-0.25in}
-% \setlength{\evensidemargin}{0in}
-% \setlength{\oddsidemargin}{0in}
-%\setlength{\evensidemargin}{.25in}
-%\setlength{\oddsidemargin}{.25in}
+\usepackage{floatrow}
+% Table float box with bottom caption, box width adjusted to content
+\newfloatcommand{capbtabbox}{table}[][\FBwidth]
+
 \usepackage[margin=1in]{geometry}
 \usepackage{setspace}
 \doublespacing
-
 
 \usepackage{soul,color, mathtools, fixmath}
 \usepackage{multirow}
@@ -620,35 +604,61 @@ h_i \left( t \given  H_{i,t}^{NX} ; \theta, b_i \right) \approx
   + \left[ M_{i,t}^\top + C_{i,t}^\top J_{\hat \psi, \phi}\right] (\beta + b_i) \right)
 = \exp \left( W_{i,t}^\top \theta  + Z_{i,t}^\top b_i \right),
 \end{equation}
-where $Z_{i,t} = M_{i,t} + C_{i,t} J_{\hat \psi, \phi}$. Lemma~\ref{lemma:logistic} implies that the random subsampling framework applied to equation~\eqref{eq:multilevel} leads to a penalized logistic mixed-effects model.  As far as the authors are aware, the combination of mixed-effects and $L_2$-penalization on a subset of parameters has not been addressed in existing packages.  To address this, we derive a penalized adaptive Gaussian quadarture (PADQ) for estimation.  For conciseness, this derivation is presented in Appendix~\ref{app:penlogit}.
+where $Z_{i,t} = M_{i,t} + C_{i,t} J_{\hat \psi, \phi}$. Lemma~\ref{lemma:logistic} implies that the random subsampling framework applied to equation~\eqref{eq:multilevel} leads to a penalized logistic mixed-effects model.  As far as the authors are aware, the combination of mixed-effects and $L_2$-penalization on a subset of parameters has not been addressed in existing packages.  To address this, we derive a penalized adaptive Gaussian quadarture (PADQ) for estimation.  For conciseness, the algorithm is presented in Appendix~\ref{app:penlogit}.
 
 \section{A worked example: Adolescent psychiatric inpatient mHealth study} \label{section:example}
 
-During a XX month period in 2019, 91 psychiatric inpatients admitted for suicidal risk to Franciscan Children's Hospital were enrolled in an observational study.  Study data were graciously provided by Evan Kleiman and his study team ({\tt https://kleimanlab.org}). Each study participant wore an Empatica E4~\citep{empaticae3}, a medical-grade wearable device that offers real-time physiological data.  On each user-day, participants were asked to self-identify moments of suicidal distress.  At these times, the participant was asked to press a button on the Empatica E4 device.  The timestamp of the button press was recorded.  One of the primary study goals was to assess the association between sensor-based physiological measurements and self-identified moments of suicidal distress. In particular, the scientific question is whether there are early indicators of escalating distress by monitoring physiological correlates.
+During an eight month period in 2018, 91 psychiatric inpatients admitted for suicidal risk to Franciscan Children's Hospital were enrolled in an observational study.  Study data were graciously provided by Evan Kleiman and his study team ({\tt https://kleimanlab.org}). Each study participant wore an Empatica E4~\citep{empaticae3}, a medical-grade wearable device that offers real-time physiological data.  On each user-day, participants were asked to self-identify moments of suicidal distress.  At these times, the participant was asked to press a button on the Empatica E4 device.  The timestamp of the button press was recorded.  One of the primary study goals was to assess the association between sensor-based physiological measurements and self-identified moments of suicidal distress. In particular, the scientific question is whether there are early indicators of escalating distress by monitoring physiological correlates.
 
-A key concern is whether all moments of suicidal distress are recorded.  To ensure this, clinical staff interviewed participants in the evening who were then asked to review their button press activity.  Any events that were identified as incorrect button press activity were removed.  An additional concern is that events can only occur when the individual is at-risk, i.e., (A) the individual is wearing the Empatica E4 and (B) is currently awake.
-Due to (B), we define each study day to begin at 9AM and end at 8PM. Due to (A), we use the Empatica E4 temperature sensor and filter out all records during which temperature data are below $30^{\circ}$ Celsius. At the end of the study period, the average number of button presses per day was XX with a standard deviation of XX.  Figure~\ref{fig:buttons} presents the distribution of button presses as a function of day in study.
+A key concern is whether all moments of suicidal distress are recorded.  To ensure this, clinical staff interviewed participants in the evening who were then asked to review their button press activity.  Any events that were identified as incorrect button press activity were removed.  At the end of the study period, the average number of button presses per day was $1.91$ with a standard deviation of $2.23$.  Figure~\ref{fig:buttons} presents the distribution of button presses as a function of hour in the day.  This demonstrates low button-press counts prior to 7AM and a sharp drop off by 11PM. This demonstrates an additional concern: events can only occur when the individual is at-risk, i.e., (A) the individual is wearing the Empatica E4 and (B) is currently awake. Due to (B), we define each study day to begin at 9AM and end at 8PM. Due to (A), we use the Empatica E4 temperature sensor and filter out all records during which temperature data are below $30^{\circ}$ Celsius.
+
+\vspace{0.25cm}
+\begin{minipage}{\textwidth}
+  \begin{minipage}[b]{0.49\textwidth}
+    \centering
+    \includegraphics[width=0.9\textwidth]{figs/buttonpresses.png}
+    \captionof{figure}{Button-presses per hour within the user-day}
+    \label{fig:buttons}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[b]{0.49\textwidth}
+    \centering
+    \centering
+    \includegraphics[width=1.0\textwidth]{figs/recurrent_events_plot.png}
+    \captionof{figure}{User button-presses versus time in study}
+    \label{fig:buttons2}
+    \end{minipage}
+\end{minipage}
+\vspace{0.25cm}
+
+Figure~\ref{fig:buttons2} presents the raw button presses as a function of time in study for each user, showing the potential heterogeneity in button press rates between users and study days. To assess whether there is between user or between study day variation, Table~\ref{tab:anova} presents a two-way ANOVA decomposition of the button press counts as a function of participant and day in study.  The ANOVA decomposition demonstrates high variation with day in study compared to across users in terms of button presses.
+
+\begin{table}[!th]
+\begin{tabular}{ccccccc}\hline
+      & DF & Sum Sq & Mean Sq & F value & Pr($>$F) \\ \hline
+        Participant & 88 & 13 & 13.31 & 2.71 & 0.10 \\
+        Day in Study & 75 & 54.71 & 54.71 & $8.8 \times 10^{-4}$ \\
+        Residuals & 989 & 4.91 & - \\ \hline
+      \end{tabular}  \captionof{table}{ANOVA decomposition of daily button press counts}
+      \label{tab:anova}
+\end{table}
+
+
+The focus here is on two physiological processes -- (1) electrodermal activity (EDA), a measure of skin conductance measured at 4Hz, and  (2) \emph{gACC}, a coordinate-free feature built from accelerometer data collected at 32Hz that measures physical movement.  Electrodermal activity can be significantly impacted by external factors (e.g., room temperature).  To account for the high between user-day variation, we analyze EDA standardized per study-day.
+The individual EDA and gACC trajectories are highly variable which tends to obscure patterns and trends.  In Figure~\ref{fig:mean_edacc}, the mean trajectories of EDA and gACC are plotted in reverse time from button press timestamps and randomly sampled non-event timestamps. While there are certain similarities in the two plots, the differences in temporal trends are rather striking. In particular, we see sharp increases in EDA in the XX minutes prior to button presses, which is in marked contrast with levels in the six months prior to failure, as seen in the lower pair of curves.
 
 \begin{figure}[!th]
-\caption{Button press distribution across study days (include number of people).}
-\label{fig:buttons}
-\end{figure}
-
-The focus here is on two physiological processes -- (1) electrodermal activity (EDA), a measure of skin conductance measured at 4Hz, and  (2) \emph{gACC}, a coordinate-free feature built from accelerometer data collected at 32Hz that measures physical movement.  The EDA measures are cleaned to  Due to high between study-day variation in EDA which may be due to external factors, we analyze EDA standardized per study-day.
-
-The individual EDA and gACC trajectories are highly variable which tends to obscure patterns and trends.  In Figure~XX, the mean trajectories of EDA and gACC are plotted in reverse time from button press timestamps and randomly sampled non-event timestamps. While there are certain similarities in the two plots, the differences in temporal trends are rather striking. In particular, we see sharp increases in EDA in the XX minutes prior to button presses,
-which is in marked contrast with levels in the six months prior to failure,
-as seen in the lower pair of curves.
-
-\begin{figure}[!th]
+\rule{3cm}{3cm}%
 \caption{EDA and ACC plots for average at non-event and event times.}
-\label{fig:means}
+\label{fig:mean_edacc}
 \end{figure}
 
 Inspection of the graphs suggests setting $\Delta = XX$ for EDA and $XX$ for gACC and  Gaussian with moments {\bf comparison over $\Delta$ and using imputation} where the baseline rate is assumed to depend on
 
 \begin{figure}[!th]
-\caption{$\beta (t)$ for ACC and EDA with 95\% CI.}
+\rule{3cm}{3cm}%
+\caption{$\beta (t)$ for ACC and EDA with 95\% CI; solid line is complete-case analysis, while dotted line is for }
+\label{}
 \end{figure}
 
 \subsection{Accounting for missing data and heterogeneity}
@@ -977,9 +987,9 @@ $\Delta=$ & & 0.5 & 1 & 2 & 4 \\ \hline
 
 
 1. Start simulation for appendix (delta wrong, beta2): CHECK
-2. Button Press Figure:
+2. Button Press Figure: Check
 3. Compute wear minutes:
-4. Standardize EDA
+4. Standardize EDA:
 5. Subsample EDA and gACC only at wear times between 9am and 8pm
 6. EDA/ACC figures
 7. Estimate with complete data
