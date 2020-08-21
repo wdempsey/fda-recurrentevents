@@ -945,36 +945,40 @@ The argument
 
 Here we investigate the impact of misspecification of the window length for $\beta(t) = \beta_0 \exp \left( - \beta_1 s \right)$.  To do this, we generate 1000 datasets per condition each consisting of 500 user-days.  For each simulation, we analyze the data using window lengths $\Delta \in (26,29,32,35,37)$.
 
-When the window length is too large, i.e., $\Delta > \Delta^\star$, then asymptotically the estimation is unbiased as $\beta(t) \equiv 0$ for $t > \Delta$ and therefore the true function is in the function space; however, in finite samples, we will incur a penalty, especially for settings where the function is far from zero near $t = \Delta$.
+When the window length is too large, i.e., $\Delta > \Delta^\star$, then asymptotically the estimation is unbiased as $\beta(t) \equiv 0$ for $t > \Delta$; however, we incur a penalty in finite samples, especially for settings where the function is far from zero near $t = \Delta$.  We find the MISE increases and variance slightly decreases as $\Delta$ increases.  While the MISE increased for $\Delta < \Delta^\star$, the pointwise estimation error remains low for $t < \Delta$.  This does not hold for $\Delta > \Delta^\star$, where instead we see parameter attenuation, i.e., a bias towards zero in the estimates at each $0 < t< \Delta$, which is captured by the partial MISE.
 
-we can expect a downward bias in parameter estimates. Moreover, if~$\Delta < \Delta^\star$ then we can expect a similar bias in the parameter estimates.  For the former, however, we can simply let~$K_x = K_b$ grow as a function of data size; for the latter, we can see if~$\hat \beta(s)$ is statistically significant for~$s$ near~$\Delta$. If so, we can set~$\Delta$ larger to ensure the condition holds.
 
 \begin{table}[!th]
 \begin{tabular}{c | c c c c c}
 & & \multicolumn{4}{c}{Sampling rate} \\ \cline{3-6}
 $\Delta=$ & & 0.5 & 1 & 2 & 4 \\ \hline
-\multirow{2}{*}{26} & MISE & 0.400 & 0.404 & 0.409 & 0.413 \\
- & Variance & $1.1 \times 10^{-2}$ & $1.3 \times 10^{-2}$ & $1.5 \times 10^{-2}$ & $1.9 \times 10^{-2}$ \\ \hline
-\multirow{2}{*}{29} & MISE & 0.240 & 0.243 & 0.244 & 0.251 \\
- & Variance & $9.2 \times 10^{-3}$ & $1.1 \times 10^{-2}$ & $1.2 \times 10^{-2}$ & $1.8 \times 10^{-2}$ \\ \hline
-\multirow{2}{*}{32} & MISE & 0.105 & 0.103 & 0.103 & 0.105 \\
- & Variance & $8.0 \times 10^{-3}$ & $8.8 \times 10^{-3}$ & $1.0 \times 10^{-2}$ & $1.4 \times 10^{-2}$ \\ \hline
-\multirow{2}{*}{35} & MISE & 0.384 & 0.383 & 0.384 & 0.386 \\
- & Variance & $7.0 \times 10^{-3}$ & $7.7 \times 10^{-3}$ & $9.3 \times 10^{-3}$ & $1.1 \times 10^{-2}$ \\ \hline
-\multirow{2}{*}{37} & MISE & 0.589 & 0.588 & 0.589, & 0.591 \\
- & Variance & $6.0 \times 10^{-3}$ & $6.5 \times 10^{-3}$ & $7.9 \times 10^{-3}$ & $1.0 \times 10^{-2}$ \\ \hline
+\multirow{3}{*}{26} & MISE & $5.9 \times 10^{-2}$ & $6.1 \times 10^{-2}$ & $6.6 \times 10^{-2}$ & $7.4 \times 10^{-2}$ \\
+ & Variance & $1.3 \times 10^{-2}$ & $1.6 \times 10^{-2}$ & $12.4 \times 10^{-2}$ & $3.6 \times 10^{-2}$ \\
+  & P-MISE & $7.1 \times 10^{-2}$ & $7.3 \times 10^{-2}$ & $7.8 \times 10^{-2}$ & $8.8 \times 10^{-2}$ \\ \hline
+\multirow{3}{*}{29} & MISE & $6.9 \times 10^{-2}$ & $7.0 \times 10^{-2}$ & $7.1 \times 10^{-2}$ & $7.8 \times 10^{-2}$ \\
+ & Variance & $1.1 \times 10^{-2}$ & $1.5 \times 10^{-2}$ & $2.0 \times 10^{-2}$ & $3.4 \times 10^{-2}$ \\
+  & P-MISE & $7.5 \times 10^{-2}$ & $7.5 \times 10^{-2}$ & $7.7 \times 10^{-2}$ & $8.4 \times 10^{-2}$ \\ \hline
+\multirow{3}{*}{32} & MISE & $8.1 \times 10^{-2}$ & $8.0 \times 10^{-2}$ & $8.1 \times 10^{-2}$ & $8.7 \times 10^{-2}$ \\
+ & Variance & $1.1 \times 10^{-2}$ & $1.4 \times 10^{-2}$ & $1.9 \times 10^{-2}$ & $3.3 \times 10^{-2}$ \\
+  & P-MISE & $8.1 \times 10^{-2}$ & $8.0 \times 10^{-2}$ & $8.1 \times 10^{-2}$ & $8.7 \times 10^{-2}$ \\ \hline
+\multirow{3}{*}{35} & MISE & $9.0 \times 10^{-2}$ & $8.8 \times 10^{-2}$ & $8.8 \times 10^{-2}$ & $9.2 \times 10^{-2}$ \\
+ & Variance & $1.1 \times 10^{-2}$ & $1.5 \times 10^{-2}$ & $2.2 \times 10^{-2}$ & $3.0 \times 10^{-2}$ \\
+  & P-MISE & $8.5 \times 10^{-2}$ & $8.2 \times 10^{-2}$ & $8.1 \times 10^{-2}$ & $8.4 \times 10^{-2}$ \\ \hline
+\multirow{3}{*}{37} & MISE & $10.3 \times 10^{-2}$ & $10.1 \times 10^{-2}$ & $9.9 \times 10^{-2}$ & $10.1 \times 10^{-2}$ \\
+ & Variance & $1.1 \times 10^{-2}$ & $1.4 \times 10^{-2}$ & $2.0 \times 10^{-2}$ & $3.0 \times 10^{-2}$ \\
+  & P-MISE & $9.4 \times 10^{-2}$ & $9.2 \times 10^{-2}$ & $9.0 \times 10^{-2}$ & $9.0 \times 10^{-2}$ \\ \hline
 \end{tabular}
-\caption{Mean-integrated squared error as a function of $\Delta^\star$ and sampling rate when true $\Delta = 30$ minutes.  Demonstrates the }
-\label{tab:mise}
+\caption{Mean-integrated squared error (MISE), variance, and partial MISE as a function of $\Delta^\star$ and sampling rate when true $\Delta = 32$ minutes.}
+\label{tab:appmise}
 \end{table}
 
 
 \end{document}
 
 
-1. Start simulation for appendix (delta wrong, beta2)
-2. Button Press Figure
-3. Compute wear minutes
+1. Start simulation for appendix (delta wrong, beta2): CHECK
+2. Button Press Figure:
+3. Compute wear minutes:
 4. Standardize EDA
 5. Subsample EDA and gACC only at wear times between 9am and 8pm
 6. EDA/ACC figures
