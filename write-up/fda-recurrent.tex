@@ -201,7 +201,7 @@ U_n (\theta) = \sum_{i=1}^{n} \left ( \sum_{j=1}^{k_i} \frac{h^{(1)}_i
 \]
 with $h_i^{(1)} (T_{i,j}; \theta)$ and $H_i^{(1)} (\tau_{i}; \theta)$ are derivatives with respect to $\theta$.
 
-In classical joint models~\citep{Henderson2000, Tsiatis2004}, time-varying covariates~$x_i (t)$ are observed only intermittently at appointment times. In our current setting, maximizing the likelihood is computationally prohibitive since for any~$\theta$ we must compute the cumulative hazard functions~$H_{i} (\tau_i; \theta)$ which require integration of~$h_i(t;\theta)$ given by~\eqref{eq:hazardlinear} which itself depends on the integral~$\int_{t-\Delta}^t x_i (s) \beta(s) ds$.  That is, the risk model now depends on an integrated past history of the time-varying covariate which leads to severe increase in computational complexity.
+In classical joint models~\citep{Henderson2000, Tsiatis2004}, time-varying covariates~$x_i (t)$ are observed only intermittently at appointment times. In our current setting, maximizing the likelihood is computationally prohibitive since for any~$\theta$ we must compute the cumulative hazard functions~$H_{i} (\tau_i; \theta)$ which require integration of~$h_i(t;\theta)$ given by~\eqref{eq:hazardlinear} which itself depends on the integral~$\int_{t-\Delta}^t x_i (s) \beta(s) ds$ that is a function of the unknown functional parameter $\beta(\cdot)$.  That is, the risk model now depends on an integrated past history of the time-varying covariate which leads to severe increase in computational complexity.
 
 \subsection{Probabilistic subsampling framework}
 
@@ -417,7 +417,7 @@ Under assumption~\ref{assumption:truncation}, we next consider the statistical e
 where~$\Sigma(\theta)$ is the Fisher information of the complete-data maximum likelihood estimator.
 Therefore the relative efficiency is~$c/(1+c)$. For an upper bound~$H = \max_{t \in (0,\tau)} h(t;\theta)$, if we set~$\pi (t) = c \times H$, then the relative efficiency can be lower bounded by~$c / (c+1)$.
 
-Sensor measurements occur multiple times per second.  If the intensity rate is bounded above by $1$ and the unit time scale was hours. If we can subsample the data at~$10$ times per hour, then we have a lower bound on the efficiency of $0.909$. For a 4Hz sensor, this reduces the number of samples per hour from~$4 \times 60 \times 60 = 14,400$ per hour to on average $10$. While the computational complexity of logistic regression is linear in the number of samples, we get $1440$ times reduction in the data size at the cost of a $0.909$ statistical efficiency. If we sample~$100$ times per hour, then the efficiency loss is only $0.999$, with a $144$ times reduction in data size. Table~\ref{tab:compvseff} provides additional examples for a 4Hz and 32Hz sensor rate respectively.  The data reduction depends on this rate; however, the lower bound on statistical efficiency does not because the subsampling rate only depends on the upper bound of the intensity function. In particular, if the events are rare then subsampling rate can be greatly reduced with no impact to statistical efficiency.
+Sensor measurements occur multiple times per second.  Suppose the intensity rate is bounded above by $1$ and the unit time scale was hours. If we then  subsample the data at a rate of~$10$ times per hour, then we have a lower bound on the efficiency of $0.909$. For a 4Hz sensor, this reduces the number of samples per hour from~$4 \times 60 \times 60 = 14,400$ per hour to on average $10$. While the computational complexity of logistic regression is linear in the number of samples, we get $1440$ times reduction in the data size at the cost of a $0.909$ statistical efficiency. If we sample~$100$ times per hour, then the efficiency loss is only $0.999$, with a $144$ times reduction in data size. Table~\ref{tab:compvseff} provides additional examples for a 4Hz and 32Hz sensor rate respectively.  The data reduction depends on this rate; however, the lower bound on statistical efficiency does not because the subsampling rate only depends on the upper bound of the intensity function. In particular, if the events are rare then subsampling rate can be greatly reduced with no impact to statistical efficiency.
 
 \begin{table}[!th]
 \centering
@@ -616,7 +616,7 @@ A key concern is whether all moments of suicidal distress are recorded.  To ensu
 \begin{minipage}{\textwidth}
   \begin{minipage}[b]{0.49\textwidth}
     \centering
-    \includegraphics[width=0.9\textwidth]{figs/buttonpresses.png}
+%    \includegraphics[width=0.9\textwidth]{figs/buttonpresses.png}
     \captionof{figure}{Button-presses per hour within the user-day}
     \label{fig:buttons}
   \end{minipage}
@@ -624,7 +624,7 @@ A key concern is whether all moments of suicidal distress are recorded.  To ensu
   \begin{minipage}[b]{0.49\textwidth}
     \centering
     \centering
-    \includegraphics[width=1.0\textwidth]{figs/recurrent_events_plot.png}
+%    \includegraphics[width=1.0\textwidth]{figs/recurrent_events_plot.png}
     \captionof{figure}{User button-presses versus time in study}
     \label{fig:buttons2}
     \end{minipage}
