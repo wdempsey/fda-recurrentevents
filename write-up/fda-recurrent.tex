@@ -532,13 +532,10 @@ In this section, we extend our model to the case of multiple functional regresso
 \label{eq:multihazardlinear}
 h_i \left( t \given  H_{i,t}^{NX} ; \theta \right) =
 h_0 (t; \gamma) \exp \left( g_t \left( H_{i,t}^{N} \right)^{\prime} \alpha
-  + \int_{t-\Delta}^t x_{i,1} (s) \beta_1(s) ds + \cdots + \int_{t-\Delta}^t x_{i,L} (s) \beta_2(s) ds  \right)
+  + \int_{t-\Delta_1}^t x_{i,1} (s) \beta_1(s) ds + \cdots + \int_{t-\Delta_L}^t x_{i,L} (s) \beta_L(s) ds  \right)
 \end{equation}
-The approach given in Section~\ref{eq:logistication} extends naturally to the multivariate functional setting. For each functional regressor, we estimate the pooled sample covariance $\Sigma_{y,l}$ for $y \in \{0,1\}$ and $l=1,\ldots,L$ as in Section~\ref{sec:margcov}.  Let $\sum_{k=1}^\infty \hat \lambda^{(y)}_{k,l} \hat \psi^{(y)}_{k,l} (s) \hat \psi_{k,l}(t)$ be the spectral decomposition of $\hat \Sigma_{y,l}$.  Then $x_{i,j}(t)$ is approximated using a truncated Karhunen-Loeve
-$$
-\int_{t-\Delta}^t X_{l} (t,s) \beta(t) = \left[M_{l,t} + {\bf c}_l (t)^\top J_{\hat \psi_l^{(y)}, \phi} \right] {\bf b}_l
-$$
-Note that we express each coefficient function in the same spline basis; however, different basis expansions are used for each health process as defined by the marginal covariance calculation in Section~\ref{sec:margcov}.
+The approach given in Section~\ref{eq:logistication} extends naturally to the multivariate functional setting. For each functional regressor, we estimate the pooled sample covariance $\Sigma_{y,l}$ for $y \in \{0,1\}$ and $l=1,\ldots,L$ as in Section~\ref{sec:margcov}.  Let $\sum_{k=1}^\infty \hat \lambda^{(y)}_{k,l} \hat \psi^{(y)}_{k,l} (s) \hat \psi_{k,l}(t)$ be the spectral decomposition of $\hat \Sigma_{y,l}$.  Then $x_{i,j}(t)$ is approximated using a truncated Karhunen-Loeve $\int_{t-\Delta_l}^t X_{l} (t,s) \beta_l(t) = \left[M_{l,t} + {\bf c}_l (t)^\top J_{\hat \psi_l^{(y)}, \phi_l} \right] {\bf b}_l$.
+% Note that we express each coefficient function in the same spline basis; however, different basis expansions are used for each health process as defined by the marginal covariance calculation in Section~\ref{sec:margcov}.
 
 
 \subsection{Missing data}
@@ -577,22 +574,23 @@ $\mathbold{\mu}_i (t) = \E [ \bfx_i (t) \given Y_i (t) = y] = \{
 \mu_y (s_{j}, t) \}_{j=1}^r$ and~$\mu_y (s,t)$ is the mean of~$X(t,s)$
 from group~$y$, and~$\Sigma_t ( s^\prime, s)$ is the covariance
 between~$X(s^\prime,t)$ and $X(s,t)$ for $s^\prime, s \in [0, \Delta]$
-and~$t \in \mathbb{R}_+$.
+and~$t \in \mathbb{R}_+$.  To account for overlap between $\Delta$-windows for $t \in \bfT_i \cup \bfD_i$ - i.e., avoid imputing values at a particular time to different values -- imputation is performed sequentially over this set.
+%$\{ (t,t') : t, t^\prime \in \bfT_i \cup \bfD_i \& |t - t'| < \Delta \}$
 
 \subsubsection{Multiple imputation under uncongeniality}
 
-Multiple imputation yields valid frequentist inferences when the imputation and analysis procedure are congenial~\citep{Meng1994};  the above procedure was derived for function-on-scalar multiple imputation for binary outcomes, which ignored the joint nature of recurrent event analysis in the presence of high frequency sensor data. The main advantage of the above imputation framework is its simplicity and approximate congeniality when events are rare and the sampling rate is low.  The main disadvantage is that the above framework is uncongenial under many events and/or high sampling rates. Again, congeniality ensures good frequentist coverage properties.  A key question is whether we can use the above imputation methods within a general procedure to handle uncongeniality.
+Multiple imputation yields valid frequentist inferences when the imputation and analysis procedure are congenial~\citep{Meng1994};  the above procedure is derived for function-on-scalar multiple imputation for binary outcomes, which ignored the joint nature of recurrent event analysis in the presence of high frequency sensor data. The main advantage of the above imputation framework is its simplicity and approximate congeniality when events are rare and the sampling rate is low.  The main disadvantage is that the above framework is uncongenial under many events and/or high sampling rates. Again, congeniality ensures good frequentist coverage properties.  A key question is whether we can use the above imputation methods within a general procedure to handle uncongeniality.
 
-To address this, we use the recommendation from~\cite{Bartlett2020} and consider a method that first bootstraps a sample from the randomly sampled dataset and then apply multiple imputation to each bootstrap sample.  This general approach was originally proposed by~\cite{Shao1994} and~\cite{Little2002}. We suppose $B$ bootstraps and $M$ imputations per bootstrap; let $\hat \theta_{b,m}$ denote the estimator for the $m$th imputation of the $b$th bootstrap.  The point estimator is given by $(B)^{-1} \sum_{b=1}^B \hat \theta_{b}$ where $\hat \theta_b = M^{-1} \sum_{m=1}^M \hat \theta_{b,m}$. To construct the confidence interval, we require mean sum of squares with and between boostraps, i.e., $MSW = \frac{1}{B(M-1)} \sum_{b=1}^B \sum_{m=1}^M (\hat \theta_{b,m} - \hat \theta_b )^2$ and $MSB = \frac{1}{B-1} \sum_{b=1}^B M \cdot (\hat \theta_b - \hat \theta)^2$ respectively. Then the estimator of the variance of $\hat \theta$ is given by $\left( \frac{B+1}{BM} \right) MSB - MSW/M$.
+To address this, we use the recommendation from~\cite{Bartlett2020} and consider a method that first bootstraps a sample from the dataset and then apply multiple imputation to each bootstrap sample.  This general approach was originally proposed by~\cite{Shao1994} and~\cite{Little2002}. We suppose $B$ bootstraps and $M$ imputations per bootstrap; let $\hat \theta_{b,m}$ denote the estimator for the $m$th imputation of the $b$th bootstrap.  The point estimator is given by $(B)^{-1} \sum_{b=1}^B \hat \theta_{b}$ where $\hat \theta_b = M^{-1} \sum_{m=1}^M \hat \theta_{b,m}$. To construct the confidence interval, we require mean sum of squares with and between boostraps, i.e., $MSW = \frac{1}{B(M-1)} \sum_{b=1}^B \sum_{m=1}^M (\hat \theta_{b,m} - \hat \theta_b )^2$ and $MSB = \frac{1}{B-1} \sum_{b=1}^B M \cdot (\hat \theta_b - \hat \theta)^2$ respectively. Then the estimator of the variance of $\hat \theta$ is given by $\left( \frac{B+1}{BM} \right) MSB - MSW/M$.
 
-The bootstrap followed by multiple imputation procedure has been studied extensively by~\cite{Bartlett2020} and is robust to uncongeniality.  The main disadvantage of this approach is its considerable computational intensity.  Recall likelihood calculations were computationally prohibitive by themselves, so combining with bootstrap and MI would further increase this large-scale computation.  The random subsampling framework thus simplifies handling of missing data via connections to function-on-scalar multiple imputation by~\cite{Petrovich2018} as well as to bootstrap to handle uncongeniality by~\cite{Bartlett2020}. Ignoring the computational time of bootstrap sampling, the computational time for the first choise in the simulation study with $B=200$ bootstraps and $M=2$ imputations per bootstrap leads to $35$ hours for a sampling rate of $0.5$ compared to $7$ hours for a sampling rate of $4$.  This is simply to highlight the substantial benefits of the subsampling framework.
+The bootstrap followed by multiple imputation procedure has been studied extensively by~\cite{Bartlett2020} and is robust to uncongeniality.  The main disadvantage of this approach is its considerable computational intensity.  Recall likelihood calculations were computationally prohibitive by themselves, so combining with bootstrap and MI would further increase this large-scale computation.  The random subsampling framework thus simplifies handling of missing data via connections to function-on-scalar multiple imputation by~\cite{Petrovich2018} as well as to bootstrap to handle uncongeniality by~\cite{Bartlett2020}. Ignoring the computational time of bootstrap sampling, the computational time for the first choise in the simulation study with $B=200$ bootstraps and $M=2$ imputations per bootstrap leads to $35$ hours for a sampling rate of $0.5$ compared to $7$ hours for a sampling rate of $4$, which highlights the benefits of the proposed framework.
 
 
 
 
 \subsection{Multilevel models}
 
-In this section, we extend our model to the case of multilevel models with  functional regressors. Multilevel models are critical in mobile health where we expect high degree of individual variation.  In this case, we suppose that there is individual variation $b_i \sim N(0, \sigma_{b}^2)$ such that the multilevel extension of our model~\eqref{eq:hazard} is given by
+The approach can be extended to multilevel models with functional regressors, which are critical in mobile health where a high degree of individual variation is often observed.  Let $b_i \sim N(0, \sigma_{b}^2)$, then the multilevel extension of~\eqref{eq:hazard} is
 \begin{equation}
 \label{eq:multilevel}
 h_i \left( t \given  H_{i,t}^{NX} ; \theta, b_i \right) \approx
