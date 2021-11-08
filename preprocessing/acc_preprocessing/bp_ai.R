@@ -8,10 +8,9 @@
 library(tidyverse)
 library(lubridate)
 
+setwd('Z:/SI_data/R21_Study - ACC - AI/')
 
-setwd('..')
-
-# read in the button press data and transform the data type of the timestamp
+# read in the button press data and transform the data type of the time stamp
 bp = readRDS('../R21_Study - tags/button_presses.RDS')
 bp = transmute(bp, ID, time=as_datetime(ts))
 
