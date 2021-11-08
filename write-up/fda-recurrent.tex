@@ -23,6 +23,7 @@
 \usepackage{amsfonts,amssymb,amsthm, txfonts, pxfonts,amscd}
 \usepackage{multirow}
 \usepackage{floatrow}
+\usepackage{subcaption}
 % Table float box with bottom caption, box width adjusted to content
 \newfloatcommand{capbtabbox}{table}[][\FBwidth]
 
@@ -642,9 +643,21 @@ The focus here is on two physiological processes -- (1) electrodermal activity (
 The individual EDA and gACC trajectories are highly variable which tends to obscure patterns and trends.  In Figure~\ref{fig:mean_edacc}, the mean trajectories of EDA and gACC are plotted in reverse time from button press timestamps and randomly sampled non-event timestamps. While there are certain similarities in the two plots, the differences in temporal trends are rather striking. In particular, we see sharp increases in EDA in the XX minutes prior to button presses, which is in marked contrast with levels in the six months prior to failure, as seen in the lower pair of curves.
 
 \begin{figure}[!th]
-\rule{3cm}{3cm}%
-\caption{EDA and ACC plots for average at non-event and event times.}
-\label{fig:mean_edacc}
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.6\linewidth]{../figures/smoothed_eda.png}
+  \caption{Mean EDA in 30-minutes prior to button press.}
+  \label{fig:mean_eda}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.4\linewidth]{../figures/smoothed_eda.png}
+  \caption{Mean Activity Index (AI) in 30-minutes prior to button press.}
+  \label{fig:mean_acc}
+\end{subfigure}
+\caption{A figure with two subfigures}
+\label{fig:test}
 \end{figure}
 
 Inspection of the graphs suggests setting $\Delta = XX$ for EDA and $XX$ for gACC and  Gaussian with moments {\bf comparison over $\Delta$ and using imputation} where the baseline rate is assumed to depend on

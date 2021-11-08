@@ -50,9 +50,9 @@ if(!file.exists("../summary_data/bp_eda.rds")) {
       }
     }
   }
-  saveRDS(bp_eda, file = './methods/summary_data/bp_eda.rds')
+  saveRDS(bp_eda, file = '../summary_data/bp_eda.rds')
 } else {
-  bp_eda = readRDS(file = './methods/summary_data/bp_eda.rds')
+  bp_eda = readRDS(file = '../summary_data/bp_eda.rds')
 }
 
 
@@ -62,9 +62,8 @@ bp_eda_summary = bp_eda %>%
   summarise(EDA_entries = n())
 max(bp_eda_summary$EDA_entries) # should be no larger than 7200 = 30*60*4
 
-
 #### Draw the mean plot and the boxplot ####
-bp_eda = bp_eda_read %>%
+bp_eda = bp_eda %>%
   group_by(ID, BP_num, Device) %>%
   mutate(time_to_bp = max(EDA_num)+1-EDA_num) %>%
   ungroup() %>%
@@ -75,20 +74,26 @@ eda_mean_plot =  bp_eda %>%
   ungroup()
 
 
+png("../figures/smoothed_eda.png",
+    width = 480, height = 480, units = "px", pointsize = 12)
 # mean plot
+eda_mean_plot$time_to_bp = eda_mean_plot$time_to_bp/4/60
 plot(x=eda_mean_plot$time_to_bp, y=eda_mean_plot$EDA_mean, axes=F, cex = 0.25, 
      main = "Mean of EDA across observations", ylab = 'mean(EDA)', 
-     xlab = "time before a button press / 0.25 secs")
+     xlab = "Time before Button Press (in minutes)")
 axis(side = 1)
 axis(side = 2)
+smoothed_mean = loess(EDA_mean ~ time_to_bp, data = eda_mean_plot, span = 1/3)
+lines(eda_mean_plot$time_to_bp, smoothed_mean$fitted, col= "red", lwd = 2)
+dev.off()
 
 
-# boxplot for time points in the first minute before a button press
-sub_bp_eda = filter(bp_eda, ID!=1009, time_to_bp<=240)  # 1009 has trouble raw EDA, at about 240
-boxplot(EDA~time_to_bp, data=sub_bp_eda, cex=0.08, axes = F, 
-        main = "Boxplots of EDA across observations", ylab = 'EDA',
-        xlab = "time before a button press / 0.25 secs")
-axis(side = 1)
-axis(side = 2)
-axis(side = 2, at=10, col = 'blue')
-abline(h = 10, col = 'blue')
+# # boxplot for time points in the first minute before a button press
+# sub_bp_eda = filter(bp_eda, ID!=1009, time_to_bp<=240)  # 1009 has trouble raw EDA, at about 240
+# boxplot(EDA~time_to_bp, data=sub_bp_eda, cex=0.08, axes = F, 
+#         main = "Boxplots of EDA across observations", ylab = 'EDA',
+#         xlab = "time before a button press / 0.25 secs")
+# axis(side = 1)
+# axis(side = 2)
+# axis(side = 2, at=10, col = 'blue')
+# abline(h = 10, col = 'blue')
