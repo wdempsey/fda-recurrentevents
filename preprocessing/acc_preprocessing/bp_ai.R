@@ -1,10 +1,4 @@
 ## Code for the mean AI plots 30 minuets backward from the button press
-
-## ---- Please place this file in a folder named "methods" 
-##      under the directory where the scaled AI data is stored. ----
-
-## Recent update: May 27, 2021, by Xinrui Wu
-
 library(tidyverse)
 library(lubridate)
 
