@@ -1,4 +1,4 @@
-File Description
+## ACC Pre-processing
 
 1. [acc_measure_single.R](./acc_measure_single.R): Function for computing AI for the ACC data from a single person.
 2. [acc_measure_allFiles.R](./acc_measure_allFiles.R): Code for computing activity indexes for all the individuals.
