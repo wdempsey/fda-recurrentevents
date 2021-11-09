@@ -2,8 +2,10 @@
 library(tidyverse)
 library(lubridate)
 
-
-setwd('Z:/SI_data/R21_Study - EDA - scaled/')
+## WINDOWS
+setwd('Z:/SI_data/R21_Study - EDA - scaled2/')
+## LINUS
+setwd("/mnt/turbo/SI_data/R21_Study - EDA - scaled2/")
 
 
 # read in the button press data and transform the data type of the timestamp
@@ -12,7 +14,7 @@ bp = transmute(bp, ID, time=as_datetime(ts))
 
 
 #### Match button presses and the previous EDA (scaled) data ####
-if(!file.exists("../summary_data/bp_eda.rds")) {
+if(!file.exists("../summary_data/bp_eda2.rds")) {
   bp_eda = data.frame(ID=NULL, BP_num=NULL, BP_time=NULL, Device=NULL, 
                       EDA_time=NULL, EDA=NULL, EDA_num=NULL)
   
@@ -25,7 +27,7 @@ if(!file.exists("../summary_data/bp_eda.rds")) {
     ## check the progress of the loop and save temporary result ##
     if (i%%10 == 0){
       print(i)
-      saveRDS(bp_eda, file = './methods/summary_data/bp_eda.rds')
+      saveRDS(bp_eda, file = '../summary_data/bp_eda2.rds')
     }
     
     ## match bp and EDA for this observation
@@ -50,9 +52,9 @@ if(!file.exists("../summary_data/bp_eda.rds")) {
       }
     }
   }
-  saveRDS(bp_eda, file = '../summary_data/bp_eda.rds')
+  saveRDS(bp_eda, file = '../summary_data/bp_eda2.rds')
 } else {
-  bp_eda = readRDS(file = '../summary_data/bp_eda.rds')
+  bp_eda = readRDS(file = '../summary_data/bp_eda2.rds')
 }
 
 
