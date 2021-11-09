@@ -62,6 +62,8 @@ bp_eda_summary = bp_eda %>%
   summarise(EDA_entries = n())
 max(bp_eda_summary$EDA_entries) # should be no larger than 7200 = 30*60*4
 
+bp_eda = subset(bp_eda, abs(EDA) < 5)
+
 #### Draw the mean plot and the boxplot ####
 bp_eda = bp_eda %>%
   group_by(ID, BP_num, Device) %>%
@@ -75,10 +77,10 @@ eda_mean_plot =  bp_eda %>%
 
 
 png("../figures/smoothed_eda.png",
-    width = 480, height = 480, units = "px", pointsize = 12)
+    width = 800, height = 600, units = "px", pointsize = 18)
 # mean plot
 eda_mean_plot$time_to_bp = eda_mean_plot$time_to_bp/4/60
-plot(x=eda_mean_plot$time_to_bp, y=eda_mean_plot$EDA_mean, axes=F, cex = 0.25, 
+plot(x=eda_mean_plot$time_to_bp, y=eda_mean_plot$EDA_mean, axes=F, cex = 1, 
      main = "Mean of EDA across observations", ylab = 'mean(EDA)', 
      xlab = "Time before Button Press (in minutes)")
 axis(side = 1)

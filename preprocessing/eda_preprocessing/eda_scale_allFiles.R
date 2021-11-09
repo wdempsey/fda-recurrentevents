@@ -11,7 +11,7 @@
 library(tidyverse)
 library(lubridate)
 
-setwd('..')
+setwd('Z:/SI_data/R21_Study - EDA - scaled/')
 
 ## ------------------ Scale EDA for all observations ------------------ ##
 
@@ -24,6 +24,7 @@ for (i in 1:n_obs){
   
   if (file.exists(input_name)){
     eda_raw = readRDS(input_name)
+    eda_raw = subset(eda_raw, EDA_HighLowPass < 20)
     eda_scaled = mutate(eda_raw, time=as_datetime(ts/1000)) %>%  # change data type of the timestamp
       mutate(date=as_date(time)) %>%  # add date column
       transmute(date, time, Device=E4_serial, EDA=EDA_HighLowPass) %>%
