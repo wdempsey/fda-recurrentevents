@@ -11,7 +11,7 @@
 library(tidyverse)
 library(lubridate)
 
-setwd('Z:/SI_data/R21_Study - EDA - scaled/')
+setwd('Z:/SI_data/R21_Study - EDA - scaled2/')
 
 ## ------------------ Scale EDA for all observations ------------------ ##
 
@@ -19,6 +19,7 @@ n_obs = 91  # the largest number of observations (files)
 eda_dir = "../R21_Study - EDA" # the directory where the raw EDA data is
 for (i in 1:n_obs){
   id = 1000 + i 
+  print(paste("Current patient", id))
   input_name = paste0(eda_dir, "/", id, "_EDA.rds")
   output_name = paste0("./", id, "_EDA_scaled.rds")
   
