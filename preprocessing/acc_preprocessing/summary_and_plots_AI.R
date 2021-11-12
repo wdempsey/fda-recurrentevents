@@ -1,14 +1,9 @@
 # Summary and plots on AI and pause time
 
-## ---- Please place this file in a folder named "methods" 
-##      under the directory where the scaled AI data is stored. ----
-
-## Recent update: May 27, 2021, by Xinrui Wu
-
 library(tidyverse)
 library(lubridate)
 
-setwd('..')
+setwd('/mnt/turbo/SI_data/R21_Study - ACC - AI/')
 
 ## ------------------ Summary for AI and Pause time------------------ ##
 n_obs = 91  # the largest number of observations (files)
@@ -27,6 +22,7 @@ all_pause = data.frame(ID=integer(), pause_num=integer(), pause=double(), period
 none_ind = 0
 for (i in 1:n_obs){
   id = 1000 + i 
+  print(paste("At Patient", id))
   input_name = paste0("./", id, "_AI.rds")
   
   ## check the progress of the loop##
@@ -48,7 +44,8 @@ for (i in 1:n_obs){
     summary_AI[i, 'Continuous Periods'] = length(unique(acc_ai$Period))
     
     # pause information
-    time_diff = round(diff(as.numeric(acc_ai$timestamp)))
+    timestamps = acc_ai$timestamp[order(acc_ai$timestamp)]
+    time_diff = round(diff(as.numeric(timestamps)))
     cum_time = cumsum(time_diff)[(c(which(time_diff > epch), length(time_diff)+1)-1)] - 
       c(0, cumsum(time_diff)[which(time_diff > epch)])
     n_pause = length(which(time_diff > epch))
@@ -64,9 +61,7 @@ for (i in 1:n_obs){
       summary_AI[i, 'Pause_max(hour)'] = 0
       summary_AI[i, 'Pause_min(hour)'] = 0
     }
-  }
-  
-  else{
+  } else{
     none_ind = c(none_ind, i)
   }
 }
@@ -75,8 +70,8 @@ for (i in 1:n_obs){
 none_ind = none_ind[-1]
 if(length(none_ind) > 0) {summary_AI = summary_AI[-none_ind,]}
 
-saveRDS(summary_AI, file = './methods/summary_data/summary_AI.rds')
-saveRDS(all_pause, file = './methods/summary_data/pauses_AI.rds')
+saveRDS(summary_AI, file = '../summary_data/summary_AI.rds')
+saveRDS(all_pause, file = '../summary_data/pauses_AI.rds')
 
 # summary of pause time for each observation
 summary_pause = all_pause %>%
@@ -86,11 +81,11 @@ summary_pause = all_pause %>%
             num_30min_to_1day = sum(pause_num > 0 & pause >= 30*60 & pause < 60*60*24),
             num_more_than_1day = sum(pause_num > 0 & pause >= 60*60*24), 
             num_total = sum(pause_num > 0))
-saveRDS(summary_pause, file = './methods/summary_data/summary_pause_AI.rds')
+saveRDS(summary_pause, file = '../summary_data/summary_pause_AI.rds')
 
 
-## ---------- Frequency of missing AI data in the 30 minuetes before button presses ---------- ##
-all_pause = readRDS('./methods/summary_data/pauses_AI.rds')
+## ---------- Frequency of missing AI data in the 30 minutes before button presses ---------- ##
+all_pause = readRDS('../summary_data/pauses_AI.rds')
 
 time_with_miss_30min = transmute(all_pause, ID, pause_num, period) %>%
   mutate(time_with_miss = period * (period <= 30*60 & pause_num > 0) + 
@@ -108,6 +103,13 @@ prob_miss_30min_obs = time_with_miss_30min %>%
 prob_miss_30min_all = sum(time_with_miss_30min$time_with_miss) / sum(time_with_miss_30min$period)
 print(prob_miss_30min_all)
 
+library(ggplot2)
+png("~/Documents/github/fda-recurrentevents/figures/missing_data_ai.png",
+    width = 480, height = 480, units = "px", pointsize = 12)
+par(mar = c(4, 4, 1, 1), mfrow = c(1,1))
+qplot((time_with_miss_30min$time_with_miss / time_with_miss_30min$period), 
+      geom="histogram", xlab = "Fraction of Missing AI data in 30-minutes prior to a measurement") 
+dev.off()
 
 ## ---------- Summary of devices ---------- ##
 num_devices = data.frame(ID=integer(), num_device=integer()) # number of devices for each observation
@@ -115,6 +117,7 @@ num_devices = data.frame(ID=integer(), num_device=integer()) # number of devices
 n_obs = 91
 for (i in 1:n_obs){
   id = 1000 + i 
+  print(paste("At Patient", id))
   input_name = paste0("./", id, "_AI.rds")
   
   if (file.exists(input_name)){
@@ -123,12 +126,9 @@ for (i in 1:n_obs){
     num_devices = rbind(num_devices, temp)
   }
 }
-saveRDS(num_devices, file = './methods/summary_data/num_devices_AI.rds')
+saveRDS(num_devices, file = '../summary_data/num_devices_AI.rds')
 
 table(num_devices$num_device)
-
-
-
 
 ## ------------------ Plots ------------------ ##
 ## summary of AI ##
@@ -166,33 +166,7 @@ legend(91,900, legend=c("mean", "maximum", "minimum",
                         '95% quantile', '99% quantile'), 
        col=c('black', 'grey', 'grey','blue','red', 'blue','red','blue'), box.col = "white", 
        horiz=F, lty=c(1,1,1,3,3,2,4,4), cex=0.8)
-legend(91,100, legend=c("mean", 
-                        '25% quantile', '50% quantile', '75% quantile'), 
-       col=c('black', 'red', 'blue','dimgrey'), box.col = "white", 
-       horiz=F, lty=c(1,3,3,3), cex=0.8)
 dev.off()
-
-
-
-#### AI histogram for each obs. ####
-par(mfrow = c(15, 6), mar=c(1.5,2,1.5,0.5))
-n_obs = 91
-for (i in 1:n_obs){
-  id = 1000 + i 
-  input_name = paste0("./", id, "_AI.rds")
-  
-  if (file.exists(input_name)){
-    acc_ai = readRDS(input_name)
-    hist(acc_ai$AI, breaks=50, freq=F, xlab='AI', main = id)
-    abline(v = mean(acc_ai$AI), col='blue')
-    abline(v = quantile(acc_ai$AI, 0.95), col='red')
-    abline(v = quantile(acc_ai$AI, 0.99), col='grey')
-  }
-}
-dev.off()
-
-
-
 
 ## summary of pause time ##
 #### boxplot ####
