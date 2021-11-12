@@ -36,12 +36,10 @@ for (i in 1:n_obs){
       ungroup() %>%
       filter(time_diff != 0) %>%  # drop duplicate data
       group_by(date) %>%
-      mutate(EDA_raw = EDA) %>%
-      mutate(EDA_scaled = scale(EDA, scale = FALSE)) %>%
-      mutate(EDA_scaled2 = scale(EDA)) %>%
+      mutate(EDA = scale(EDA)) %>%
       ungroup() %>%
       arrange(Device, time) %>%
-      transmute(timestamp=time, Device, EDA_raw, EDA_scaled, EDA_scaled2)
+      transmute(timestamp=time, Device, EDA)
     saveRDS(eda_scaled, file = output_name)
   }
 }

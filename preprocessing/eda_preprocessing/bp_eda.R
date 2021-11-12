@@ -3,9 +3,9 @@ library(tidyverse)
 library(lubridate)
 
 ## WINDOWS
-setwd('Z:/SI_data/R21_Study - EDA - scaled2/')
-## LINUS
-setwd("/mnt/turbo/SI_data/R21_Study - EDA - scaled2/")
+setwd('Z:/SI_data/R21_Study - EDA - scaled/')
+## LINUX
+setwd("/mnt/turbo/SI_data/R21_Study - EDA - scaled/")
 
 
 # read in the button press data and transform the data type of the timestamp
@@ -14,7 +14,7 @@ bp = transmute(bp, ID, time=as_datetime(ts))
 
 
 #### Match button presses and the previous EDA (scaled) data ####
-if(!file.exists("../summary_data/bp_eda2.rds")) {
+if(!file.exists("../summary_data/bp_eda.rds")) {
   bp_eda = data.frame(ID=NULL, BP_num=NULL, BP_time=NULL, Device=NULL, 
                       EDA_time=NULL, EDA=NULL, EDA_num=NULL)
   
@@ -42,7 +42,7 @@ if(!file.exists("../summary_data/bp_eda2.rds")) {
         if (dim(sub_eda)[1] > 0){
           sub_bp_eda = sub_eda %>%
             transmute(ID=rep(id,n()), BP_num=rep(j,n()), BP_time=rep(bp_time, n()), 
-                      Device, EDA_time=timestamp, EDA=EDA_scaled) %>%
+                      Device, EDA_time=timestamp, EDA=EDA) %>%
             group_by(Device) %>%
             mutate(EDA_num = 1:n()) %>%
             ungroup() %>%
@@ -52,9 +52,9 @@ if(!file.exists("../summary_data/bp_eda2.rds")) {
       }
     }
   }
-  saveRDS(bp_eda, file = '../summary_data/bp_eda2.rds')
+  saveRDS(bp_eda, file = '../summary_data/bp_eda.rds')
 } else {
-  bp_eda = readRDS(file = '../summary_data/bp_eda2.rds')
+  bp_eda = readRDS(file = '../summary_data/bp_eda.rds')
 }
 
 
@@ -73,21 +73,25 @@ bp_eda = bp_eda %>%
 eda_mean_plot =  bp_eda %>%
   filter(!is.na(EDA)) %>%
   group_by(time_to_bp) %>%
-  summarize(EDA_mean = mean(EDA), EDA_sd = sd(EDA), num_bp = n()) %>%
+  summarize(EDA_mean = mean(EDA),
+            EDA_sd = sd(EDA),
+            num_bp = n()) %>%
   ungroup()
 
+smoothed_mean = loess(EDA_mean ~ time_to_bp, data = eda_mean_plot, span = 1/3)
 
 png("../figures/smoothed_eda.png",
-    width = 800, height = 600, units = "px", pointsize = 18)
+    width = 480, height = 480, units = "px", pointsize = 12)
+
+par(mfrow = c(1,1), mar = c(5,4,1,1)+0.1)
 # mean plot
 eda_mean_plot$time_to_bp = eda_mean_plot$time_to_bp/4/60
-plot(x=eda_mean_plot$time_to_bp, y=eda_mean_plot$EDA_mean, axes=F, cex = 1, 
-     main = "Mean of EDA across observations", ylab = 'mean(EDA)', 
-     xlab = "Time before Button Press (in minutes)")
+plot(x=eda_mean_plot$time_to_bp, y=eda_mean_plot$EDA_mean, axes=F, cex = 0.5,
+     ylab = 'Avg. Scaled EDA', 
+     xlab = "Time before Button Press (in minutes)",
+)
 axis(side = 1)
 axis(side = 2)
-smoothed_mean = loess(EDA_mean ~ time_to_bp, data = eda_mean_plot, span = 1/3)
-smoothed_sd = loess(EDA_sd ~ time_to_bp, data = eda_mean_plot, span = 1/3)
 lines(eda_mean_plot$time_to_bp, smoothed_mean$fitted, col= "red", lwd = 2)
 dev.off()
 
