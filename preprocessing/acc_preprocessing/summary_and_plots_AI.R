@@ -130,25 +130,16 @@ saveRDS(num_devices, file = '../summary_data/num_devices_AI.rds')
 
 table(num_devices$num_device)
 
-## ------------------ Plots ------------------ ##
-## summary of AI ##
-#### Histogram of AI mean ####
-hist(summary_AI$AI_mean, breaks = 25, axes = F, xlab = '', ylab = '', 
-     main = 'Histogram of mean(AI) across Observations')
-axis(side = 1)
-axis(side = 2)
-
-
 #### AI quantiles for each obs. ####
-par(xpd=T, mar=c(5,5,5,7))
-ymax = max(summary_AI$AI_max)
-ymin = min(summary_AI$AI_min)
-plot(x = (summary_AI$ID - 1000), y = summary_AI$AI_mean, type = 'l', axes = F, ylim = c(ymin-50, ymax+50), 
-     xlab = 'Observations', ylab = 'AI', main = 'Summary of AI acorss Observations')
+png("~/Documents/github/fda-recurrentevents/figures/ai_summary.png",
+    width = 720, height = 480, units = "px", pointsize = 18)
+par(mar=c(4,4,1,7))
+ymax = max(summary_AI$AI.99)
+ymin = min(summary_AI$AI.25)
+plot(x = (summary_AI$ID - 1000), y = summary_AI$AI_mean, type = 'l', axes = F, ylim = c(ymin*0.8, ymax*1.2), 
+     xlab = '', ylab = '')
 axis(side = 1)
 axis(side = 2)
-points(x = (summary_AI$ID - 1000), y = summary_AI$AI_max, type = 'l', lty = 1, col = 'grey')
-points(x = (summary_AI$ID - 1000), y = summary_AI$AI_min, type = 'l', lty = 1, col = 'grey')
 points(x = (summary_AI$ID - 1000), y = summary_AI$AI.25, type = 'l', lty = 3, col = 'blue')
 points(x = (summary_AI$ID - 1000), y = summary_AI$AI.50, type = 'l', lty = 3, col = 'red')
 points(x = (summary_AI$ID - 1000), y = summary_AI$AI.75, type = 'l', lty = 2, col = 'blue')
@@ -158,36 +149,24 @@ text(x = (summary_AI$ID - 1000), y = rep(ymax+20, dim(summary_AI)[1]),
      labels = summary_AI$Days, col = "dimgrey", cex = .5)
 text(x = (summary_AI$ID - 1000), y = rep(ymax+45, dim(summary_AI)[1]), 
      labels = summary_AI$`Continuous Periods`, col = "pink", cex = .5)
-legend(95,900, legend=c("AI_max", "AI_min", "AI_mean", 'Days', 'Periods'), 
-       col=c('red', 'blue', 'black', 'dimgrey', 'pink'), box.col = "white", 
-       horiz=F, lty=c(2,2,1,1,1), cex=0.8)
-legend(91,900, legend=c("mean", "maximum", "minimum", 
+# legend(95,900, legend=c("AI_max", "AI_min", "AI_mean", 'Days', 'Periods'), 
+       # col=c('red', 'blue', 'black', 'dimgrey', 'pink'), box.col = "white", 
+       # horiz=F, lty=c(2,2,1,1,1), cex=0.8)
+legend(91,400, legend=c("mean", "maximum", "minimum", 
                         '25% quantile', '50% quantile', '75% quantile', 
                         '95% quantile', '99% quantile'), 
        col=c('black', 'grey', 'grey','blue','red', 'blue','red','blue'), box.col = "white", 
        horiz=F, lty=c(1,1,1,3,3,2,4,4), cex=0.8)
+mtext("AI", side = 2, line = 2)
+mtext("User ID", side = 1, line = 2)
 dev.off()
-
-## summary of pause time ##
-#### boxplot ####
-hist(all_pause$pause)
-boxplot((pause/3600)~ID, data = all_pause, ylab='Pause Time / hour')
-
-#### barplot ####
-df = t(as.matrix(summary_pause[,2:5]))
-barplot(df, col=c('red', 'blue', 'yellow', 'grey'),
-        legend = c('< 1min', '[1min, 30mins)', '[30mins, 1day)', '>= 1day'), 
-        xlab = 'ID', ylab = 'Count', main = "Number of Pauses")
-par(mfrow = c(2, 2), mgp = c(1,1,0))
-barplot(df[1,], col='red', xlab = 'ID', main = 'Pauses < 1 min')
-barplot(df[2,], col='blue', xlab = 'ID', main = 'Pauses in [1min, 30mins)')
-barplot(df[3,], col='yellow', xlab = 'ID', main = 'Pauses in [30mins, 1day)')
-barplot(df[4,], col='grey', xlab = 'ID', main = 'Pauses > 1 day')
-dev.off()
-
 
 ## probability of having missing data in the past 30 mins for each observed time ##
-barplot(prob_miss_30min_obs$prob, type = 'l', xlab='ID', ylab='Probability', 
-        main = 'Prob. of having missing data in the past 30 mins')
-hist(prob_miss_30min_obs$prob, xlab='Probability', breaks = seq(from=0, to=0.15, by = 0.01), 
-     main = 'Histogram of the Prob. of having missing data in the past 30 mins')
+png("~/Documents/github/fda-recurrentevents/figures/missingperuser.png",
+    width = 720, height = 480, units = "px", pointsize = 18)
+par(mfrow = c(1,1),
+    mar = c(5,4,1,1) + 0.1)
+ggplot(data = prob_miss_30min_obs, aes(x = ID, y = prob)) + 
+  geom_bar(stat = "identity") + 
+  xlab("Patient ID")+ ylab("Probability of missing data in past 30 minutes")
+

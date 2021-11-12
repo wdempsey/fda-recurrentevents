@@ -1,17 +1,19 @@
 ## Summary and plots on EDA and its pause time
-
-## ---- Please place this file in a folder named "methods" 
-##      under the directory where the scaled EDA data is stored. ----
-
-## Recent update: May 27, 2021, by Xinrui Wu
-
 library(tidyverse)
 library(lubridate)
 
-setwd('..')
+setwd('/mnt/turbo/SI_data/R21_Study - EDA - scaled/')
+
 ## ------------------ Summary for Pause time in EDA------------------ ##
 n_obs = 91  # the largest number of observations (files)
 td = 0.25 # time difference between 2 consecutive data
+
+# summary of AI for each person
+summary_EDA = data.frame(matrix(0, nrow = n_obs, ncol = 14))
+colnames(summary_EDA) = c('ID', 'EDA_mean', 'EDA_sd', 'EDA_max', 'EDA_min', 
+                         'EDA.25', 'EDA.50', 'EDA.75', 'EDA.95', 'EDA.99', 
+                         'Days', 'Continuous Periods', 
+                         'Pause_max(hour)', 'Pause_min(hour)')
 
 #  pause and period (after the pause) length in seconds
 all_pause = data.frame(ID=integer(), pause_num=integer(), pause_len=double(), 
@@ -19,44 +21,50 @@ all_pause = data.frame(ID=integer(), pause_num=integer(), pause_len=double(),
 
 for (i in 1:n_obs){
   id = 1000 + i 
-  input_name = paste0("./", id, "_EDA.rds")
+  print(paste("At patient ", id))
+  input_name = paste0("./", id, "_EDA_scaled.rds")
   
   ## check the progress of the loop and save temporary result ##
   if (i%%10 == 0){
     print(i)
-    saveRDS(all_pause, file = './methods/summary_data/pauses_EDA.rds')
+    saveRDS(all_pause, file = '../summary_data/pauses_EDA.rds')
   }
   
   if (file.exists(input_name)){
     eda = readRDS(input_name)
-    eda_hlp = eda %>%
-      transmute(ID=Participant, time = as_datetime(eda$ts/1000), EDA = EDA_HighLowPass)
-    
+    summary_EDA[i, 'ID'] = id
+    summary_EDA[i, 'EDA_mean'] = mean(eda$EDA_scaled)
+    summary_EDA[i, 'EDA_sd'] = sd(eda$EDA_scaled)
+    summary_EDA[i, 'EDA_max'] = max(eda$EDA_scaled)
+    summary_EDA[i, 'EDA_min'] = min(eda$EDA_scaled)
+    summary_EDA[i, 'EDA_max'] = max(eda$EDA_scaled)
+    summary_EDA[i, c('EDA.25', 'EDA.50', 'EDA.75', 'EDA.95', 'EDA.99')] = 
+      quantile(eda$EDA_scaled, probs = c(0.25, 0.5, 0.75, 0.95, 0.99))
+    summary_EDA[i, 'Days'] = length(unique(as.Date(eda$timestamp)))
     # pause information
-    time_diff = round(diff(as.numeric(eda_hlp$time)),2)
-    pause_time = which(time_diff > td)
-    n_pause = length(pause_time)
-    
-    eda_hlp = eda_hlp %>%
-      mutate(period=rep(1, dim(eda_hlp)[1]))
-    if(n_pause > 0){
-      for (i in 1:n_pause){
-        breaks = c(pause_time, dim(eda_hlp)[1])
-        eda_hlp$period[(breaks[i]+1):breaks[i+1]] = i+1
-      }
+    timestamps = eda$timestamp[order(eda$timestamp)]
+    time_diff = round(diff(as.numeric(timestamps)),3)
+    cum_time = cumsum(time_diff)[(c(which(time_diff > td), length(time_diff)+1)-1)] - 
+      c(0, cumsum(time_diff)[which(time_diff > td)])
+    n_pause = length(which(time_diff > td))
+    all_pause = rbind(all_pause, data.frame(ID=id, pause_num=0, pause=0, period=cum_time[1]))
+    if (n_pause > 0){
+      sub_pause = time_diff[which(time_diff > td)]
+      all_pause = rbind(all_pause, data.frame(ID=rep(id, n_pause), pause_num=1:n_pause, 
+                                              pause=sub_pause, period=cum_time[2:length(cum_time)]))
+      summary_EDA[i, 'Pause_max(hour)'] = round(max(sub_pause)/3600, 4)
+      summary_EDA[i, 'Pause_min(hour)'] = round(min(sub_pause)/3600, 4)
+      summary_EDA[i, 'Continuous Periods'] = n_pause+1
     }
-    sub_pause = eda_hlp %>%
-      group_by(ID, period) %>%
-      summarise(period_len = as.numeric(difftime(tail(time,1),time[1], units = 'secs')), 
-                num_na = sum(is.na(EDA))) %>%
-      ungroup() %>%
-      transmute(ID, pause_num=period-1, pause_len = c(0, time_diff[which(time_diff > td)]),
-                pause_len, period_len, num_na)
-    
-    all_pause = rbind(all_pause, sub_pause)
+    else{
+      summary_EDA[i, 'Pause_max(hour)'] = 0
+      summary_EDA[i, 'Pause_min(hour)'] = 0
+    }
+  } else{
+    none_ind = c(none_ind, i)
   }
 }
-saveRDS(all_pause, file = './methods/summary_data/pauses_EDA.rds')
+saveRDS(all_pause, file = '../summary_data/pauses_EDA.rds')
 
 # summary of pause time for each observation
 summary_pause_EDA = all_pause %>%
