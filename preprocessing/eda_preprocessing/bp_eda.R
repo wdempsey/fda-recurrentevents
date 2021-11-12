@@ -79,15 +79,14 @@ eda_mean_plot =  bp_eda %>%
   ungroup()
 
 smoothed_mean = loess(EDA_mean ~ time_to_bp, data = eda_mean_plot, span = 1/3)
+eda_mean_plot$time_to_bp = eda_mean_plot$time_to_bp/4/60
 
 png("../figures/smoothed_eda.png",
     width = 480, height = 480, units = "px", pointsize = 12)
-
 par(mfrow = c(1,1), mar = c(5,4,1,1)+0.1)
 # mean plot
-eda_mean_plot$time_to_bp = eda_mean_plot$time_to_bp/4/60
 plot(x=eda_mean_plot$time_to_bp, y=eda_mean_plot$EDA_mean, axes=F, cex = 0.5,
-     ylab = 'Avg. Scaled EDA', 
+     ylab = 'Average Scaled EDA', 
      xlab = "Time before Button Press (in minutes)",
 )
 axis(side = 1)
