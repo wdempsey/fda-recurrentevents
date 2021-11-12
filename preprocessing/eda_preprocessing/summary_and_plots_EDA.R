@@ -18,7 +18,7 @@ colnames(summary_EDA) = c('ID', 'EDA_mean', 'EDA_sd', 'EDA_max', 'EDA_min',
 #  pause and period (after the pause) length in seconds
 all_pause = data.frame(ID=integer(), pause_num=integer(), pause_len=double(), 
                        period_len=double(), num_na=integer()) 
-
+none_ind = 0
 for (i in 1:n_obs){
   id = 1000 + i 
   print(paste("At patient ", id))
@@ -39,7 +39,7 @@ for (i in 1:n_obs){
     summary_EDA[i, 'EDA_min'] = min(eda$EDA_scaled)
     summary_EDA[i, 'EDA_max'] = max(eda$EDA_scaled)
     summary_EDA[i, c('EDA.25', 'EDA.50', 'EDA.75', 'EDA.95', 'EDA.99')] = 
-      quantile(eda$EDA_scaled, probs = c(0.25, 0.5, 0.75, 0.95, 0.99))
+      quantile(eda$EDA_scaled, probs = c(0.25, 0.5, 0.75, 0.95, 0.99), na.rm = T)
     summary_EDA[i, 'Days'] = length(unique(as.Date(eda$timestamp)))
     # pause information
     timestamps = eda$timestamp[order(eda$timestamp)]
@@ -74,7 +74,7 @@ summary_pause_EDA = all_pause %>%
             num_30min_to_1day = sum(pause_num > 0 & pause_len >= 30*60 & pause_len < 60*60*24),
             num_more_than_1day = sum(pause_num > 0 & pause_len >= 60*60*24), 
             num_total = sum(pause_num > 0))
-saveRDS(summary_pause_EDA, file = './methods/summary_data/summary_pause_EDA.rds')
+saveRDS(summary_pause_EDA, file = '../summary_data/summary_pause_EDA.rds')
 
 
 ## ---------- Frequency of missing EDA data in the 30 minuetes before button presses ---------- ##
@@ -153,10 +153,6 @@ for (i in 1:n_obs){
 
 
 ## ------------------ Plots ------------------ ##
-
-## pause time ##
-hist(all_pause$pause_len)
-boxplot((pause_len/3600)~ID, data = all_pause, ylab='Pause Time (EDA) / hour')
 
 
 df = t(as.matrix(summary_pause_EDA[,2:5]))
