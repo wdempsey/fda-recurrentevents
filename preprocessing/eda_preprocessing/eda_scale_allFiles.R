@@ -6,12 +6,12 @@
 ## Recent update: May 27, 2021, by Xinrui Wu
 
 #### For each user:
-####     EDA_scaled = (EDA - mean_by_date) / std_by_date
+####     EDA_scaled = (EDA - mean_by_date)
 
 library(tidyverse)
 library(lubridate)
 
-setwd('Z:/SI_data/R21_Study - EDA - scaled2/')
+setwd('Z:/SI_data/R21_Study - EDA - scaled3/')
 
 ## ------------------ Scale EDA for all observations ------------------ ##
 
@@ -36,10 +36,12 @@ for (i in 1:n_obs){
       ungroup() %>%
       filter(time_diff != 0) %>%  # drop duplicate data
       group_by(date) %>%
-      mutate(EDA_scaled = scale(EDA)) %>%
+      mutate(EDA_raw = EDA) %>%
+      mutate(EDA_scaled = scale(EDA, scale = FALSE)) %>%
+      mutate(EDA_scaled2 = scale(EDA)) %>%
       ungroup() %>%
       arrange(Device, time) %>%
-      transmute(timestamp=time, Device, EDA_scaled)
+      transmute(timestamp=time, Device, EDA_raw, EDA_scaled, EDA_scaled2)
     saveRDS(eda_scaled, file = output_name)
   }
 }

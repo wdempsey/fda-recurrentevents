@@ -64,8 +64,6 @@ bp_eda_summary = bp_eda %>%
   summarise(EDA_entries = n())
 max(bp_eda_summary$EDA_entries) # should be no larger than 7200 = 30*60*4
 
-bp_eda = subset(bp_eda, abs(EDA) < 5)
-
 #### Draw the mean plot and the boxplot ####
 bp_eda = bp_eda %>%
   group_by(ID, BP_num, Device) %>%
@@ -73,6 +71,7 @@ bp_eda = bp_eda %>%
   ungroup() %>%
   arrange(time_to_bp)
 eda_mean_plot =  bp_eda %>%
+  filter(!is.na(EDA)) %>%
   group_by(time_to_bp) %>%
   summarize(EDA_mean = mean(EDA), EDA_sd = sd(EDA), num_bp = n()) %>%
   ungroup()
@@ -88,6 +87,7 @@ plot(x=eda_mean_plot$time_to_bp, y=eda_mean_plot$EDA_mean, axes=F, cex = 1,
 axis(side = 1)
 axis(side = 2)
 smoothed_mean = loess(EDA_mean ~ time_to_bp, data = eda_mean_plot, span = 1/3)
+smoothed_sd = loess(EDA_sd ~ time_to_bp, data = eda_mean_plot, span = 1/3)
 lines(eda_mean_plot$time_to_bp, smoothed_mean$fitted, col= "red", lwd = 2)
 dev.off()
 
