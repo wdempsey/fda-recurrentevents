@@ -126,12 +126,14 @@ saveRDS(num_devices, file = '../summary_data/num_devices_AI.rds')
 table(num_devices$num_device)
 
 #### AI quantiles for each obs. ####
-png("~/Documents/github/fda-recurrentevents/figures/ai_summary.png",
+summary_AI = readRDS(file = '../summary_data/summary_AI.rds')
+
+png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/ai_summary.png",
     width = 720, height = 480, units = "px", pointsize = 18)
-par(mar=c(4,4,1,7))
+par(xpd=T, mar=c(4,4,1,7))
 ymax = max(summary_AI$AI.99)
 ymin = min(summary_AI$AI.25)
-plot(x = (summary_AI$ID - 1000), y = summary_AI$AI_mean, type = 'l', axes = F, ylim = c(ymin*0.8, ymax*1.2), 
+plot(x = (summary_AI$ID - 1000), y = summary_AI$AI_mean, type = 'l', axes = F, ylim = c(ymin*0.8, ymax*1.1), 
      xlab = '', ylab = '')
 axis(side = 1)
 axis(side = 2)
