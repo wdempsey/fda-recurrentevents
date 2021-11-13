@@ -1,6 +1,7 @@
 ## Summary and plots on EDA and its pause time
 library(tidyverse)
 library(lubridate)
+library(ggplot2)
 
 ## Windows
 setwd('Z:/SI_data/R21_Study - EDA - scaled/')
@@ -102,17 +103,9 @@ prob_miss_30min_obs = time_with_miss_30min %>%
 prob_miss_30min_all = sum(time_with_miss_30min$time_with_miss) / sum(time_with_miss_30min$period)
 print(prob_miss_30min_all)
 
-library(ggplot2)
-png("~/Documents/github/fda-recurrentevents/figures/missing_data_eda.png",
-    width = 480, height = 480, units = "px", pointsize = 12)
-par(mar = c(4, 4, 1, 1), mfrow = c(1,1))
-qplot(prob_miss_30min_obs$prob, 
-      geom="histogram", xlab = "Fraction of Missing AI data in 30-minutes prior to a measurement") 
-dev.off()
-
 #### EDA quantiles for each obs. ####
 summary_EDA = summary_EDA[summary_EDA$ID > 0,]
-png("~/Documents/github/fda-recurrentevents/figures/eda_summary.png",
+png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_summary.png",
     width = 720, height = 480, units = "px", pointsize = 18)
 par(xpd=T, mar=c(4,4,1,7))
 ymax = max(summary_EDA$EDA.99)
@@ -143,10 +136,10 @@ mtext("User ID", side = 1, line = 2)
 dev.off()
 
 ## probability of having missing data in the past 30 mins for each observed time ##
-png("~/Documents/github/fda-recurrentevents/figures/missingperuser.png",
-    width = 720, height = 480, units = "px", pointsize = 18)
-par(mfrow = c(1,1),
-    mar = c(5,4,1,1) + 0.1)
-ggplot(data = prob_miss_30min_obs, aes(x = ID, y = prob)) + 
-  geom_bar(stat = "identity") + 
-  xlab("Patient ID")+ ylab("Probability of missing data in past 30 minutes")
+png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/missing_data_eda.png",
+    width = 480, height = 480, units = "px", pointsize = 12)
+par(mar = c(4, 4, 1, 1), mfrow = c(1,1))
+qplot(prob_miss_30min_obs$prob, 
+      geom="histogram", xlab = "Patient Average Fraction of Missing EDA data in 30-minutes",
+      bins = 20) 
+dev.off()
