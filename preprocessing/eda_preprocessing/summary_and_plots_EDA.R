@@ -2,11 +2,14 @@
 library(tidyverse)
 library(lubridate)
 
+## Windows
+setwd('Z:/SI_data/R21_Study - EDA - scaled/')
+## Linux
 setwd('/mnt/turbo/SI_data/R21_Study - EDA - scaled/')
 
 ## ------------------ Summary for Pause time in EDA------------------ ##
 n_obs = 91  # the largest number of observations (files)
-td = 0.25 # time difference between 2 consecutive data
+td = 0.50 # time difference between 2 consecutive data
 
 # summary of AI for each person
 summary_EDA = data.frame(matrix(0, nrow = n_obs, ncol = 14))
@@ -44,8 +47,10 @@ for (i in 1:n_obs){
     # pause information
     timestamps = eda$timestamp[order(eda$timestamp)]
     time_diff = round(diff(as.numeric(timestamps)),3)
-    cum_time = cumsum(time_diff)[(c(which(time_diff > td), length(time_diff)+1)-1)] - 
-      c(0, cumsum(time_diff)[which(time_diff > td)])
+    cumulative_timediff = cumsum(time_diff)
+    gap_obs = which(time_diff > td)
+    cum_time = cumulative_timediff[(c(gap_obs, length(time_diff)+1)-1)] - 
+      c(0,cumulative_timediff[gap_obs])
     n_pause = length(which(time_diff > td))
     all_pause = rbind(all_pause, data.frame(ID=id, pause_num=0, pause=0, period=cum_time[1]))
     if (n_pause > 0){
@@ -69,15 +74,15 @@ saveRDS(all_pause, file = '../summary_data/pauses_EDA.rds')
 # summary of pause time for each observation
 summary_pause_EDA = all_pause %>%
   group_by(ID) %>%
-  summarise(num_less_than_1min = sum(pause_num > 0 & pause_len < 60), 
-            num_1min_to_30min = sum(pause_num > 0 & pause_len >= 60 & pause_len < 30*60), 
-            num_30min_to_1day = sum(pause_num > 0 & pause_len >= 30*60 & pause_len < 60*60*24),
-            num_more_than_1day = sum(pause_num > 0 & pause_len >= 60*60*24), 
+  summarise(num_less_than_1min = sum(pause_num > 0 & pause < 60), 
+            num_1min_to_30min = sum(pause_num > 0 & pause >= 60 & pause < 30*60), 
+            num_30min_to_1day = sum(pause_num > 0 & pause >= 30*60 & pause < 60*60*24),
+            num_more_than_1day = sum(pause_num > 0 & pause >= 60*60*24), 
             num_total = sum(pause_num > 0))
 saveRDS(summary_pause_EDA, file = '../summary_data/summary_pause_EDA.rds')
 
 
-## ---------- Frequency of missing EDA data in the 30 minuetes before button presses ---------- ##
+## ---------- Frequency of missing EDA data in the 30 minutes before button presses ---------- ##
 
 time_with_miss_30min = all_pause %>%
   mutate(time_with_miss = period_len * (period_len <= 30*60 & pause_num > 0) + 
