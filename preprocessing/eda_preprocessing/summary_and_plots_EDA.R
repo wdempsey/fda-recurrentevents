@@ -83,112 +83,70 @@ saveRDS(summary_pause_EDA, file = '../summary_data/summary_pause_EDA.rds')
 
 
 ## ---------- Frequency of missing EDA data in the 30 minutes before button presses ---------- ##
+time_with_miss_30min = transmute(all_pause, ID, pause_num, period) %>%
+  mutate(time_with_miss = period * (period <= 30*60 & pause_num > 0) + 
+           rep(30*60, dim(all_pause)[1]) * (period > 30*60 & pause_num > 0))
 
-time_with_miss_30min = all_pause %>%
-  mutate(time_with_miss = period_len * (period_len <= 30*60 & pause_num > 0) + 
-           rep(30*60, dim(all_pause)[1]) * (period_len > 30*60 & pause_num > 0), 
-         ave_pause=0)
+time_with_miss_30min$frac_missing = (time_with_miss_30min$time_with_miss / time_with_miss_30min$period)
+time_with_miss_30min = subset(time_with_miss_30min, !is.na(frac_missing))
 
-for (i in 1:dim(time_with_miss_30min)[1]){
-  time_with_miss = time_with_miss_30min$time_with_miss[i]
-  pause = time_with_miss_30min$pause_len[i]
-  if(time_with_miss > 0){
-    if(pause>=1800){
-      time_with_miss_30min$ave_pause[i] = (1800+(1800-time_with_miss))/2
-    }
-    else{
-      if((1800-pause)>=time_with_miss){
-        time_with_miss_30min$ave_pause[i] = pause
-      }
-      else{
-        time_with_miss_30min$ave_pause[i] = ((1800-pause)*pause + 
-                                               (pause+(1800-time_with_miss))*(time_with_miss+pause-1800)/2)/time_with_miss
-      }
-    }
-  }
-}
-
-ave_pause = time_with_miss_30min %>%
-  group_by(ID) %>%
-  summarise(miss_ave = sum(ave_pause*time_with_miss)/max(sum(time_with_miss),1), 
-            all_ave = sum(ave_pause*time_with_miss)/sum(period_len)) %>%
-  mutate(miss_ave = round(miss_ave/60,2), all_ave = round(all_ave/60,2))
-
+# note: "frequency of missing" = 
+#       "real number of data entries" / "number of data entries there should be in 30 minuetes"
+# frequency of missing for each observation
 prob_miss_30min_obs = time_with_miss_30min %>%
   group_by(ID) %>%
-  summarize(prob = sum(time_with_miss) / sum(period_len))
-prob_miss_30min_all = sum(time_with_miss_30min$time_with_miss) / sum(time_with_miss_30min$period_len)
-prob_miss_30min_all
+  summarize(prob = sum(time_with_miss) / sum(period))
 
 
+# frequency of missing for all observations
+prob_miss_30min_all = sum(time_with_miss_30min$time_with_miss) / sum(time_with_miss_30min$period)
+print(prob_miss_30min_all)
 
-## ------------------ Pause in AI and EDA------------------ ##
-pauses_ai = readRDS('../R21_Study - ACC - AI/methods/summary_data/pauses_AI.rds')
-pauses_eda = readRDS('./methods/summary_data/pauses_EDA.rds')
-
-par(mfrow=c(17, 7), mar = c(1,1,1,1))
-for (i in 1:n_obs){
-  id = 1000 + i
-  if (length(which(pauses_ai$ID==id)) > 0){
-    sub_ai = pauses_ai[which(pauses_ai$ID==id),] %>%
-      transmute(pause, period)
-    ai = cumsum(matrix(t(as.matrix(sub_ai)), ncol = 1))
-    sub_eda = pauses_eda[which(pauses_eda$ID==id),] %>%
-      transmute(pause=pause_len, period=period_len)
-    eda = cumsum(matrix(t(as.matrix(sub_eda)), ncol = 1))
-    
-    plot(x=1:ai[2], y=rep(1, ai[2]), type='l', col='red', lwd=1, 
-         xlim = c(0, max(c(max(ai), max(eda)))), ylim=c(0.8, 2.2), axes = F, 
-         xlab='time with data (secs)', ylab='', main=id)
-    #axis(side = 1, labels = F)
-    if (dim(sub_ai)[1] > 1){
-      for (j in 2:dim(sub_ai)[1]){
-        points(x=(ai[2*j-1]+1):ai[2*j], y=rep(1, (ai[2*j]-ai[2*j-1])), type='l', col='red', lwd=1)
-      }
-    }
-    points(x=1:eda[2], y=rep(2, eda[2]), type='l', col='blue', lwd=1)
-    if (dim(sub_eda)[1] > 1){
-      for (j in 2:dim(sub_eda)[1]){
-        points(x=(eda[2*j-1]+1):eda[2*j], y=rep(2, (eda[2*j]-eda[2*j-1])), type='l', col='blue', lwd=1)
-      }
-    }
-  }
-}
-
-
-
-## ------------------ Plots ------------------ ##
-
-
-df = t(as.matrix(summary_pause_EDA[,2:5]))
-barplot(df, col=c('red', 'blue', 'yellow', 'grey'),
-        legend = c('< 1min', '[1min, 30mins)', '[30mins, 1day)', '>= 1day'), 
-        xlab = 'ID', ylab = 'Count', main = "Number of Pauses (EDA)")
-par(mfrow = c(2, 2), mgp = c(1,1,0))
-barplot(df[1,], col='red', xlab = 'ID', main = 'Pauses < 1 min (EDA)')
-barplot(df[2,], col='blue', xlab = 'ID', main = 'Pauses in [1min, 30mins) (EDA)')
-barplot(df[3,], col='yellow', xlab = 'ID', main = 'Pauses in [30mins, 1day) (EDA)')
-barplot(df[4,], col='grey', xlab = 'ID', main = 'Pauses > 1 day (EDA)')
+library(ggplot2)
+png("~/Documents/github/fda-recurrentevents/figures/missing_data_eda.png",
+    width = 480, height = 480, units = "px", pointsize = 12)
+par(mar = c(4, 4, 1, 1), mfrow = c(1,1))
+qplot(prob_miss_30min_obs$prob, 
+      geom="histogram", xlab = "Fraction of Missing AI data in 30-minutes prior to a measurement") 
 dev.off()
 
+#### EDA quantiles for each obs. ####
+summary_EDA = summary_EDA[summary_EDA$ID > 0,]
+png("~/Documents/github/fda-recurrentevents/figures/eda_summary.png",
+    width = 720, height = 480, units = "px", pointsize = 18)
+par(xpd=T, mar=c(4,4,1,7))
+ymax = max(summary_EDA$EDA.99)
+ymin = min(summary_EDA$EDA.25)
+plot(x = (summary_EDA$ID - 1000), y = summary_EDA$EDA_mean, type = 'l', axes = F, ylim = c(ymin*0.8, ymax*1.2), 
+     xlab = '', ylab = '')
+axis(side = 1)
+axis(side = 2)
+points(x = (summary_EDA$ID - 1000), y = summary_EDA$EDA.25, type = 'l', lty = 3, col = 'blue')
+points(x = (summary_EDA$ID - 1000), y = summary_EDA$EDA.50, type = 'l', lty = 3, col = 'red')
+points(x = (summary_EDA$ID - 1000), y = summary_EDA$EDA.75, type = 'l', lty = 2, col = 'blue')
+points(x = (summary_EDA$ID - 1000), y = summary_EDA$EDA.95, type = 'l', lty = 4, col = 'red')
+points(x = (summary_EDA$ID - 1000), y = summary_EDA$EDA.99, type = 'l', lty = 4, col = 'blue')
+text(x = (summary_EDA$ID - 1000), y = rep(ymax*1.1, dim(summary_EDA)[1]), 
+     labels = summary_EDA$Days, col = "black", cex = .5)
+text(x = (summary_EDA$ID - 1000), y = rep(ymax*1.15, dim(summary_EDA)[1]), 
+     labels = summary_EDA$`Continuous Periods`, col = "grey", cex = .5)
+# legend(95,900, legend=c("AI_max", "AI_min", "AI_mean", 'Days', 'Periods'), 
+# col=c('red', 'blue', 'black', 'dimgrey', 'pink'), box.col = "white", 
+# horiz=F, lty=c(2,2,1,1,1), cex=0.8)
+legend(91,4, legend=c("mean", "maximum", "minimum", 
+                        '25% quantile', '50% quantile', '75% quantile', 
+                        '95% quantile', '99% quantile'), 
+       col=c('black', 'grey', 'grey','blue','red', 'blue','red','blue'), box.col = "white", 
+       horiz=F, lty=c(1,1,1,3,3,2,4,4), cex=0.8)
+mtext("EDA", side = 2, line = 2)
+mtext("User ID", side = 1, line = 2)
+dev.off()
 
 ## probability of having missing data in the past 30 mins for each observed time ##
-barplot(prob_miss_30min_obs$prob, type = 'l', xlab='ID', ylab='Probability', 
-        main = 'Prob. of having missing data in the past 30 mins (EDA)')
-hist(prob_miss_30min_obs$prob, xlab='Probability', breaks = seq(from=0, to=0.15, by = 0.01), 
-     main = 'Histogram of the Prob. of having missing data in the past 30 mins (EDA)')
-
-## average missing time ##
-par(mfrow=c(1,2))
-hist(ave_pause$miss_ave, breaks = 50, xlab='Average missing time/(min) (across individuals)', 
-     main='Avg. from time points with missing-EDA')
-hist(ave_pause$all_ave, breaks = 50, xlab='Average missing time/(min) (across individuals)', 
-     main='Avg. from all observed time points-EDA')
-dev.off()
-
-
-
-
-
-
-
+png("~/Documents/github/fda-recurrentevents/figures/missingperuser.png",
+    width = 720, height = 480, units = "px", pointsize = 18)
+par(mfrow = c(1,1),
+    mar = c(5,4,1,1) + 0.1)
+ggplot(data = prob_miss_30min_obs, aes(x = ID, y = prob)) + 
+  geom_bar(stat = "identity") + 
+  xlab("Patient ID")+ ylab("Probability of missing data in past 30 minutes")
