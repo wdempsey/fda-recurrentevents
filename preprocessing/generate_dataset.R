@@ -6,17 +6,12 @@
 ## Inputs: RDS files for participant level eda and button_press
 ## Outputs: event_complete.RDS and nonevent_complete.RDS
 source('./gendata_functions.R')
-source('../inputs.R')
+source('./inputs.R')
 require(lubridate)
 
-setwd("/n/murphy_lab/users/wdempsey/data-for-fda/data/")
-# setwd("/Volumes/murphy_lab/users/wdempsey/data-for-fda/data/")
-# setwd("/Users/walterdempsey/Harvard University/R21_Study - raw_data/")
+## Windows
+setwd("Z:/SI_data/")
 buttonpress = readRDS("./R21_Study - tags/button_presses.RDS")
-
-# bp_ts = as_datetime(buttonpress$ts)
-# temp = aggregate(rep(1, length(bp_ts))~month(bp_ts) + day(bp_ts) + as.factor(buttonpress$ID), FUN = sum)
-# summary(temp$`rep(1, length(bp_ts))`)
 
 library(doParallel)
 set.seed(87514)
@@ -37,15 +32,14 @@ for (id in 1001:1091) {
   
   id_bp = subset(buttonpress, ID == id)
   
-  eda_file_name = paste("./R21_Study - EDA/",id,"_EDA.rds", sep = "")
-  acc_file_name = paste("./R21_Study - ACC/",id,"_acc.rds", sep = "")
+  eda_file_name = paste("./R21_Study - EDA - scaled/",id,"_EDA_scaled.rds", sep = "")
+  acc_file_name = paste("./R21_Study - ACC - AI/",id,"_AI.rds", sep = "")
   if(!(file.exists(eda_file_name) & file.exists(acc_file_name))) {
     print(paste("No EDA and/or ACC file with id", id))
   } else{
     eda = readRDS(eda_file_name)
     print("Made it to sampling nonevent times")
-    datetime_ts = as_datetime(eda$ts/1000)
-    sampled_times = generate_noneventtimes(datetime_ts, sampling_rate, max.iters = 20000)
+    sampled_times = generate_noneventtimes(eda$timestamp, sampling_rate, max.iters = 20000)
     
     print("And now onto EDA calculations")
     eda_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_eda_apply(iter, sequence, id_bp, eda)
