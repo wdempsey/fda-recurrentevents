@@ -6,7 +6,7 @@
 ## Inputs: RDS files for participant level eda and button_press
 ## Outputs: event_complete.RDS and nonevent_complete.RDS
 source('./gendata_functions.R')
-source('./inputs.R')
+sampling_rate = 4 ## Every fifteen minutes
 require(lubridate)
 
 ## Windows
@@ -15,7 +15,8 @@ buttonpress = readRDS("./R21_Study - tags/button_presses.RDS")
 
 library(doParallel)
 set.seed(87514)
-sequence = seq(-30,0,1/60);
+sequence_eda = seq(-30,0,1/60);
+sequence_acc = seq(-30,0,10/60);
 eda_event_complete = eda_nonevent_complete = matrix(nrow = 0, ncol = 3+length(sequence))
 acc_event_complete = acc_nonevent_complete = matrix(nrow = 0, ncol = 3+length(sequence))
 
@@ -42,13 +43,12 @@ for (id in 1001:1091) {
     sampled_times = generate_noneventtimes(eda$timestamp, sampling_rate, max.iters = 20000)
     
     print("And now onto EDA calculations")
-    eda_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_eda_apply(iter, sequence, id_bp, eda)
+    eda_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_eda_apply(iter, sequence_eda, id_bp, eda)
     eda_output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind) %dopar% nonevent_approximate_eda_apply(iter, sequence, sampled_times, eda)
     
     print("And now onto ACC calculations")
     acc = readRDS(acc_file_name); max_acc = 127 * 0.5773503 * 3
-    acc$g = sqrt((acc$acc_x/max_acc)^2 + (acc$acc_y/max_acc)^2 + (acc$acc_z/max_acc)^2)
-    acc_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_acc_apply(iter, sequence, id_bp, acc)
+    acc_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_acc_apply(iter, sequence_acc, id_bp, acc)
     acc_output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind) %dopar% nonevent_approximate_acc_apply(iter, sequence, sampled_times, acc)
     
     ## Define time as since minimum time in EDA or ID_BP

@@ -1,4 +1,4 @@
-approximate_eda <- function(x, y) {
+approximate_eda <- function(x, y, tol = 1/60) {
   ## Input: x = minute_diff from current_time; y = corresponding EDA observations
   ## Output: Function that takes in time-until-event and outputs closest observed EDA
   inside_fn <-function(time_until_event) {
@@ -7,7 +7,7 @@ approximate_eda <- function(x, y) {
     ## Output: outputs mean of these if multiple min(gap) 
     gap = abs(x-time_until_event)
     which_obs = which(gap == min(gap))
-    if( min(gap) < 1/60 ) {
+    if( min(gap) < tol ) {
       return (mean(y[which_obs]))  
     } else {
       return (NA)
@@ -19,22 +19,20 @@ approximate_eda <- function(x, y) {
 approximate_eda_apply <- function(iter, sequence, id_bp, eda) {
   ## Input: Current iter, sequence of times until event, set of event times, EDA data
   ## Output: Outputs corresponding EDA at time-until-event
-  current_ts = id_bp$ts_ms[iter]
-  diff = eda$ts - current_ts
-  minute_diff = diff/1000/60 
-  keep_obs = (-30 < minute_diff) & (minute_diff <= 0)
-  output = unlist(lapply(sequence, approximate_eda(minute_diff[keep_obs],eda$EDA_FeatureScaledFiltered_Day[keep_obs])))
+  current_ts = as_datetime(id_bp$ts[iter])
+  minute_diff = interval(eda$timestamp,current_ts) %/% seconds(1) / 60
+  keep_obs = which((-30 < minute_diff) & (minute_diff <= 0))
+  output = unlist(lapply(sequence, approximate_eda(minute_diff[keep_obs],eda$EDA_scaled[keep_obs])))
   return(output)
 }
 
 approximate_acc_apply <- function(iter, sequence, id_bp, acc) {
   ## Input: Current iter, sequence of times until event, set of event times, EDA data
   ## Output: Outputs corresponding EDA at time-until-event
-  current_ts = id_bp$ts_ms[iter]
-  diff = acc$ts - current_ts
-  minute_diff = diff/1000/60 
-  keep_obs = (-30 < minute_diff) & (minute_diff <= 0)
-  output = unlist(lapply(sequence, approximate_eda(minute_diff[keep_obs],acc$g[keep_obs])))
+  current_ts = as_datetime(id_bp$ts[iter])
+  minute_diff = interval(acc$timestamp,current_ts) %/% seconds(1) / 60
+  keep_obs = which((-30 < minute_diff) & (minute_diff <= 0))
+  output = unlist(lapply(sequence, approximate_eda(minute_diff[keep_obs],acc$AI[keep_obs], tol = )))
   return(output)
 }
 
