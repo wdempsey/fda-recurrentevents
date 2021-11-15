@@ -44,7 +44,7 @@ for (id in 1001:1091) {
     
     print("And now onto EDA calculations")
     eda_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_eda_apply(iter, sequence_eda, id_bp, eda)
-    eda_output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind) %dopar% nonevent_approximate_eda_apply(iter, sequence, sampled_times, eda)
+    eda_output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind) %dopar% nonevent_approximate_eda_apply(iter, sequence_eda, sampled_times, eda)
     
     print("And now onto ACC calculations")
     acc = readRDS(acc_file_name); max_acc = 127 * 0.5773503 * 3
