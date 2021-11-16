@@ -11,12 +11,15 @@ require(lubridate)
 
 ## Windows
 setwd("Z:/SI_data/")
+## Linux
+setwd("/mnt/turbo/SI_data/")
+
 buttonpress = readRDS("./R21_Study - tags/button_presses.RDS")
 
 library(doParallel)
 set.seed(87514)
-sequence_eda = seq(-30,0,1/60);
-sequence_acc = seq(-30,0,10/60);
+sequence_eda = seq(0,30,1/60);
+sequence_acc = seq(0,30,10/60);
 eda_event_complete = eda_nonevent_complete = matrix(nrow = 0, ncol = 3+length(sequence))
 acc_event_complete = acc_nonevent_complete = matrix(nrow = 0, ncol = 3+length(sequence))
 

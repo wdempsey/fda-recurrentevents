@@ -21,7 +21,7 @@ approximate_eda_apply <- function(iter, sequence, id_bp, eda) {
   ## Output: Outputs corresponding EDA at time-until-event
   current_ts = as_datetime(id_bp$ts[iter])
   minute_diff = interval(eda$timestamp,current_ts) %/% seconds(1) / 60
-  keep_obs = which((-30 < minute_diff) & (minute_diff <= 0))
+  keep_obs = which((30 > minute_diff) & (minute_diff >= 0))
   output = unlist(lapply(sequence, approximate_eda(minute_diff[keep_obs],eda$EDA_scaled[keep_obs], tol = 1/60)))
   return(output)
 }
@@ -31,7 +31,7 @@ approximate_acc_apply <- function(iter, sequence, id_bp, acc) {
   ## Output: Outputs corresponding EDA at time-until-event
   current_ts = as_datetime(id_bp$ts[iter])
   minute_diff = interval(acc$timestamp,current_ts) %/% seconds(1) / 60
-  keep_obs = which((30 < minute_diff) & (minute_diff >= 0))
+  keep_obs = which((30 > minute_diff) & (minute_diff >= 0))
   output = unlist(lapply(sequence, approximate_eda(minute_diff[keep_obs],acc$AI[keep_obs], tol = 10/60)))
   return(output)
 }
@@ -41,7 +41,7 @@ nonevent_approximate_eda_apply <- function(iter, sequence, sampled_times, eda) {
   ## Output: Outputs corresponding EDA at time-until-event
   current_ts = as_datetime(sampled_times[iter])
   minute_diff = interval(eda$timestamp,current_ts) %/% seconds(1) / 60
-  keep_obs = which((30 < minute_diff) & (minute_diff >= 0))
+  keep_obs = which((30 > minute_diff) & (minute_diff >= 0))
   output = unlist(lapply(sequence, approximate_eda(minute_diff[keep_obs],eda$EDA_scaled[keep_obs])))
   return(output)
 }
@@ -50,10 +50,9 @@ nonevent_approximate_acc_apply <- function(iter, sequence, sampled_times, acc) {
   ## Input: Current iter, sequence of times until event, set of sampled times, EDA data
   ## Output: Outputs corresponding EDA at time-until-event
   current_ts = sampled_times[iter]
-  diff = eda$ts/1000 - current_ts
-  minute_diff = diff/60 
-  keep_obs = (-30 < minute_diff) & (minute_diff <= 0)
-  output = unlist(lapply(sequence, approximate_eda(minute_diff[keep_obs],acc$g[keep_obs])))
+  minute_diff = interval(acc$timestamp,current_ts) %/% seconds(1) / 60
+  keep_obs = which((30 > minute_diff) & (minute_diff >= 0))
+  output = unlist(lapply(sequence, approximate_eda(minute_diff[keep_obs],acc$AI[keep_obs], tol = 10/60)))
   return(output)
 }
 
