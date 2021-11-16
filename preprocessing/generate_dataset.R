@@ -50,14 +50,15 @@ for (id in 1001:1091) {
     eda_output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind) %dopar% nonevent_approximate_eda_apply(iter, sequence_eda, sampled_times, eda)
     
     print("And now onto ACC calculations")
-    acc = readRDS(acc_file_name); max_acc = 127 * 0.5773503 * 3
+    acc = readRDS(acc_file_name)
     acc_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_acc_apply(iter, sequence_acc, id_bp, acc)
     acc_output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind) %dopar% nonevent_approximate_acc_apply(iter, sequence, sampled_times, acc)
     
     ## Define time as since minimum time in EDA or ID_BP
-    base_time = min(eda$ts, id_bp$ts_ms, acc$ts)
-    event_times_mins_since_base = (id_bp$ts_ms-base_time)/1000/60
-    nonevent_times_mins_since_base = (sampled_times*1000-base_time)/1000/60
+    id_bp$timestamp = as_datetime(id_bp$ts)
+    base_time = min(eda$timestamp, id_bp$timestamp, acc$timestamp)
+    event_times_mins_since_base = id_bp$timestamp - base_time
+    nonevent_times_mins_since_base = (as_datetime(sampled_times)-base_time)
     
     if (nrow(id_bp) > 1) {
       eda_event_temp = cbind(id, id_bp$ts, event_times_mins_since_base, eda_output_event)
