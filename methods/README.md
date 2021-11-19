@@ -7,4 +7,14 @@ subsampling methodology. These methods are:
 Steps to run code are as follows:
 1. [Mean and covariance estimation file](/mean_cov_estimation.R) can
    be run to generate `mean_estimates` and `pooled_estimates` from the pre-processed datasets.
-2. [Likelihood file](likelihood_computation.R) can be 
+2. [Likelihood file](likelihood_computation.R) can be run to fit the penalized logistic regression.
+3. [The penalized mixed-effects likelihood file]
+4. [Imputation](imputation.R) and [Bootstrap](bootstrap.R) takes input files
+
+The order of operations is then
+- Run `mean_cov_estimation.R` 
+- Run `likelihood_computation.R` to get fixed effect model
+- Use the output as initialization and run `pagq_likelihood_computation.R` to fit the mixed-effects model.  This completes the complete-case analysis.
+- Then run [bootstrap](bootstrap.R) $200$ times.
+- For each boostrapped sample, impute missing rows using  `imputation.R`.
+- Then re-run main analysis to get fixed effects estimates per dataset.
