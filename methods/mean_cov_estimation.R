@@ -123,8 +123,11 @@ set_of_types = c("eda", "acc")
 # }
 ## CLEAR WORKSPACE
 rm(list=ls()) 
+## WINDOWS
+setwd("Z:/SI_data/")
+## Linux
 setwd("/n/murphy_lab/users/wdempsey/data-for-fda/data/")
-# setwd("/Volumes/murphy_lab/users/wdempsey/data-for-fda/data/")
+
 set_of_types = c("eda", "acc")
 for (type in set_of_types){
   nonevent_complete = readRDS(paste(type, "_nonevent_complete_HLP_2019-07-27.RDS", sep=""))

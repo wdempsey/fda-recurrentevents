@@ -89,6 +89,8 @@ summary(temp_daytime)
 saveRDS(temp, file = "linear_edaonly_alldata_fit.RDS")
 saveRDS(temp_daytime, file = "linear_edaonly_daytimedata_fit.RDS")
 
+saveRDS(temp_daytime_plusacc, file = "linear_edaacc_daytimedata_fit.RDS")
+
 beta_obs = 25:(25+ncol(bb)-1)
 beta = temp$coefficients[beta_obs]
 beta[is.na(beta)] = 0
