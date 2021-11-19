@@ -52,28 +52,40 @@ for (id in 1001:1091) {
     print("And now onto ACC calculations")
     acc = readRDS(acc_file_name)
     acc_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_acc_apply(iter, sequence_acc, id_bp, acc)
-    acc_output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind) %dopar% nonevent_approximate_acc_apply(iter, sequence, sampled_times, acc)
+    acc_output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind) %dopar% nonevent_approximate_acc_apply(iter, sequence_acc, sampled_times, acc)
     
     ## Define time as since minimum time in EDA or ID_BP
     id_bp$timestamp = as_datetime(id_bp$ts)
     base_time = min(eda$timestamp, id_bp$timestamp, acc$timestamp)
-    event_times_mins_since_base = id_bp$timestamp - base_time
-    nonevent_times_mins_since_base = (as_datetime(sampled_times)-base_time)
+    event_times_mins_since_base = interval(base_time, id_bp$timestamp) %/% seconds(1) / 60 ## Minutes since Base Time
+    nonevent_times_mins_since_base = interval(base_time, as_datetime(sampled_times)) %/% seconds(1) / 60 ## Minutes since Base Time
     
     if (nrow(id_bp) > 1) {
-      eda_event_temp = cbind(id, id_bp$ts, event_times_mins_since_base, eda_output_event)
-      acc_event_temp = cbind(id, id_bp$ts, event_times_mins_since_base, acc_output_event)
+      eda_event_temp = data.frame(id = id, timestamp = id_bp$timestamp, timesincebaseline = event_times_mins_since_base, eda_output_event)
+      acc_event_temp = data.frame(id = id, timestamp = id_bp$timestamp, timesincebaseline = event_times_mins_since_base, acc_output_event)
     } else {
-      eda_event_temp = c(id, id_bp$ts, event_times_mins_since_base, eda_output_event)
-      acc_event_temp = c(id, id_bp$ts, event_times_mins_since_base, acc_output_event)
+      eda_event_temp = data.frame(id = id, timestamp = id_bp$timestamp, 
+                                  timesincebaseline = event_times_mins_since_base, 
+                                  t(unlist(eda_output_event)))     
+      acc_event_temp = data.frame(id = id, timestamp = id_bp$timestamp, 
+                                  timesincebaseline = event_times_mins_since_base, 
+                                  t(unlist(acc_output_event)))     
     }
     
     if (length(sampled_times) > 1) {
-      eda_nonevent_temp = cbind(id, sampled_times, nonevent_times_mins_since_base, eda_output_nonevent)
-      acc_nonevent_temp = cbind(id, sampled_times, nonevent_times_mins_since_base, acc_output_nonevent)
+      eda_nonevent_temp = data.frame(id = id, timestamp = sampled_times, 
+                                     timesincebaseline = nonevent_times_mins_since_base, 
+                                     eda_output_nonevent)
+      acc_nonevent_temp = data.frame(id = id, timestamp = sampled_times, 
+                                     timesincebaseline = nonevent_times_mins_since_base, 
+                                     acc_output_nonevent)
     } else {
-      eda_nonevent_temp = c(id, sampled_times, nonevent_times_mins_since_base, eda_output_nonevent)
-      acc_nonevent_temp = c(id, sampled_times, nonevent_times_mins_since_base, acc_output_nonevent)
+      eda_nonevent_temp = data.frame(id = id, timestamp = sampled_times, 
+                                  timesincebaseline = nonevent_times_mins_since_base, 
+                                  t(unlist(eda_output_nonevent)))    
+      acc_nonevent_temp = data.frame(id = id, timestamp = sampled_times, 
+                                     timesincebaseline = nonevent_times_mins_since_base, 
+                                     t(unlist(acc_output_nonevent)))    
     }
     print("Appending EDA data")
     eda_event_complete = rbind(eda_event_complete, eda_event_temp)
