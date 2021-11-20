@@ -13,6 +13,8 @@ require(lubridate)
 setwd("Z:/SI_data/")
 ## Linux
 setwd("/mnt/turbo/SI_data/")
+## GREAT LAKES
+setwd("/nsf/turbo/sph-wdem/SI_data")
 
 buttonpress = readRDS("./R21_Study - tags/button_presses.RDS")
 
