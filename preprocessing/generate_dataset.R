@@ -6,7 +6,7 @@
 ## Inputs: RDS files for participant level eda and button_press
 ## Outputs: event_complete.RDS and nonevent_complete.RDS
 source('./gendata_functions.R')
-sampling_rate = 4 ## Every fifteen minutes
+sampling_rate = 2 ## Every 30 minutes
 require(lubridate)
 
 ## Windows
@@ -92,10 +92,12 @@ for (id in 1001:1091) {
     print("Appending EDA data")
     eda_event_complete = rbind(eda_event_complete, eda_event_temp)
     eda_nonevent_complete = rbind(eda_nonevent_complete, eda_nonevent_temp)    
+    print(paste("Current number of rows for sampled times:", nrow(eda_nonevent_complete)))
     
     print("Appending ACC data")
     acc_event_complete = rbind(acc_event_complete, acc_event_temp)
     acc_nonevent_complete = rbind(acc_nonevent_complete, acc_nonevent_temp)    
+    print(paste("Current number of rows for sampled times:", nrow(acc_nonevent_complete)))
   }
 }  
 saveRDS(object = eda_event_complete, file = paste("eda_event_complete_HLP_", today(), ".RDS", sep = ""))
