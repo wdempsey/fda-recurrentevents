@@ -62,9 +62,14 @@ for (id in 1001:1091) {
     event_times_mins_since_base = interval(base_time, id_bp$timestamp) %/% seconds(1) / 60 ## Minutes since Base Time
     nonevent_times_mins_since_base = interval(base_time, as_datetime(sampled_times)) %/% seconds(1) / 60 ## Minutes since Base Time
     
+    print("Building Event Data Frame")
     if (nrow(id_bp) > 1) {
-      eda_event_temp = data.frame(id = id, timestamp = id_bp$timestamp, timesincebaseline = event_times_mins_since_base, eda_output_event)
-      acc_event_temp = data.frame(id = id, timestamp = id_bp$timestamp, timesincebaseline = event_times_mins_since_base, acc_output_event)
+      eda_event_temp = data.frame(id = id, timestamp = id_bp$timestamp, 
+                                  timesincebaseline = event_times_mins_since_base, 
+                                  eda_output_event)
+      acc_event_temp = data.frame(id = id, timestamp = id_bp$timestamp, 
+                                  timesincebaseline = event_times_mins_since_base, 
+                                  acc_output_event)
     } else {
       eda_event_temp = data.frame(id = id, timestamp = id_bp$timestamp, 
                                   timesincebaseline = event_times_mins_since_base, 
@@ -74,6 +79,7 @@ for (id in 1001:1091) {
                                   t(unlist(acc_output_event)))     
     }
     
+    print("Building Non-Event Data Frame")
     if (length(sampled_times) > 1) {
       eda_nonevent_temp = data.frame(id = id, timestamp = sampled_times, 
                                      timesincebaseline = nonevent_times_mins_since_base, 
