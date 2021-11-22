@@ -56,6 +56,7 @@ for (type in set_of_types){
   optK = 10
   optphi_vectors = eig_vectors[,1:optK]
   optcoef = residual%*%optphi_vectors
+  if(type == "eda") {legend_name = "EDA"} else{legend_name = "ACC"}
   par(mar = c(4,3,2,1)+ 0.1)
   png(filename = paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/",
                        type, "_fda_fitplot.png", sep = ""),
@@ -64,7 +65,8 @@ for (type in set_of_types){
        ylab = "", col = "red", lwd = 2, ylim = c(min(Y[obs,]), max(Y[obs,]))) # , ylim = c(0.02,0.08))
   axis(side = 1); axis(side = 2)
   lines(sequence, Y[obs,], col = "black", lwd = 1, lty = 2)
-  legend(-10,2.75, c("FF-EDA", "K=10", "K=35"), col = c("black", "red", "red"), lty = c(1,1,2), cex = 0.75, bty = "n")
+  lines(sequence, optphi_vectors%*%optcoef[obs,]/inflation + est$Yhat[obs,], col = "red", lty = 2)
+  legend(-10,max(Y[obs,])*0.8, c(paste("Observed", legend_name), "K=10", "K=35"), col = c("black", "red", "red"), lty = c(1,1,2), cex = 0.75, bty = "n")
   # dev.off()
 
   ## SAVE THE MEAN, COEFFICIENT MATRIX, AND FIRST K EIGEN VECTORS
@@ -74,11 +76,8 @@ for (type in set_of_types){
   saveRDS(object = x, file = paste(type, "_lin_event_complete_case_times_",today(),".RDS", sep=""))
 
   ## NOW DO QUADRATIC TERMS
-  Y = event_complete[full_obs,sensor_obs]
   mu = rowMeans(Y)
   quad_Y = sweep(Y,1,mu)^2
-  x = event_complete[full_obs,2]
-  z = sequence
   est <- fbps(quad_Y,list(x=x,z=z))
 
   ## COMPUTE ESTIMATED MARGINAL COVARIANCE
@@ -92,7 +91,6 @@ for (type in set_of_types){
       Sigma[i,j] = sum(residual[,i]*residual[,j])/nrow(residual)
     }
   }
-
   Sigma_est <- fbps(Sigma)
   final_Sigma = (Sigma_est$Yhat + t(Sigma_est$Yhat))/2
   eig_Sigma_est = eigen(final_Sigma)
@@ -102,7 +100,7 @@ for (type in set_of_types){
 
   eig_values[eig_values<0] = 0
 
-  (cumsum(eig_values)/sum(eig_values))[1:35]
+  print(paste("Variance explained: ", (cumsum(eig_values)/sum(eig_values))[K]))
   K = 35
   phi_vectors = eig_vectors[,1:K]
   coef = residual%*%phi_vectors
@@ -113,6 +111,7 @@ for (type in set_of_types){
   saveRDS(object = phi_vectors, file = paste(type, "_quad_event_eigen_vectors_",today(),".RDS", sep=""))
   saveRDS(object = x, file = paste(type, "_quad_event_complete_case_times_",today(),".RDS", sep=""))
 }
+
 ## CLEAR WORKSPACE
 rm(list=ls()) 
 ## WINDOWS
@@ -162,12 +161,10 @@ for (type in set_of_types){
   
   eig_values[eig_values<0] = 0
   
-  (cumsum(eig_values)/sum(eig_values))[1:35]
   K = 35
+  print(paste("Variance explained: ", (cumsum(eig_values)/sum(eig_values))[K]))
   phi_vectors = eig_vectors[,1:K]
   coef = residual%*%phi_vectors
-  # plot(sequence, phi_vectors%*%coef[obs,]/inflation + est$Yhat[obs,], type = "l")
-  # lines(sequence, Y[obs,], col = "red", lwd = 2)
   
   ## SAVE THE MEAN, COEFFICIENT MATRIX, AND FIRST K EIGEN VECTORS
   saveRDS(object = coef/inflation, file = paste(type, "_lin_nonevent_coef_matrix_",today(),".RDS", sep=""))
@@ -192,13 +189,11 @@ for (type in set_of_types){
   
   eig_values[eig_values<0] = 0
   
-  (cumsum(eig_values)/sum(eig_values))[1:35]
   K = 35
+  print(paste("Variance explained: ", (cumsum(eig_values)/sum(eig_values))[K]))
   phi_vectors = eig_vectors[,1:K]
   coef = residual%*%phi_vectors
-  # plot(sequence, phi_vectors%*%coef[obs,]/inflation + est$Yhat[obs,], type = "l")
-  # lines(sequence, Y[obs,], col = "red", lwd = 2)
-  
+
   ## SAVE THE MEAN, COEFFICIENT MATRIX, AND FIRST K EIGEN VECTORS
   saveRDS(object = coef/inflation, file = paste(type, "_quad_nonevent_coef_matrix_",today(),".RDS", sep=""))
   saveRDS(object = phi_vectors, file = paste(type, "_quad_nonevent_eigen_vectors_",today(),".RDS", sep=""))
