@@ -1,11 +1,11 @@
 # Directory for EDA participant data
-eda_dir <- "/Volumes/murphy_lab/users/wdempsey/data-for-fda/data/R21_Study - EDA" 
+eda_dir <- "Z:/SI_data/R21_Study - EDA - scaled"
 
 # Directory for ACC participant data
-acc_dir <- NA # Currently not linked in.
+acc_dir <- "Z:/SI_data/R21_Study - ACC - AI"
 
 # Directory for BP data
-button_press_dir <- "/Volumes/murphy_lab/users/wdempsey/data-for-fda/data/R21_Study - tags"
+button_press_dir <- "Z:/SI_data/R21_Study - tags"
 
 # List of all participant ids
 participant_ids <- seq(1001,1091)
@@ -33,4 +33,4 @@ partial_pooling_indicator <- 0
 
 ## User-specified sampling rate (per hour)
 ## for the non-event times
-sampling_rate = 4 # 4 times per hour (i.e., every 15-minutes)
+sampling_rate = 2 # 2 times per hour (i.e., every 30-minutes)
