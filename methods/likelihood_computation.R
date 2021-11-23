@@ -34,21 +34,30 @@ for (i in 1:length(x)) {
 print("Generated Splines")
 
 library(lubridate)
+## WINDOWS
 setwd("Z:/SI_data/")
+## LINUX 
+setwd('/mnt/turbo/SI_data/')
+
 ## PULL IN EVENT RDS FILES
-event_eigen_vectors = readRDS("eda_lin_event_eigen_vectors_2021-11-22.RDS")
-event_coef = readRDS("eda_lin_event_coef_matrix_2021-11-22.RDS")
-event_means = readRDS("eda_lin_event_means_2021-11-22.RDS")
-event_times = readRDS("eda_lin_event_complete_case_times_2021-11-22.RDS") 
-event_id = readRDS("eda_lin_event_complete_case_ids_2021-11-22.RDS")
-## BUILD outer product of b-spline and event eigen
-event_J_coef = event_coef%*%t(event_eigen_vectors)%*%bb
-event_J_means = event_means%*%bb
-event_model.matrix = cbind(hour(as_datetime(event_times)), event_J_coef + event_J_means)
-
-rm("event_means"); rm("event_coef"); rm("event_eigen_vectors"); rm("event_times")
-rm("event_J_coef"); rm("event_J_means")
-
+if(!file.exists("edamodelmatrix_2021-11-23.RDS")) {
+  event_eigen_vectors = readRDS("eda_lin_event_eigen_vectors_2021-11-22.RDS")
+  event_coef = readRDS("eda_lin_event_coef_matrix_2021-11-22.RDS")
+  event_means = readRDS("eda_lin_event_means_2021-11-22.RDS")
+  event_times = readRDS("eda_lin_event_complete_case_times_2021-11-22.RDS") 
+  event_id = readRDS("eda_lin_event_complete_case_ids_2021-11-22.RDS")
+  ## BUILD outer product of b-spline and event eigen
+  event_J_coef = event_coef%*%t(event_eigen_vectors)%*%bb
+  event_J_means = event_means%*%bb
+  event_model.matrix = cbind(hour(as_datetime(event_times)), event_J_coef + event_J_means)
+  
+  rm("event_means"); rm("event_coef"); rm("event_eigen_vectors"); rm("event_times")
+  rm("event_J_coef"); rm("event_J_means")
+  
+  saveRDS(event_model.matrix, file = paste("edamodelmatrix_",today(), ".RDS", sep = ""))
+} else {
+  event_model.matrix = readRDS("edamodelmatrix_2021-11-23.RDS")
+}
 ## PULL IN NONEVENT RDS FILES
 nonevent_eigen_vectors = readRDS("eda_lin_nonevent_eigen_vectors_2021-11-22.RDS")
 nonevent_coef = readRDS("eda_lin_nonevent_coef_matrix_2021-11-22.RDS")
