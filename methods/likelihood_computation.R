@@ -20,31 +20,27 @@
 
 ## GENERATE SPLINES
 library(splines)
-sequence <- seq(-30,0, by = 1/60)
+sequence <- seq(0,-30, by = -1/60)
 # knots <- seq(-40, 10, 1)  # 10 => 10-4 = 6 Basis splines
 # knots <- c(-32,seq(-30,0,1), 2)  # 10 => 10-4 = 6 Basis splines
 # x <- seq(-30, 0, by = 1/60)
 # bb <- splineDesign(knots, x = x, outer.ok = FALSE, ord = 2)
-x <- seq(-30, -5, by = 5)
+x <- seq(-5, -30, by = -5)
 bb <- matrix(nrow = length(sequence), ncol = length(x) + 1)
 bb[,1] = 1
 for (i in 1:length(x)) {
   bb[,i+1] = unlist(lapply(X = sequence, function(y) {max(y - x[i],0)}))
 }
-# knots <- seq(0, 30, 1)  # 10 => 10-4 = 6 Basis splines
-# x <- seq(0, 30, by = 1/60)
-# bb <- splineDesign(knots, x = x, outer.ok = TRUE)
 print("Generated Splines")
 
 library(lubridate)
-# setwd("/Volumes/murphy_lab/users/wdempsey/data-for-fda/data/")
-setwd("/n/murphy_lab/users/wdempsey/data-for-fda/data/")
+setwd("Z:/SI_data/")
 ## PULL IN EVENT RDS FILES
-event_eigen_vectors = readRDS("eda_lin_event_eigen_vectors_2019-07-27.RDS")
-event_coef = readRDS("eda_lin_event_coef_matrix_2019-07-27.RDS")
-event_means = readRDS("eda_lin_event_means_2019-07-27.RDS")
-event_times = readRDS("eda_lin_event_complete_case_times_2019-07-27.RDS") 
-# event_id = readRDS("event_complete_case_ids_2019-07-03.RDS")  ## NEED TO FIX
+event_eigen_vectors = readRDS("eda_lin_event_eigen_vectors_2021-11-22.RDS")
+event_coef = readRDS("eda_lin_event_coef_matrix_2021-11-22.RDS")
+event_means = readRDS("eda_lin_event_means_2021-11-22.RDS")
+event_times = readRDS("eda_lin_event_complete_case_times_2021-11-22.RDS") 
+event_id = readRDS("eda_lin_event_complete_case_ids_2021-11-22.RDS")
 ## BUILD outer product of b-spline and event eigen
 event_J_coef = event_coef%*%t(event_eigen_vectors)%*%bb
 event_J_means = event_means%*%bb
@@ -54,24 +50,24 @@ rm("event_means"); rm("event_coef"); rm("event_eigen_vectors"); rm("event_times"
 rm("event_J_coef"); rm("event_J_means")
 
 ## PULL IN NONEVENT RDS FILES
-nonevent_eigen_vectors = readRDS("eda_lin_nonevent_eigen_vectors_2019-07-27.RDS")
-nonevent_coef = readRDS("eda_lin_nonevent_coef_matrix_2019-07-27.RDS")
+nonevent_eigen_vectors = readRDS("eda_lin_nonevent_eigen_vectors_2021-11-22.RDS")
+nonevent_coef = readRDS("eda_lin_nonevent_coef_matrix_2021-11-22.RDS")
 nonevent_J_coef = nonevent_coef%*%t(nonevent_eigen_vectors)%*%bb
 rm("nonevent_eigen_vectors"); rm("nonevent_coef")
 
-nonevent_means = readRDS("eda_lin_nonevent_means_2019-07-27.RDS")
-# nonevent_ids = readRDS("nonevent_complete_case_ids_2019-07-03.RDS") ## NEED TO FIX
+nonevent_ids = readRDS("eda_nonevent_complete_case_ids_2021-11-22.RDS") ## NEED TO FIX
+nonevent_means = readRDS("eda_lin_nonevent_means_2021-11-22.RDS")
 nonevent_J_means = nonevent_means%*%bb
 rm("nonevent_means")
 ## BUILD outer product of b-spline and event eigen
 ## BUILD outer product of b-spline and event eigen
-nonevent_times = readRDS("eda_lin_nonevent_complete_case_times_2019-07-27.RDS")
+nonevent_times = readRDS("eda_lin_nonevent_complete_case_times_2021-11-22.RDS")
 nonevent_model.matrix = cbind(hour(as_datetime(nonevent_times)), nonevent_J_coef + nonevent_J_means)
 rm("nonevent_J_coef"); rm("nonevent_J_means")
 
 ## PULL IN PI_IDS
-log_sampling_rate = log(0.25)
-print("RDS Files Readin correctly")
+log_sampling_rate = log(0.5)
+print("RDS Files Reading correctly")
 
 Y = c(rep(1,nrow(event_model.matrix)), rep(0, nrow(nonevent_model.matrix)))
 

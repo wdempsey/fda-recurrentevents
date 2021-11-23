@@ -74,6 +74,9 @@ for (type in set_of_types){
   saveRDS(object = coef/inflation, file = paste(type, "_lin_event_coef_matrix_",today(),".RDS", sep=""))
   saveRDS(object = phi_vectors, file = paste(type, "_lin_event_eigen_vectors_",today(),".RDS", sep=""))
   saveRDS(object = x, file = paste(type, "_lin_event_complete_case_times_",today(),".RDS", sep=""))
+  saveRDS(object = as.numeric(event_complete[full_obs,1]), 
+          file = paste(type, "_lin_event_complete_case_ids_",today(),".RDS", sep=""))
+  
 
   ## NOW DO QUADRATIC TERMS
   mu = rowMeans(Y)
@@ -109,7 +112,6 @@ for (type in set_of_types){
   saveRDS(object = est$Yhat, file = paste(type, "_quad_event_means_",today(),".RDS", sep=""))
   saveRDS(object = coef/inflation, file = paste(type, "_quad_event_coef_matrix_",today(),".RDS", sep=""))
   saveRDS(object = phi_vectors, file = paste(type, "_quad_event_eigen_vectors_",today(),".RDS", sep=""))
-  saveRDS(object = x, file = paste(type, "_quad_event_complete_case_times_",today(),".RDS", sep=""))
 }
 
 ## CLEAR WORKSPACE
@@ -127,10 +129,12 @@ for (type in set_of_types){
   full_obs = apply(X = nonevent_complete, MARGIN = 1, FUN = function(x){!any(is.na(x))})
   ## print(paste(length(which(!full_obs)), "out of", length(full_obs), "missing at least 1 entry"))
   Y = nonevent_complete[full_obs,sensor_obs]
+  Y = as.matrix(Y, nrow = nrow(Y), ncol = ncol(Y))
   mu = rowMeans(Y)
   quad_Y = sweep(Y,1,mu)^2
   x = nonevent_complete[full_obs,2]
   z = sequence
+  id = nonevent_complete[full_obs,1]
   rm("nonevent_complete") # Remove the full data to free up memory
   
   est <- fbps(Y,list(x=x,z=z))
@@ -169,7 +173,9 @@ for (type in set_of_types){
   ## SAVE THE MEAN, COEFFICIENT MATRIX, AND FIRST K EIGEN VECTORS
   saveRDS(object = coef/inflation, file = paste(type, "_lin_nonevent_coef_matrix_",today(),".RDS", sep=""))
   saveRDS(object = phi_vectors, file = paste(type, "_lin_nonevent_eigen_vectors_",today(),".RDS", sep=""))
-  saveRDS(object = x, file = paste(type, "_lin_nonevent_complete_case_times_",today(),".RDS", sep=""))
+  saveRDS(object = x, file = paste(type, "_nonevent_complete_case_times_",today(),".RDS", sep=""))
+  saveRDS(object = id, 
+          file = paste(type, "_nonevent_complete_case_ids_",today(),".RDS", sep=""))
   
   ## TAKE PAIRS OF ROWS and CALCULATE THE MSE
   print(paste("Made it to nonevent, quadratic Sigma calc for", type))
@@ -197,5 +203,4 @@ for (type in set_of_types){
   ## SAVE THE MEAN, COEFFICIENT MATRIX, AND FIRST K EIGEN VECTORS
   saveRDS(object = coef/inflation, file = paste(type, "_quad_nonevent_coef_matrix_",today(),".RDS", sep=""))
   saveRDS(object = phi_vectors, file = paste(type, "_quad_nonevent_eigen_vectors_",today(),".RDS", sep=""))
-  saveRDS(object = x, file = paste(type, "_quad_nonevent_complete_case_times_",today(),".RDS", sep=""))
 }
