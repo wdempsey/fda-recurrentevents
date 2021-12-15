@@ -18,9 +18,22 @@
 ## denominator =  c^prime %*% (mle_output$var_subsampl + mle_output$var_event ) %*% c 
 ## rel eff = numerator / denominator
 
-## GENERATE SPLINES
+## LIBRARIES
 library(splines)
-sequence <- seq(-30,0, by = 1/60)
+library(lubridate)
+## WINDOWS
+setwd("Z:/SI_data/")
+## LINUX 
+setwd('/mnt/turbo/SI_data/')
+
+## PULL IN EVENT RDS FILES
+set_of_types = c("acc", "eda")
+## GENERATE SPLINES
+if (type == "eda") {
+  sequence <- seq(-30,0, by = 1/60)
+} else if (type == "acc") {
+  sequence <- seq(-30,0, by = 1/6)
+}
 # knots <- seq(-40, 10, 1)  # 10 => 10-4 = 6 Basis splines
 # knots <- c(-32,seq(-30,0,1), 2)  # 10 => 10-4 = 6 Basis splines
 # x <- seq(-30, 0, by = 1/60)
@@ -33,20 +46,12 @@ for (i in 1:length(x)) {
 }
 print("Generated Splines")
 
-library(lubridate)
-## WINDOWS
-setwd("Z:/SI_data/")
-## LINUX 
-setwd('/mnt/turbo/SI_data/')
-
-## PULL IN EVENT RDS FILES
-set_of_types = c("acc", "eda")
 if(!file.exists(paste(type, "_event_modelmatrix_2021-11-23.RDS", sep = ""))) {
   event_eigen_vectors = readRDS(paste(type, "_lin_event_eigen_vectors_2021-11-22.RDS", sep = ""))
-  event_coef = readRDS("eda_lin_event_coef_matrix_2021-11-22.RDS")
-  event_means = readRDS("eda_lin_event_means_2021-11-22.RDS")
-  event_times = readRDS("eda_lin_event_complete_case_times_2021-11-22.RDS") 
-  event_id = readRDS("eda_lin_event_complete_case_ids_2021-11-22.RDS")
+  event_coef = readRDS(paste(type, "_lin_event_coef_matrix_2021-11-22.RDS", sep = ""))
+  event_means = readRDS(paste(type, "_lin_event_means_2021-11-22.RDS", sep = ""))
+  event_times = readRDS(paste(type, "_lin_event_complete_case_times_2021-11-22.RDS", sep = ""))
+  event_id = readRDS(paste(type, "_lin_event_complete_case_ids_2021-11-22.RDS", sep = ""))
   ## BUILD outer product of b-spline and event eigen
   event_J_coef = event_coef%*%t(event_eigen_vectors)%*%bb
   event_J_means = event_means%*%bb
@@ -55,34 +60,38 @@ if(!file.exists(paste(type, "_event_modelmatrix_2021-11-23.RDS", sep = ""))) {
   rm("event_means"); rm("event_coef"); rm("event_eigen_vectors"); rm("event_times")
   rm("event_J_coef"); rm("event_J_means")
   
-  saveRDS(event_model.matrix, file = paste("eda_event_modelmatrix_",today(), ".RDS", sep = ""))
+  saveRDS(event_model.matrix, file = paste(type, "_event_modelmatrix_",today(), ".RDS", sep = ""))
 } else {
-  event_model.matrix = readRDS("eda_event_modelmatrix_2021-11-23.RDS")
+  event_model.matrix = readRDS(paste(type,"_event_modelmatrix_2021-12-14.RDS",sep =""))
 }
 ## PULL IN NONEVENT RDS FILES
 if(!file.exists("eda_nonevent_modelmatrix_2021-11-23.RDS")) {
-  nonevent_eigen_vectors = readRDS("eda_lin_nonevent_eigen_vectors_2021-11-22.RDS")
-  nonevent_coef = readRDS("eda_lin_nonevent_coef_matrix_2021-11-22.RDS")
+  nonevent_eigen_vectors = readRDS(paste(type, "_lin_nonevent_eigen_vectors_2021-11-22.RDS", sep =""))
+  nonevent_coef = readRDS(paste(type, "_lin_nonevent_coef_matrix_2021-11-22.RDS", sep = ""))
   nonevent_J_coef = nonevent_coef%*%t(nonevent_eigen_vectors)%*%bb
   rm("nonevent_eigen_vectors"); rm("nonevent_coef")
   
-  nonevent_ids = readRDS("eda_nonevent_complete_case_ids_2021-11-22.RDS") ## NEED TO FIX
-  nonevent_means = readRDS("eda_lin_nonevent_means_2021-11-22.RDS")
+  nonevent_ids = readRDS(paste(type, "_nonevent_complete_case_ids_2021-11-22.RDS", sep =""))
+  nonevent_means = readRDS(paste(type, "_lin_nonevent_means_2021-11-22.RDS", sep = ""))
   nonevent_J_means = nonevent_means%*%bb
   rm("nonevent_means")
   ## BUILD outer product of b-spline and event eigen
   ## BUILD outer product of b-spline and event eigen
-  nonevent_times = readRDS("eda_lin_nonevent_complete_case_times_2021-11-22.RDS")
+  nonevent_times = readRDS(paste(type, "_lin_nonevent_complete_case_times_2021-11-22.RDS", sep =""))
   nonevent_model.matrix = cbind(hour(as_datetime(nonevent_times)), nonevent_J_coef + nonevent_J_means)
   rm("nonevent_J_coef"); rm("nonevent_J_means")
-  saveRDS(nonevent_model.matrix, file = paste("eda_nonevent_modelmatrix_",today(), ".RDS", sep = ""))
+  saveRDS(nonevent_model.matrix, file = paste(type, "_nonevent_modelmatrix_",today(), ".RDS", sep = ""))
 } else {
-  nonevent_model.matrix = readRDS("eda_nonevent_modelmatrix_2021-11-23.RDS")
+  nonevent_model.matrix = readRDS("acc_nonevent_modelmatrix_2021-12-14.RDS")
 }
 
 ## PULL IN PI_IDS
 log_sampling_rate = log(0.5)
 print("RDS Files Reading correctly")
+
+## Bring in glmnet
+if(!require("glmnet")){install.packages('glmnet')}
+library('glmnet')
 
 Y = c(rep(1,nrow(event_model.matrix)), rep(0, nrow(nonevent_model.matrix)))
 
@@ -90,10 +99,10 @@ model.matrix = rbind(event_model.matrix[,-1], nonevent_model.matrix[,-1])
 hour.info = c(event_model.matrix[,1], nonevent_model.matrix[,1])
 daytime_obs = (hour.info > 9) & (hour.info < 20)
 
-temp = glm(Y~as.factor(hour.info) + model.matrix - 1, family = "binomial", offset = rep(log_sampling_rate,length(Y)))
+temp = glmnet(Y~as.factor(hour.info) + model.matrix - 1, family = "binomial", offset = rep(log_sampling_rate,length(Y)))
 summary(temp)
 
-temp_daytime = glm(Y[daytime_obs]~model.matrix[daytime_obs,] - 1, family = "binomial", offset = rep(log_sampling_rate,length(Y[daytime_obs])))
+temp_daytime = glmnet(Y[daytime_obs]~model.matrix[daytime_obs,] - 1, family = "binomial", offset = rep(log_sampling_rate,length(Y[daytime_obs])))
 summary(temp_daytime)
 
 saveRDS(temp, file = "linear_edaonly_alldata_fit.RDS")
