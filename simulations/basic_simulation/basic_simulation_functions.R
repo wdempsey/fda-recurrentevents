@@ -87,7 +87,7 @@ construct_J <- function(times, eig_Sigma, dataset) {
   K_b = 35
   local_times = times[1:44]
   num=K_b-3
-  qtiles <- seq(0, local_times[length(local_times)], length = num + 2)[-c(1, num + 2)]
+  qtiles <- seq(0, 1, length = num + 2)[-c(1, num + 2)]
   knots <- quantile(local_times, qtiles)
   ## Basis = bs(t, kb)
   Basis = cbind(1, local_times, local_times^2, sapply(knots, function(k) ((local_times - k > 0) * (local_times - k)) ^ 2))

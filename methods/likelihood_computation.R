@@ -28,6 +28,7 @@ setwd('/mnt/turbo/SI_data/')
 
 ## PULL IN EVENT RDS FILES
 set_of_types = c("acc", "eda")
+type = "acc"
 ## GENERATE SPLINES
 if (type == "eda") {
   sequence <- seq(-30,0, by = 1/60)
@@ -38,7 +39,7 @@ if (type == "eda") {
 # knots <- c(-32,seq(-30,0,1), 2)  # 10 => 10-4 = 6 Basis splines
 # x <- seq(-30, 0, by = 1/60)
 # bb <- splineDesign(knots, x = x, outer.ok = FALSE, ord = 2)
-x <- seq(-30,-5, by = 5)
+x <- seq(-30,-5, length.out = 30)
 bb <- matrix(nrow = length(sequence), ncol = length(x) + 1)
 bb[,1] = 1
 for (i in 1:length(x)) {
@@ -46,7 +47,7 @@ for (i in 1:length(x)) {
 }
 print("Generated Splines")
 
-if(!file.exists(paste(type, "_event_modelmatrix_2021-11-23.RDS", sep = ""))) {
+if(!file.exists(paste(type, "_event_modelmatrix_2021-12-15.RDS", sep = ""))) {
   event_eigen_vectors = readRDS(paste(type, "_lin_event_eigen_vectors_2021-11-22.RDS", sep = ""))
   event_coef = readRDS(paste(type, "_lin_event_coef_matrix_2021-11-22.RDS", sep = ""))
   event_means = readRDS(paste(type, "_lin_event_means_2021-11-22.RDS", sep = ""))
@@ -62,10 +63,10 @@ if(!file.exists(paste(type, "_event_modelmatrix_2021-11-23.RDS", sep = ""))) {
   
   saveRDS(event_model.matrix, file = paste(type, "_event_modelmatrix_",today(), ".RDS", sep = ""))
 } else {
-  event_model.matrix = readRDS(paste(type,"_event_modelmatrix_2021-12-14.RDS",sep =""))
+  event_model.matrix = readRDS(paste(type,"_event_modelmatrix_2021-12-15.RDS",sep =""))
 }
 ## PULL IN NONEVENT RDS FILES
-if(!file.exists("eda_nonevent_modelmatrix_2021-11-23.RDS")) {
+if(!file.exists(paste(type, "_nonevent_modelmatrix_2021-12-15.RDS", sep = ""))) {
   nonevent_eigen_vectors = readRDS(paste(type, "_lin_nonevent_eigen_vectors_2021-11-22.RDS", sep =""))
   nonevent_coef = readRDS(paste(type, "_lin_nonevent_coef_matrix_2021-11-22.RDS", sep = ""))
   nonevent_J_coef = nonevent_coef%*%t(nonevent_eigen_vectors)%*%bb
@@ -82,7 +83,7 @@ if(!file.exists("eda_nonevent_modelmatrix_2021-11-23.RDS")) {
   rm("nonevent_J_coef"); rm("nonevent_J_means")
   saveRDS(nonevent_model.matrix, file = paste(type, "_nonevent_modelmatrix_",today(), ".RDS", sep = ""))
 } else {
-  nonevent_model.matrix = readRDS("acc_nonevent_modelmatrix_2021-12-14.RDS")
+  nonevent_model.matrix = readRDS(paste(type, "_nonevent_modelmatrix_2021-12-15.RDS",  sep =""))
 }
 
 ## PULL IN PI_IDS
