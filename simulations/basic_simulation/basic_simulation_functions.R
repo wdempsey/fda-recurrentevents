@@ -100,23 +100,24 @@ construct_J <- function(times, eig_Sigma, dataset) {
   return(list("Basis" = Basis, "w" = w))
 }
 
-runglmnet <- function(sampling_rate, dataset, w, Basis, epsilon = 0.0001) {
+runglmnet <- function(sampling_rate, dataset, w, Basis, epsilon = exp(-100)) {
   n.tmp = length(dataset$Y)
   p.tmp = ncol(w)
   subsample_offset = rep(log(sampling_rate),nrow(dataset))
   p.fac = rep(1, ncol(w))
   p.fac[1:4] = 0 #no penalty on the first 4 variables
-  lambda_max <- 1/n.tmp
-  epsilon <- .0001
-  K <- 100
-  lambdapath <- round(exp(seq(log(lambda_max), log(lambda_max*epsilon), 
-                              length.out = K)), digits = 10)
+  
+  var_p_adjustment = 5/1000 * (1-5/1000) ## 5 events per day on average
+  tolerance = min((t(w) %*% w)) * var_p_adjustment ## Scale of the lambda keeps hitting boundary
+  lambda_max <- 1/n.tmp * tolerance
+  K <- 30
+  lambdapath <- exp(seq(log(lambda_max), log(lambda_max*epsilon), length.out = K))
   
   # set.seed("97139817")
   # Start the clock!
   ptm <- proc.time()
-  ridge.fit.cv <- cv.glmnet(w, dataset$Y, alpha = 0, intercept = TRUE, 
-                            penalty.factor = p.fac, standardize = FALSE,
+  ridge.fit.cv <- cv.glmnet(w, dataset$Y, alpha = 0, intercept = T, 
+                            penalty.factor = p.fac, standardize = F,
                             lambda = lambdapath, nfolds = 20,
                             family = "binomial")
   # Stop the clock
