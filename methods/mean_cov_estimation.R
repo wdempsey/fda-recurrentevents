@@ -12,7 +12,7 @@
 ## Note: one can check if reconstruction is good by taking
 ## hatX(t,s) = coefficients%*%eigenvectors + mu(t,s) 
 ## And seeing how close hatX(t,s) is to X(t,s).
-
+  
 setwd("Z:/SI_data/")
 set_of_types = c("eda", "acc")
 for (type in set_of_types){
@@ -67,13 +67,16 @@ for (type in set_of_types){
   lines(sequence, Y[obs,], col = "black", lwd = 1, lty = 2)
   lines(sequence, optphi_vectors%*%optcoef[obs,]/inflation + est$Yhat[obs,], col = "red", lty = 2)
   legend(-10,max(Y[obs,])*0.8, c(paste("Observed", legend_name), "K=10", "K=35"), col = c("black", "red", "red"), lty = c(1,1,2), cex = 0.75, bty = "n")
-  # dev.off()
-
+  dev.off()
+  
+  ## Timestamps
+  timestamp = event_complete[full_obs,2]
   ## SAVE THE MEAN, COEFFICIENT MATRIX, AND FIRST K EIGEN VECTORS
   saveRDS(object = est$Yhat, file = paste(type, "_lin_event_means_",today(),".RDS", sep=""))
   saveRDS(object = coef/inflation, file = paste(type, "_lin_event_coef_matrix_",today(),".RDS", sep=""))
   saveRDS(object = phi_vectors, file = paste(type, "_lin_event_eigen_vectors_",today(),".RDS", sep=""))
-  saveRDS(object = x, file = paste(type, "_lin_event_complete_case_times_",today(),".RDS", sep=""))
+  saveRDS(object = x, file = paste(type, "_lin_event_complete_case_timesincebaseline_",today(),".RDS", sep=""))
+  saveRDS(object = timestamp, file = paste(type, "_lin_event_complete_case_timestamp_",today(),".RDS", sep=""))
   saveRDS(object = as.numeric(event_complete[full_obs,1]), 
           file = paste(type, "_lin_event_complete_case_ids_",today(),".RDS", sep=""))
   
@@ -135,6 +138,8 @@ for (type in set_of_types){
   x = nonevent_complete[full_obs,2]
   z = sequence
   id = nonevent_complete[full_obs,1]
+  ## Timestamps
+  timestamp = nonevent_complete[full_obs,2]
   rm("nonevent_complete") # Remove the full data to free up memory
   
   est <- fbps(Y,list(x=x,z=z))
@@ -170,10 +175,12 @@ for (type in set_of_types){
   phi_vectors = eig_vectors[,1:K]
   coef = residual%*%phi_vectors
   
+  
   ## SAVE THE MEAN, COEFFICIENT MATRIX, AND FIRST K EIGEN VECTORS
   saveRDS(object = coef/inflation, file = paste(type, "_lin_nonevent_coef_matrix_",today(),".RDS", sep=""))
   saveRDS(object = phi_vectors, file = paste(type, "_lin_nonevent_eigen_vectors_",today(),".RDS", sep=""))
-  saveRDS(object = x, file = paste(type, "_nonevent_complete_case_times_",today(),".RDS", sep=""))
+  saveRDS(object = x, file = paste(type, "_lin_nonevent_complete_case_timesincebaseline_",today(),".RDS", sep=""))
+  saveRDS(object = timestamp, file = paste(type, "_lin_nonevent_complete_case_timestamp_",today(),".RDS", sep=""))
   saveRDS(object = id, 
           file = paste(type, "_nonevent_complete_case_ids_",today(),".RDS", sep=""))
   

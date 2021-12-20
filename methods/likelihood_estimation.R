@@ -1,3 +1,15 @@
+## WINDOWS
+setwd("Z:/SI_data/")
+## LINUX 
+setwd('/mnt/turbo/SI_data/')
+
+## Read in acc and eda model.matrix
+## ACC
+acc_event_model.matrix = readRDS("acc_event_modelmatrix_2021-12-16.RDS")
+acc_nonevent_model.matrix = readRDS("acc_nonevent_modelmatrix_2021-12-16.RDS")
+## EDA
+eda_event_model.matrix = readRDS("eda_event_modelmatrix_2021-12-16.RDS")
+eda_nonevent_model.matrix = readRDS("eda_nonevent_modelmatrix_2021-12-16.RDS")
 
 ## PULL IN PI_IDS
 log_sampling_rate = log(0.5)
