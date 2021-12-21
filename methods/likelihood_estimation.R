@@ -60,7 +60,6 @@ betaHat.net <- bb %*% ridge.coef
 plot(betaHat.net)
 
 temp_daytime = glm(Y[daytime_obs]~model.matrix[daytime_obs,], family = "binomial", offset = rep(log_sampling_rate,length(Y[daytime_obs])))
-summary(temp_daytime)
 
 W = temp_daytime$fit*(1-temp_daytime$fit)
 X = model.matrix(temp_daytime)

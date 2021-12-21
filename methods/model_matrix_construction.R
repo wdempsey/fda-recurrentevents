@@ -42,7 +42,8 @@ for (type in set_of_types) {
   bb = cbind(1, sequence, sequence^2, sapply(knots, function(k) ((sequence - k > 0) * (sequence - k)) ^ 2))
   print("Generated Splines")
   
-  if(!file.exists(paste(type, "_event_modelmatrix_2021-12-20.RDS", sep = ""))) {
+  if(!file.exists(paste(type, "_event_modelmatrix_2021-12-21.RDS", sep = ""))) {
+    print(paste("Building", type, "event model matrix"))
     event_eigen_vectors = readRDS(paste(type, "_lin_event_eigen_vectors_2021-12-20.RDS", sep = ""))
     event_coef = readRDS(paste(type, "_lin_event_coef_matrix_2021-12-20.RDS", sep = ""))
     event_means = readRDS(paste(type, "_lin_event_means_2021-12-20.RDS", sep = ""))
@@ -56,15 +57,17 @@ for (type in set_of_types) {
     event_model.matrix = data.frame(event_model.matrix)
     names(event_model.matrix) = c("id", "timesincebaseline", "hour", paste("acc_X", 1:ncol(event_J_coef), sep = ""))
     
-    rm("event_means"); rm("event_coef"); rm("event_eigen_vectors"); rm("event_times")
-    rm("event_J_coef"); rm("event_J_means")
+    rm("event_means"); rm("event_coef"); rm("event_eigen_vectors"); rm("event_timestamp")
+    rm("event_timesincebaseline"); rm("event_J_coef"); rm("event_J_means"); rm("event_id")
     
     saveRDS(event_model.matrix, file = paste(type, "_event_modelmatrix_",today(), ".RDS", sep = ""))
   } else {
-    event_model.matrix = readRDS(paste(type,"_event_modelmatrix_2021-12-20.RDS",sep =""))
+    print(paste("Already built", type, "event"))
+    event_model.matrix = readRDS(paste(type,"_event_modelmatrix_2021-12-21.RDS",sep =""))
   }
   ## PULL IN NONEVENT RDS FILES
-  if(!file.exists(paste(type, "_nonevent_modelmatrix_2021-12-20.RDS", sep = ""))) {
+  if(!file.exists(paste(type, "_nonevent_modelmatrix_2021-12-21.RDS", sep = ""))) {
+    print(paste("Bulding", type, "non-event model matrix"))
     nonevent_eigen_vectors = readRDS(paste(type, "_lin_nonevent_eigen_vectors_2021-12-20.RDS", sep =""))
     nonevent_coef = readRDS(paste(type, "_lin_nonevent_coef_matrix_2021-12-20.RDS", sep = ""))
     nonevent_J_coef = nonevent_coef%*%t(nonevent_eigen_vectors)%*%bb
@@ -80,12 +83,13 @@ for (type in set_of_types) {
     nonevent_timestamp = readRDS(paste(type, "_lin_nonevent_complete_case_timestamp_2021-12-20.RDS", sep = ""))
     nonevent_model.matrix = cbind(nonevent_ids, nonevent_timesincebaseline, hour(as_datetime(nonevent_timestamp)), nonevent_J_coef + nonevent_J_means)
     nonevent_model.matrix = data.frame(nonevent_model.matrix)
-    names(nonevent_model.matrix) = c("id", "timesincebaseline", "hour", paste("acc_X", 1:ncol(event_J_coef), sep = ""))
+    names(nonevent_model.matrix) = c("id", "timesincebaseline", "hour", paste("acc_X", 1:ncol(nonevent_J_coef), sep = ""))
     
     rm("nonevent_J_coef"); rm("nonevent_J_means")
     saveRDS(nonevent_model.matrix, file = paste(type, "_nonevent_modelmatrix_",today(), ".RDS", sep = ""))
   } else {
-    nonevent_model.matrix = readRDS(paste(type, "_nonevent_modelmatrix_2021-12-20.RDS",  sep =""))
+    print(paste("Already built", type, "nonevent"))
+    nonevent_model.matrix = readRDS(paste(type, "_nonevent_modelmatrix_2021-12-21.RDS",  sep =""))
   }
 }
 
