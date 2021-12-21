@@ -135,7 +135,7 @@ for (type in set_of_types){
   Y = as.matrix(Y, nrow = nrow(Y), ncol = ncol(Y))
   mu = rowMeans(Y)
   quad_Y = sweep(Y,1,mu)^2
-  x = nonevent_complete[full_obs,2]
+  x = as.numeric(nonevent_complete[full_obs,3])
   z = sequence
   id = nonevent_complete[full_obs,1]
   ## Timestamps
