@@ -245,29 +245,35 @@ eda_stderr = sqrt(diag(eda_bb%*%eda_updated_Sigma%*%t(eda_bb)))
 ## 
 library(ggplot2)
 
-df_summary <- data.frame(sequence = acc_sequence+30, estimate = acc_betaHat.net,
+df_acc_summary <- data.frame(sequence = acc_sequence+30, estimate = acc_betaHat.net,
                  lowerCI = acc_betaHat.net - 1.96 * acc_stderr,
                  upperCI = acc_betaHat.net + 1.96 * acc_stderr)
 
-df_summary$sequence[which(df_summary$lowerCI > 0)]
+acc_xmax = max(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
+acc_xmin = min(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
 
-ggplot(df_summary, aes(x=sequence, y=estimate)) +
+png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/acc_coef.png",
+    width = 480, height = 480, units = "px", pointsize = 16)
+ggplot(df_acc_summary, aes(x=sequence, y=estimate)) +
   geom_line(size=1, alpha=0.8) +
   geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
-  annotate("rect",xmin=0,xmax=3,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
+  annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
   xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
+dev.off()
   # geom_line(data=df_tidy, aes(x=Time, y=Ratio, group=Cell), color="grey") +
 
-# png("~/Downloads/linearfit.png", width = 720, 
-# height = 480, units = "px", pointsize = 12)
-par(mar = c(4,4,1,1) + 0.1)
-plot(eda_sequence+30, eda_betaHat.net, type= "l", 
-     axes = FALSE, xlab = "Time until event (in min)", 
-     ylab = expression(paste(beta, "(s)")),
-     ylim = c(-0.0015,0.0015), lwd = 2)
-axis(side = 1); axis(side = 2)
-lines(eda_sequence+30, (eda_betaHat.net + 1.96 * eda_stderr), col = "black", lty = 2)
-lines(eda_sequence+30, (eda_betaHat.net - 1.96 * eda_stderr), col = "black", lty = 2)
-# abline(h = 0, col = "blue", lty = 2)
-# dev.off()
+df_eda_summary <- data.frame(sequence = eda_sequence+30, estimate = eda_betaHat.net,
+                         lowerCI = eda_betaHat.net - 1.96 * eda_stderr,
+                         upperCI = eda_betaHat.net + 1.96 * eda_stderr)
 
+# eda_xmax = max(df_eda_summary$sequence[which(df_eda_summary$lowerCI > 0)])
+# eda_xmin = min(df_eda_summary$sequence[which(df_eda_summary$lowerCI > 0)])
+
+png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_coef.png",
+    width = 480, height = 480, units = "px", pointsize = 16)
+ggplot(df_eda_summary, aes(x=sequence, y=estimate)) +
+  geom_line(size=1, alpha=0.8) +
+  geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
+  # annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
+  xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
+dev.off()
