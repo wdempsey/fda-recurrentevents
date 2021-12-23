@@ -607,39 +607,29 @@ where $Z_{i,t} = M_{i,t} + C_{i,t} J_{\hat \psi, \phi}$. Lemma~\ref{lemma:logist
 
 During an eight month period in 2018, 91 psychiatric inpatients admitted for suicidal risk to Franciscan Children's Hospital were enrolled in an observational study.  Study data were graciously provided by Evan Kleiman and his study team ({\tt https://kleimanlab.org}). Each study participant wore an Empatica E4~\citep{empaticae3}, a medical-grade wearable device that offers real-time physiological data.  On each user-day, participants were asked to self-identify moments of suicidal distress.  At these times, the participant was asked to press a button on the Empatica E4 device.  The timestamp of the button press was recorded.  One of the primary study goals was to assess the association between sensor-based physiological measurements and self-identified moments of suicidal distress. In particular, the scientific question is whether there are early indicators of escalating distress by monitoring physiological correlates.
 
-A key concern is whether all moments of suicidal distress are recorded.  To ensure this, clinical staff interviewed participants in the evening who were then asked to review their button press activity.  Any events that were identified as incorrect button press activity were removed.  At the end of the study period, the average number of button presses per day was $1.91$ with a standard deviation of $2.23$.  Figure~\ref{fig:buttons} presents the distribution of button presses as a function of hour in the day.  This demonstrates low button-press counts prior to 7AM and a sharp drop off by 11PM. This demonstrates an additional concern: events can only occur when the individual is at-risk, i.e., (A) the individual is wearing the Empatica E4 and (B) is currently awake. Due to (B), we define each study day to begin at 9AM and end at 8PM. Due to (A), we use the Empatica E4 temperature sensor and filter out all records during which temperature data are below $30^{\circ}$ Celsius.
+A key concern is whether all moments of suicidal distress are recorded.  To ensure this, clinical staff interviewed participants in the evening who were then asked to review their button press activity.  Any events that were identified as incorrect button press activity were removed.  At the end of the study period, the average number of button presses per day was $2.42$ with a standard deviation of $2.62$.  Investigation of the button press data shows low button-press counts prior to 7AM and a sharp drop off by 11PM. This demonstrates an additional concern: events can only occur when the individual is at-risk, i.e., (A) the individual is wearing the Empatica E4 and (B) is currently awake. To deal with (A) and (B), here we define each study day to begin at 9AM and end at 8PM.
+% Due to (A), we use the Empatica E4 temperature sensor and filter out all records during which temperature data are below $30^{\circ}$ Celsius.
 
 \vspace{0.25cm}
-\begin{minipage}{\textwidth}
-  \begin{minipage}[b]{0.49\textwidth}
+\begin{figure}[!th]
     \centering
-%    \includegraphics[width=0.9\textwidth]{figs/buttonpresses.png}
-    \captionof{figure}{Button-presses per hour within the user-day}
+    \includegraphics[width=0.8\textwidth]{../figures/recurrentevents_plot.png}
+    \captionof{figure}{User button-presses (red) versus time since study entry (in hours).  The black mark indicates the final sensor measurement time.}
     \label{fig:buttons}
-  \end{minipage}
-  \hfill
-  \begin{minipage}[b]{0.49\textwidth}
-    \centering
-    \centering
-%    \includegraphics[width=1.0\textwidth]{figs/recurrent_events_plot.png}
-    \captionof{figure}{User button-presses versus time in study}
-    \label{fig:buttons2}
-    \end{minipage}
-\end{minipage}
+\end{figure}
 \vspace{0.25cm}
 
-Figure~\ref{fig:buttons2} presents the raw button presses as a function of time in study for each user, showing the potential heterogeneity in button press rates between users and study days. To assess whether there is between user or between study day variation, Table~\ref{tab:anova} presents a two-way ANOVA decomposition of the button press counts as a function of participant and day in study.  The ANOVA decomposition demonstrates high variation with day in study compared to across users in terms of button presses.
+Figure~\ref{fig:buttons} visualizes button presses versus time since study entry for each user. Here, day 30 is assumed to censor the observation process. A black mark signals dropout before day 30.   Figure~\ref{fig:buttons} shows the potential heterogeneity in button press rates between users and study days. To assess whether there is between user or between study day variation, Table~\ref{tab:anova} presents a two-way ANOVA decomposition of the button press counts as a function of participant and day in study.  The ANOVA decomposition demonstrates high variation with day in study compared to across users in terms of button presses.
 
 \begin{table}[!th]
 \begin{tabular}{ccccccc}\hline
       & DF & Sum Sq & Mean Sq & F value & Pr($>$F) \\ \hline
-        Participant & 88 & 13 & 13.31 & 2.71 & 0.10 \\
-        Day in Study & 75 & 54.71 & 54.71 & $8.8 \times 10^{-4}$ \\
-        Residuals & 989 & 4.91 & - \\ \hline
+        Participant & 88 & 2675.4 & 30.4 & 8.9 & $< 2 \times 10^{-16}$ \\
+        Day in Study & 29 & 443.3 & 15.3 & 4.5 & $3.9 \times 10^{-13}$ \\
+        Residuals & 672 & 2304.2 & 3.4 \\ \hline
       \end{tabular}  \captionof{table}{ANOVA decomposition of daily button press counts}
       \label{tab:anova}
 \end{table}
-
 
 Here, we focus on two physiological processes -- (1) electrodermal activity (EDA), a measure of skin conductance measured at 4Hz, and  (2) \emph{gACC}, a coordinate-free feature built from accelerometer data collected at 32Hz that measures physical movement.  Electrodermal activity can be significantly impacted by external factors (e.g., room temperature).  To account for the high between user-day variation, we analyze EDA standardized per study-day and  device. The individual EDA and gACC trajectories are highly variable which tends to obscure patterns and trends.  In Figure~\ref{fig:mean_edacc}, the mean trajectories of EDA and gACC are plotted in reverse time from button press timestamps, which shows sharp changes in EDA and AI in the 10 minutes prior to button presses.
 
@@ -671,13 +661,13 @@ Inspection of the graphs suggests setting $\Delta = XX$ for EDA and $XX$ for gAC
 
 \subsection{Accounting for missing data and heterogeneity}
 
-\subsection{Effect of electrodermal activity and activity index on moments of distress}
+% \subsection{Effect of electrodermal activity and activity index on moments of distress}
 
-Over a period of 5~years and one month following recruitment,
-patient~$u$ had eight appointments with prothrombin values as follows:
+% Over a period of 5~years and one month following recruitment,
+% patient~$u$ had eight appointments with prothrombin values as follows:
 
 \section{Discussion}
-We abide by the comment of Robert Gentleman on big data: (1) make the data as small as possible as fast as possible. Statistics works!  With subsampling and proper re-weighting the analysis is converted to well-known territory. (2) Make the software and tools as fast and as maintanable as possible.  This is exactly teh benefit of subsampling.  we convert to penalized logistic regression on a smaller but still relatively efficient dataset. This means we can use all the existing tools!
+We abide by the comment of Robert Gentleman on big data: ``make data as small as possible as fast as possible.'' Statistics works!  With subsampling and proper re-weighting the analysis is converted to well-known territory. (2) Make the software and tools as fast and as maintanable as possible.  This is exactly teh benefit of subsampling.  we convert to penalized logistic regression on a smaller but still relatively efficient dataset. This means we can use all the existing tools!
 
 Extensions to online and sampling over and over as we improve estimators.
 
