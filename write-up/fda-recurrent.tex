@@ -383,26 +383,12 @@ This implies that subsampling from an inhomogeneous Poisson process, standard lo
 
 \begin{lemma} \normalfont
 \label{prop:optimal}
-\textcolor{red}{
+% \textcolor{red}{
 If the event process is an inhomogeneous Poisson point process with intensity~$h(t; \theta)$ and subsampling occurs via an independent, inhomogeneous Poisson point process with intensity~$\pi (t)$, then~$\hat U_n (\theta)$ are optimal estimating functions (i.e., most efficient) in the class of weighted estimating functions given by~\eqref{eq:approxscore} replacing~\eqref{eq:waage_weights} by any weight function~$w_i (t; \theta)$. This class includes the Horvitz-Thompson estimator under~$w(s; \theta) = 1$.
-WD: Consider larger class and show the proof doesn't extend to non PP models?}
+% WD: Consider larger class and show the proof doesn't extend to non PP models?}
 \end{lemma}
 
 \noindent Proposition~\ref{prop:optimal} ensures the only loss of statistical efficiency is due to subsampling and not using a suboptimal estimation procedure given subsampling.
-% This result follows from the probability-based sampling design literature~\cite{Rathbun2012}.
-
-% \subsection{Computation versus statistical efficiency tradeoff}
-
-% Under assumption~\ref{assumption:truncation}, we next consider the statistical efficiency of our proposed estimator when compared to complete-data maximum likelihood estimation. While subsampling introduces additional variation, it may significantly reduce the overall computational burden. It is this trade-off that we next make precise. To start, we consider the subsampling rate~$\pi(t) = c \times h(t; \theta)$ for $c>0$, i.e., the subsampling rate proportional to the intensity function with time-independent constant~$c > 0$. Under this subsampling rate, the weight function~\eqref{eq:waage_weights} is equal to $c / (c+1)$. Under Lemma~\ref{lemma:simpleasym},
-
-% For the log-linear intensity model, the sampling-unbiased estimator for~$\hat \Xi(\theta)$ is equivalent to the Fisher information for the previously described logistic regression model. This implies that subsampling from an inhomogeneous Poisson process, standard logistic regression software can be used to fit the recurrent event model by specifying an offset equal to~$\log \pi_i (t)$. Not only this, Lemma~\ref{prop:optimal} shows weights~\eqref{eq:waage_weights} are optimal within a particular class of weighted estimating equations.
-
-% \begin{prop} \normalfont
-% \label{prop:optimal}
-% If the event process is an inhomogeneous Poisson point process with intensity~$h(t; \theta)$ and subsampling occurs via an independent, inhomogeneous Poisson point process with intensity~$\pi (t)$, then~$\hat U_n (\theta)$ are optimal estimating functions (i.e., most efficient) in the class of weighted estimating functions given by~\eqref{eq:approxscore} replacing~\eqref{eq:waage_weights} by any weight function~$w_i (t; \theta)$. This class includes the Horvitz-Thompson estimator under~$w(s; \theta) = 1$.
-% \end{prop}
-
-% \noindent Proposition~\ref{prop:optimal} ensures the only loss of statistical efficiency is due to subsampling and not using a suboptimal estimation procedure given subsampling.
 
 \subsection{Computation versus statistical efficiency tradeoff}
 
@@ -607,7 +593,7 @@ where $Z_{i,t} = M_{i,t} + C_{i,t} J_{\hat \psi, \phi}$. Lemma~\ref{lemma:logist
 
 During an eight month period in 2018, 91 psychiatric inpatients admitted for suicidal risk to Franciscan Children's Hospital were enrolled in an observational study.  Study data were graciously provided by Evan Kleiman and his study team ({\tt https://kleimanlab.org}). Each study participant wore an Empatica E4~\citep{empaticae3}, a medical-grade wearable device that offers real-time physiological data.  On each user-day, participants were asked to self-identify moments of suicidal distress.  At these times, the participant was asked to press a button on the Empatica E4 device.  The timestamp of the button press was recorded.  One of the primary study goals was to assess the association between sensor-based physiological measurements and self-identified moments of suicidal distress. In particular, the scientific question is whether there are early indicators of escalating distress by monitoring physiological correlates.
 
-A key concern is whether all moments of suicidal distress are recorded.  To ensure this, clinical staff interviewed participants in the evening who were then asked to review their button press activity.  Any events that were identified as incorrect button press activity were removed.  At the end of the study period, the average number of button presses per day was $2.42$ with a standard deviation of $2.62$.  Investigation of the button press data shows low button-press counts prior to 7AM and a sharp drop off by 11PM. This demonstrates an additional concern: events can only occur when the individual is at-risk, i.e., (A) the individual is wearing the Empatica E4 and (B) is currently awake. To deal with (A) and (B), here we define each study day to begin at 9AM and end at 8PM.
+A key concern is whether all moments of suicidal distress are recorded.  To ensure this, clinical staff interviewed participants in the evening who were then asked to review their button press activity.  Any events that were identified as incorrect button press activity were removed.  At the end of the 30-day study period, the average number of button presses per day was $2.42$ with a standard deviation of $2.62$.  Investigation of the button press data shows low button-press counts prior to 7AM and a sharp drop off by 11PM. This demonstrates an additional concern: events can only occur when the individual is at-risk, i.e., (A) the individual is wearing the Empatica E4 and (B) is currently awake. To deal with (A) and (B), here we define each study day to begin at 9AM and end at 8PM.
 % Due to (A), we use the Empatica E4 temperature sensor and filter out all records during which temperature data are below $30^{\circ}$ Celsius.
 
 \vspace{0.25cm}
@@ -619,7 +605,7 @@ A key concern is whether all moments of suicidal distress are recorded.  To ensu
 \end{figure}
 \vspace{0.25cm}
 
-Figure~\ref{fig:buttons} visualizes button presses versus time since study entry for each user. Here, day 30 is assumed to censor the observation process. A black mark signals dropout before day 30.   Figure~\ref{fig:buttons} shows the potential heterogeneity in button press rates between users and study days. To assess whether there is between user or between study day variation, Table~\ref{tab:anova} presents a two-way ANOVA decomposition of the button press counts as a function of participant and day in study.  The ANOVA decomposition demonstrates high variation with day in study compared to across users in terms of button presses.
+Figure~\ref{fig:buttons} visualizes button presses versus time since study entry for each user. Day 30 is assumed to censor the observation process. A black mark signals dropout before day 30.   Figure~\ref{fig:buttons} shows the potential heterogeneity in button press rates between users and study days. To assess whether there is between user or between study day variation, Table~\ref{tab:anova} presents a two-way ANOVA decomposition of the button press counts as a function of participant and day in study.  The ANOVA decomposition demonstrates high variation with day in study and across users.
 
 \begin{table}[!th]
 \begin{tabular}{ccccccc}\hline
@@ -631,7 +617,7 @@ Figure~\ref{fig:buttons} visualizes button presses versus time since study entry
       \label{tab:anova}
 \end{table}
 
-Here, we focus on two physiological processes -- (1) electrodermal activity (EDA), a measure of skin conductance measured at 4Hz, and  (2) \emph{gACC}, a coordinate-free feature built from accelerometer data collected at 32Hz that measures physical movement.  Electrodermal activity can be significantly impacted by external factors (e.g., room temperature).  To account for the high between user-day variation, we analyze EDA standardized per study-day and  device. The individual EDA and gACC trajectories are highly variable which tends to obscure patterns and trends.  In Figure~\ref{fig:mean_edacc}, the mean trajectories of EDA and gACC are plotted in reverse time from button press timestamps, which shows sharp changes in EDA and AI in the 10 minutes prior to button presses.
+Here, we focus on two physiological processes -- (1) electrodermal activity (EDA), a measure of skin conductance measured at 4Hz, and  (2) \emph{activity index}~\cite{10.1371/journal.pone.0160644}, a coordinate-free feature built from accelerometer data collected at 32Hz that measures physical movement.  Electrodermal activity can be significantly impacted by external factors (e.g., room temperature).  To account for the high between user-day variation, we analyze EDA standardized per study-day and  device. The individual EDA and AI trajectories are highly variable which tends to obscure patterns and trends.  In Figure~\ref{fig:mean_edacc}, the mean trajectories of EDA and AI are plotted in reverse time from button press timestamps, which shows sharp changes in EDA and AI in the 10 minutes prior to button presses.
 
 \begin{figure}[!th]
 \centering
@@ -651,7 +637,9 @@ Here, we focus on two physiological processes -- (1) electrodermal activity (EDA
 \label{fig:mean_edacc}
 \end{figure}
 
-Inspection of the graphs suggests setting $\Delta = XX$ for EDA and $XX$ for gACC and  Gaussian with moments {\bf comparison over $\Delta$ and using imputation} where the baseline rate is assumed to depend on
+\subsection{Complete-case analysis}
+
+Inspection of~Figure\ref{fig:mean_eda} and Figure~\ref{fig:mean_acc} suggests setting $\Delta = 30$ minutes is adequate to capturing the proximal impact of EDA and AI
 
 \begin{figure}[!th]
 \rule{3cm}{3cm}%
@@ -661,15 +649,15 @@ Inspection of the graphs suggests setting $\Delta = XX$ for EDA and $XX$ for gAC
 
 \subsection{Accounting for missing data and heterogeneity}
 
+TBD.
+
 % \subsection{Effect of electrodermal activity and activity index on moments of distress}
 
 % Over a period of 5~years and one month following recruitment,
 % patient~$u$ had eight appointments with prothrombin values as follows:
 
 \section{Discussion}
-We abide by the comment of Robert Gentleman on big data: ``make data as small as possible as fast as possible.'' Statistics works!  With subsampling and proper re-weighting the analysis is converted to well-known territory. (2) Make the software and tools as fast and as maintanable as possible.  This is exactly teh benefit of subsampling.  we convert to penalized logistic regression on a smaller but still relatively efficient dataset. This means we can use all the existing tools!
-
-Extensions to online and sampling over and over as we improve estimators.
+In this paper, we have presented a methodology for translating a difficult functional analysis with recurrent events problem into a traditional logistic regression.  The translation leveraged subsampling and weighting techniques, specifically the use of weights suggested by~\cite{Waagepetersen2008}, along with flexible functional data analysis methods of~\cite{Goldsmith2011} with marginal covariance methods for longitudinal functional data of~\cite{Park2018}.  The proposed methodology abides by the comment of Robert Gentleman on big data: ``make data as small as possible as fast as possible.''  Subsampling and  weighting converts the problem to well-known territory which allowed us to leverage existing software.  We show limited loss of efficiency when the subsampling is properly tuned to the event rates.  Important extensions to an online sampling algorithm, optimal weighting when the Poisson point process assumption does not hold, and non-linear functional data methods are considered important future work.
 
 \bibliographystyle{plainnat}
 \bibliography{si-fda-refs}
