@@ -277,3 +277,4 @@ ggplot(df_eda_summary, aes(x=sequence, y=estimate)) +
   # annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
   xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
 dev.off()
+
