@@ -24,7 +24,7 @@ print("Generated EDA Splines")
 acc_sequence <- seq(-30,0, by = 1/6)
 acc_knots <- quantile(acc_sequence, qtiles)
 acc_bb = cbind(1, acc_sequence, acc_sequence^2, sapply(acc_knots, function(k) ((acc_sequence - k > 0) * (acc_sequence - k)) ^ 2))
-
+print("Generated ACC Splines")
 ## PULL IN PI_IDS
 log_sampling_rate = log(0.5)
 print("RDS Files Reading correctly")
@@ -35,10 +35,11 @@ library('glmnet')
 
 ## Model per type
 acc_Y = c(rep(1,nrow(acc_event_model.matrix)), rep(0, nrow(acc_nonevent_model.matrix)))
-acc_model.matrix = rbind(acc_event_model.matrix[,-c(1:3)], acc_nonevent_model.matrix[,-c(1:3)])
-hour.info = c(acc_event_model.matrix[,3], acc_nonevent_model.matrix[,3])
+acc_model.matrix = rbind(acc_event_model.matrix[,-c(1,3)], acc_nonevent_model.matrix[,-c(1,3)])
+## HOUR WAS IN UTC BUT NEED TO BE TRANSLATED TO ETS
+## THIS IS DONE BY -5 HOURS FUNCTION
+hour.info = (c(acc_event_model.matrix[,3], acc_nonevent_model.matrix[,3]) - 5)%%24
 daytime_obs = (hour.info > 9) & (hour.info < 20)
-
 n.tmp = length(acc_Y)
 p.tmp = ncol(acc_model.matrix)
 subsample_offset = rep(log_sampling_rate,nrow(acc_model.matrix))
