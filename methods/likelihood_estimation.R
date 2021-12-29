@@ -72,21 +72,6 @@ updated_Sigma = Sigma[-1,-1]
 stderr = sqrt(diag(acc_bb%*%updated_Sigma%*%t(acc_bb)))
 betaHat.net <- acc_bb %*% ridge.coef
 
-
-temp_daytime = glm(acc_Y[daytime_obs]~acc_model.matrix[daytime_obs,], family = "binomial", offset = rep(log_sampling_rate,length(acc_Y[daytime_obs])))
-# betaHat.net_glm <- acc_bb %*% temp_daytime$coefficients[-1]
-Sigma = vcov(temp_daytime)
-ridge_I = diag(rep(ridge.fit.lambda, nrow(Sigma)))
-inv_AplusB = solve(Sigma + solve(ridge_I))
-## Use woodbury identity
-## (A+B)^{-1} =  A^-1 - A^{-1} (C^{-1} + A^{-1]})^{-1} A^{-1}
-## A^{-1} = Sigma
-## B^{-1} = solve(ridge_I)
-updated_Sigma = Sigma - Sigma%*%solve(solve(ridge_I) + Sigma)%*%Sigma
-updated_Sigma = updated_Sigma[-1,-1]
-stderr = sqrt(diag(acc_bb%*%updated_Sigma%*%t(acc_bb)))
-
-
 # png("~/Downloads/linearfit.png", width = 720, 
     # height = 480, units = "px", pointsize = 12)
 par(mar = c(4,4,1,1) + 0.1)
@@ -110,14 +95,10 @@ n.tmp = length(eda_Y)
 p.tmp = ncol(eda_model.matrix)
 subsample_offset = rep(log_sampling_rate,nrow(eda_model.matrix))
 p.fac = rep(1, ncol(eda_model.matrix))
-p.fac[1:4] = 0 #no penalty on the first 4 variables
+p.fac[1:3] = 0 #no penalty on the first 4 variables
 lambda_max <- 1/n.tmp 
 epsilon <- 1e-10
 K <- 30
-
-lambdapath <- exp(seq(log(lambda_max), log(lambda_max*epsilon), 
-                      length.out = K))
-
 # set.seed("97139817")
 # Start the clock!
 eda_model.matrix = as.matrix(eda_model.matrix)
@@ -138,6 +119,17 @@ ridge.fit.lambda <- ridge.fit.cv$lambda.min
 # Extract coefficient values for lambda.1se (without intercept)
 ridge.coef <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[-1]
 intercept <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[1]
+
+## STDERR
+X = cbind(1,acc_model.matrix[daytime_obs,])
+totals = X%*%coef(ridge.fit.cv, s = ridge.fit.lambda) + log_sampling_rate
+probs = 1/(1+exp(-totals))
+W = diag(as.vector(probs * (1-probs)))
+fisher_info = t(X)%*%W%*%X
+ridge_penalty = diag(ridge.fit.lambda*c(1,p.fac))
+Sigma = solve(fisher_info+ridge_penalty)
+updated_Sigma = Sigma[-1,-1]
+stderr = sqrt(diag(acc_bb%*%updated_Sigma%*%t(acc_bb)))
 
 betaHat.net <- eda_bb %*% ridge.coef
 
