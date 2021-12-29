@@ -35,7 +35,7 @@ library('glmnet')
 
 ## Model per type
 acc_Y = c(rep(1,nrow(acc_event_model.matrix)), rep(0, nrow(acc_nonevent_model.matrix)))
-acc_model.matrix = rbind(acc_event_model.matrix[,-c(1,3)], acc_nonevent_model.matrix[,-c(1,3)])
+acc_model.matrix = rbind(acc_event_model.matrix[,-c(1:3)], acc_nonevent_model.matrix[,-c(1:3)])
 ## HOUR WAS IN UTC BUT NEED TO BE TRANSLATED TO ETS
 ## THIS IS DONE BY -5 HOURS FUNCTION
 hour.info = (c(acc_event_model.matrix[,3], acc_nonevent_model.matrix[,3]) - 5)%%24
@@ -44,35 +44,34 @@ n.tmp = length(acc_Y)
 p.tmp = ncol(acc_model.matrix)
 subsample_offset = rep(log_sampling_rate,nrow(acc_model.matrix))
 p.fac = rep(1, ncol(acc_model.matrix))
-p.fac[1:4] = 0 #no penalty on the first 4 variables
-lambda_max <- 1/n.tmp 
-epsilon <- 1e-10
-K <- 30
-
-lambdapath <- exp(seq(log(lambda_max), log(lambda_max*epsilon), 
-                            length.out = K))
-
+p.fac[1:3] = 0 #no penalty on the first 3 variables ## HOW IS INTERCEPT HANDLED?
 # set.seed("97139817")
 # Start the clock!
 acc_model.matrix = as.matrix(acc_model.matrix)
 ptm <- proc.time()
-ridge.fit.cv <- cv.glmnet(acc_model.matrix[daytime_obs,], acc_Y[daytime_obs], alpha = 0, intercept = TRUE, 
-                          penalty.factor = p.fac, standardize = FALSE,
-                          # lambda = lambdapath, nfolds = 20,
-                          offset = rep(log_sampling_rate,length(eda_Y)),
+ridge.fit.cv <- cv.glmnet(acc_model.matrix[daytime_obs,], acc_Y[daytime_obs], alpha = 0, 
+                          intercept = TRUE, penalty.factor = p.fac, standardize = F,
+                          offset = rep(log_sampling_rate,length(acc_Y[daytime_obs])),
                           family = "binomial")
 # Stop the clock
 runtime = proc.time() - ptm
 
 ridge.fit.lambda <- ridge.fit.cv$lambda.min
-
 # Extract coefficient values for lambda.1se (without intercept)
 ridge.coef <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[-1]
-intercept <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[1]
+intercepts <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[1]
 
+X = cbind(1,acc_model.matrix[daytime_obs,])
+totals = X%*%coef(ridge.fit.cv, s = ridge.fit.lambda) + log_sampling_rate
+probs = 1/(1+exp(-totals))
+W = diag(as.vector(probs * (1-probs)))
+fisher_info = t(X)%*%W%*%X
+ridge_penalty = diag(ridge.fit.lambda*c(1,p.fac))
+Sigma = solve(fisher_info+ridge_penalty)
+updated_Sigma = Sigma[-1,-1]
+stderr = sqrt(diag(acc_bb%*%updated_Sigma%*%t(acc_bb)))
 betaHat.net <- acc_bb %*% ridge.coef
 
-plot(acc_sequence, betaHat.net)
 
 temp_daytime = glm(acc_Y[daytime_obs]~acc_model.matrix[daytime_obs,], family = "binomial", offset = rep(log_sampling_rate,length(acc_Y[daytime_obs])))
 # betaHat.net_glm <- acc_bb %*% temp_daytime$coefficients[-1]
