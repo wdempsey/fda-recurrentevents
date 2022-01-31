@@ -41,6 +41,7 @@ for (type in set_of_types){
   }
   Sigma_est <- fbps(Sigma)
   final_Sigma = (Sigma_est$Yhat + t(Sigma_est$Yhat))/2
+  saveRDS(object = final_Sigma, file = paste(type, "_event_Sigma_",today(),".RDS", sep=""))
   eig_Sigma_est = eigen(final_Sigma)
 
   eig_vectors = eig_Sigma_est$vectors
@@ -160,11 +161,10 @@ for (type in set_of_types){
       Sigma[i,j] = sum(residual[,i]*residual[,j])/nrow(residual)
     }
   }
-  
   Sigma_est <- fbps(Sigma)
-  Sigma_est$Yhat[1:10,1:10]
-  eig_Sigma_est = eigen(Sigma_est$Yhat)
-  
+  final_Sigma = (Sigma_est$Yhat + t(Sigma_est$Yhat))/2
+  saveRDS(object = final_Sigma, file = paste(type, "_nonevent_Sigma_",today(),".RDS", sep=""))
+  eig_Sigma_est = eigen(final_Sigma$Yhat)
   eig_vectors = eig_Sigma_est$vectors
   eig_values = eig_Sigma_est$values
   
