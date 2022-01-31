@@ -3,6 +3,10 @@ setwd("Z:/SI_data/")
 ## LINUX 
 setwd('/mnt/turbo/SI_data/')
 
+## LIBRARIES
+library(ggplot2)
+library('dplyr')
+
 ## Read in acc and eda model.matrix
 ## ACC
 acc_event_model.matrix = readRDS("acc_event_modelmatrix_2021-12-21.RDS")
@@ -72,18 +76,21 @@ updated_Sigma = Sigma[-1,-1]
 stderr = sqrt(diag(acc_bb%*%updated_Sigma%*%t(acc_bb)))
 betaHat.net <- acc_bb %*% ridge.coef
 
-# png("~/Downloads/linearfit.png", width = 720, 
-    # height = 480, units = "px", pointsize = 12)
-par(mar = c(4,4,1,1) + 0.1)
-plot(acc_sequence+30, betaHat.net, type= "l", 
-     axes = FALSE, xlab = "Time until event (in min)", 
-     ylab = expression(paste(beta, "(s)")), 
-     ylim = c(-4e-04, 4e-04))
-axis(side = 1); axis(side = 2)
-lines(acc_sequence+30, (betaHat.net + 1.96 * stderr), col = "red")
-lines(acc_sequence+30, (betaHat.net - 1.96 * stderr), col = "red")
-abline(h = 0, col = "blue", lty = 2)
-# dev.off()
+df_acc_summary <- data.frame(sequence = acc_sequence+30, estimate = acc_betaHat.net,
+                             lowerCI = acc_betaHat.net - 1.96 * acc_stderr,
+                             upperCI = acc_betaHat.net + 1.96 * acc_stderr)
+
+acc_xmax = max(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
+acc_xmin = min(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
+
+png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/acc_coef.png",
+    width = 480, height = 480, units = "px", pointsize = 16)
+ggplot(df_acc_summary, aes(x=sequence, y=estimate)) +
+  geom_line(size=1, alpha=0.8) +
+  geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
+  annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
+  xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
+dev.off()
 
 ### EDA
 eda_Y = c(rep(1,nrow(eda_event_model.matrix)), rep(0, nrow(eda_nonevent_model.matrix)))
@@ -95,10 +102,8 @@ n.tmp = length(eda_Y)
 p.tmp = ncol(eda_model.matrix)
 subsample_offset = rep(log_sampling_rate,nrow(eda_model.matrix))
 p.fac = rep(1, ncol(eda_model.matrix))
-p.fac[1:3] = 0 #no penalty on the first 4 variables
-lambda_max <- 1/n.tmp 
-epsilon <- 1e-10
-K <- 30
+p.fac[1:3] = 0 #no penalty on the first 3 variables
+
 # set.seed("97139817")
 # Start the clock!
 eda_model.matrix = as.matrix(eda_model.matrix)
@@ -108,20 +113,18 @@ ridge.fit.cv <- cv.glmnet(eda_model.matrix[daytime_obs,], eda_Y[daytime_obs],
                           penalty.factor = p.fac, standardize = FALSE,
                           # lambda = lambdapath, nfolds = 20,
                           family = "binomial", 
-                          offset = rep(log_sampling_rate,length(eda_Y)))
+                          offset = rep(log_sampling_rate,length(eda_Y[daytime_obs])))
 
 # Stop the clock
 runtime = proc.time() - ptm
 
 ridge.fit.lambda <- ridge.fit.cv$lambda.min
-# plot(ridge.fit.cv)
-
 # Extract coefficient values for lambda.1se (without intercept)
 ridge.coef <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[-1]
 intercept <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[1]
 
 ## STDERR
-X = cbind(1,acc_model.matrix[daytime_obs,])
+X = cbind(1,eda_model.matrix[daytime_obs,])
 totals = X%*%coef(ridge.fit.cv, s = ridge.fit.lambda) + log_sampling_rate
 probs = 1/(1+exp(-totals))
 W = diag(as.vector(probs * (1-probs)))
@@ -129,41 +132,27 @@ fisher_info = t(X)%*%W%*%X
 ridge_penalty = diag(ridge.fit.lambda*c(1,p.fac))
 Sigma = solve(fisher_info+ridge_penalty)
 updated_Sigma = Sigma[-1,-1]
-stderr = sqrt(diag(acc_bb%*%updated_Sigma%*%t(acc_bb)))
-
+stderr = sqrt(diag(eda_bb%*%updated_Sigma%*%t(eda_bb)))
 betaHat.net <- eda_bb %*% ridge.coef
 
-plot(eda_sequence+30, betaHat.net)
+df_eda_summary <- data.frame(sequence = eda_sequence+30, estimate = eda_betaHat.net,
+                             lowerCI = eda_betaHat.net - 1.96 * eda_stderr,
+                             upperCI = eda_betaHat.net + 1.96 * eda_stderr)
 
-temp_daytime = glm(eda_Y[daytime_obs]~eda_model.matrix[daytime_obs,], family = "binomial", 
-                   offset = rep(log_sampling_rate,length(eda_Y[daytime_obs])))
-Sigma = vcov(temp_daytime)
-ridge_I = diag(rep(ridge.fit.lambda, nrow(Sigma)))
-inv_AplusB = solve(Sigma + solve(ridge_I))
-## Use woodbury identity
-## (A+B)^{-1} =  A^-1 - A^{-1} (C^{-1} + A^{-1]})^{-1} A^{-1}
-## A^{-1} = Sigma
-## B^{-1} = solve(ridge_I)
-updated_Sigma = Sigma - Sigma%*%solve(solve(ridge_I) + Sigma)%*%Sigma
-updated_Sigma = updated_Sigma[-1,-1]
-stderr = sqrt(diag(eda_bb%*%updated_Sigma%*%t(eda_bb)))
+# eda_xmax = max(df_eda_summary$sequence[which(df_eda_summary$lowerCI > 0)])
+# eda_xmin = min(df_eda_summary$sequence[which(df_eda_summary$lowerCI > 0)])
 
-# png("~/Downloads/linearfit.png", width = 720, 
-    # height = 480, units = "px", pointsize = 12)
-par(mar = c(4,4,1,1) + 0.1)
-plot(eda_sequence+30, betaHat.net, type= "l", 
-     axes = FALSE, xlab = "Time until event (in min)", 
-     ylab = expression(paste(beta, "(s)")),
-     ylim = c(-0.002,0.002), lwd = 2)
-axis(side = 1); axis(side = 2)
-lines(eda_sequence+30, (betaHat.net + 1.96 * stderr), col = "black", lty = 2)
-lines(eda_sequence+30, (betaHat.net - 1.96 * stderr), col = "black", lty = 2)
-# abline(h = 0, col = "blue", lty = 2)
-# dev.off()
+png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_coef.png",
+    width = 480, height = 480, units = "px", pointsize = 16)
+ggplot(df_eda_summary, aes(x=sequence, y=estimate)) +
+  geom_line(size=1, alpha=0.8) +
+  geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
+  # annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
+  xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
+dev.off()
+
 
 ### MERGE DATASETS
-library('dplyr')
-
 names(eda_event_model.matrix)[4:length(eda_event_model.matrix)] = paste("eda_X", 1:35, sep ="")
 names(eda_nonevent_model.matrix)[4:length(eda_nonevent_model.matrix)] = paste("eda_X", 1:35, sep ="")
 
@@ -184,13 +173,7 @@ n.tmp = length(all_Y)
 p.tmp = ncol(all_model.matrix)
 subsample_offset = rep(log_sampling_rate,nrow(all_model.matrix))
 p.fac = rep(1, ncol(all_model.matrix))
-p.fac[1:4] = 0 #no penalty on the first 4 variables
-lambda_max <- 1/n.tmp 
-epsilon <- 1e-10
-K <- 30
-
-lambdapath <- exp(seq(log(lambda_max), log(lambda_max*epsilon), 
-                      length.out = K))
+p.fac[c(1:3)] = 0 #no penalty on the first 4 variables
 
 # set.seed("97139817")
 # Start the clock!
@@ -218,25 +201,21 @@ eda_betaHat.net <- eda_bb %*% ridge.coef[36:70]
 plot(acc_sequence, acc_betaHat.net)
 plot(eda_sequence, eda_betaHat.net)
 
-temp_daytime = glm(all_Y[daytime_obs]~all_model.matrix[daytime_obs,], family = "binomial", 
-                   offset = rep(log_sampling_rate,length(all_Y[daytime_obs])))
-Sigma = vcov(temp_daytime)
-ridge_I = diag(rep(ridge.fit.lambda, nrow(Sigma)))
-inv_AplusB = solve(Sigma + solve(ridge_I))
-## Use woodbury identity
-## (A+B)^{-1} =  A^-1 - A^{-1} (C^{-1} + A^{-1]})^{-1} A^{-1}
-## A^{-1} = Sigma
-## B^{-1} = solve(ridge_I)
-updated_Sigma = Sigma - Sigma%*%solve(solve(ridge_I) + Sigma)%*%Sigma
-updated_Sigma = updated_Sigma[-1,-1]
+## STDERR
+X = cbind(1,all_model.matrix[daytime_obs,])
+totals = X%*%coef(ridge.fit.cv, s = ridge.fit.lambda) + log_sampling_rate
+probs = 1/(1+exp(-totals))
+W = diag(as.vector(probs * (1-probs)))
+fisher_info = t(X)%*%W%*%X
+ridge_penalty = diag(ridge.fit.lambda*c(1,p.fac))
+Sigma = solve(fisher_info+ridge_penalty)
+updated_Sigma = Sigma[-1,-1]
 acc_updated_Sigma = updated_Sigma[1:35,1:35]
 eda_updated_Sigma = updated_Sigma[36:70,36:70]
 acc_stderr = sqrt(diag(acc_bb%*%acc_updated_Sigma%*%t(acc_bb)))
 eda_stderr = sqrt(diag(eda_bb%*%eda_updated_Sigma%*%t(eda_bb)))
 
-## 
-library(ggplot2)
-
+## JOINT FIGURES
 df_acc_summary <- data.frame(sequence = acc_sequence+30, estimate = acc_betaHat.net,
                  lowerCI = acc_betaHat.net - 1.96 * acc_stderr,
                  upperCI = acc_betaHat.net + 1.96 * acc_stderr)
@@ -244,7 +223,7 @@ df_acc_summary <- data.frame(sequence = acc_sequence+30, estimate = acc_betaHat.
 acc_xmax = max(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
 acc_xmin = min(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
 
-png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/acc_coef.png",
+png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/acc_coef_joint.png",
     width = 480, height = 480, units = "px", pointsize = 16)
 ggplot(df_acc_summary, aes(x=sequence, y=estimate)) +
   geom_line(size=1, alpha=0.8) +
@@ -261,7 +240,7 @@ df_eda_summary <- data.frame(sequence = eda_sequence+30, estimate = eda_betaHat.
 # eda_xmax = max(df_eda_summary$sequence[which(df_eda_summary$lowerCI > 0)])
 # eda_xmin = min(df_eda_summary$sequence[which(df_eda_summary$lowerCI > 0)])
 
-png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_coef.png",
+png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_coef_joint.png",
     width = 480, height = 480, units = "px", pointsize = 16)
 ggplot(df_eda_summary, aes(x=sequence, y=estimate)) +
   geom_line(size=1, alpha=0.8) +
