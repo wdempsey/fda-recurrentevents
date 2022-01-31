@@ -27,11 +27,20 @@ for (type in set_of_types){
   sequence = seq(0,-30, length.out = ncol(event_complete) - 3); sensor_obs = 4:ncol(event_complete)
   bootstrap_rows = sample(1:nrow(event_complete), size = nrow(event_complete), replace = TRUE)
   bootstrap_event_complete = event_complete[bootstrap_rows,]
-  
-  
-  
-  library(refund); library(lubridate)
+  impute_Sigma = event_Sigma
+  eigen_Sigma = eigen(impute_Sigma)
+  eigen_values = eigen_Sigma$values
+  eigen_values[eigen_values < 0] = 0
+  impute_Sigma = eigen_Sigma$vectors%*%diag(eigen_Sigma$values)%*%t(eigen_Sigma$vectors)
+  ## 
+  ## Mean: \mu_1 + Sigma_{12} (\Sigma_22^plus) (y - mu_2)
+  ## COVARIANCE: \Sigma_11 - \Sigma{12} \sigma_{22}^plus \Sigma_{12}
+  ## \Sigma_22 =T' T 
+  ## \Sigma_22^\plus = T'(T' T)^{-2} T
+  library(refund); library(lubridate); library(dynr)
   full_obs = apply(X = bootstrap_event_complete, MARGIN = 1, FUN = function(x){!any(is.na(x))})
+  how_bad = apply(X = bootstrap_event_complete, MARGIN = 1, FUN = function(x){mean(is.na(x))})
+
   ## Remove the inflation factor
   inflation = 100
   impute_Sigma = event_Sigma/inflation^2
@@ -47,11 +56,12 @@ for (type in set_of_types){
     observed_data = data[!missing_spots]
     Sigma_11 = as.matrix(impute_Sigma[missing_spots, missing_spots], nrow = sum(missing_spots))
     Sigma_12 = as.matrix(impute_Sigma[missing_spots, !missing_spots], nrow = sum(missing_spots))
-    Sigma_22 = impute_Sigma[!missing_spots, !missing_spots]
+    Sigma_22 = as.matrix(impute_Sigma[!missing_spots, !missing_spots])
     mu_1 = current_mean[missing_spots]
     mu_2 = current_mean[!missing_spots]
-    pseudo_inverse = ginv(Sigma_22)
-    mu_conditional = mu_1 + t(Sigma_12)%*%pseudo_inverse%*%(observed_data - mu_2)
+    T = chol(Sigma_22, pivot = T)
+    pseudo_inverse = solve(Sigma_22)  
+    mu_conditional = mu_1 + t(Sigma_12)%*%solve(Sigma_11, (observed_data - mu_2)
     Sigma_conditional = Sigma_11 - t(Sigma_12)%*%pseudo_inverse%*%Sigma_12
   }
   
