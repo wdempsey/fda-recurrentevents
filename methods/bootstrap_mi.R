@@ -17,7 +17,11 @@ num_bootstraps = 200
 num_imputes = 2
 set.seed(1391307)
   
+## WINDOWS
 setwd("Z:/SI_data/")
+## LINUX
+setwd('/mnt/turbo/SI_data/')
+
 set_of_types = c("eda", "acc")
 for (type in set_of_types){
   event_complete = readRDS(paste(type, "_event_complete_HLP_2021-11-20.RDS", sep = ""))
@@ -37,7 +41,7 @@ for (type in set_of_types){
   ## COVARIANCE: \Sigma_11 - \Sigma{12} \sigma_{22}^plus \Sigma_{12}
   ## \Sigma_22 =T' T 
   ## \Sigma_22^\plus = T'(T' T)^{-2} T
-  library(refund); library(lubridate); library(dynr)
+  library(refund); library(lubridate); library(dynr); library(Matrix)
   full_obs = apply(X = bootstrap_event_complete, MARGIN = 1, FUN = function(x){!any(is.na(x))})
   how_bad = apply(X = bootstrap_event_complete, MARGIN = 1, FUN = function(x){mean(is.na(x))})
 
@@ -59,10 +63,24 @@ for (type in set_of_types){
     Sigma_22 = as.matrix(impute_Sigma[!missing_spots, !missing_spots])
     mu_1 = current_mean[missing_spots]
     mu_2 = current_mean[!missing_spots]
-    T = chol(Sigma_22, pivot = T)
-    pseudo_inverse = solve(Sigma_22)  
-    mu_conditional = mu_1 + t(Sigma_12)%*%solve(Sigma_11, (observed_data - mu_2)
-    Sigma_conditional = Sigma_11 - t(Sigma_12)%*%pseudo_inverse%*%Sigma_12
+    eig_Sigma = eigen(Sigma_22)
+    eig_vectors = eig_Sigma$vectors
+    eig_values = eig_Sigma$values
+    eig_values[eig_values < 0 ] = 0
+    max_K = min(which(cumsum(eig_values)/sum(eig_values) > 0.9999))
+    T = eig_vectors[,1:max_K]%*%diag(sqrt(eig_values[1:max_K]))
+    pseudo_inverse = T%*%solve(t(T)%*%T) %*% solve(t(T)%*%T, t(T))
+    mu_conditional = mu_1 + Sigma_12%*%pseudo_inverse %*% (observed_data - mu_2)
+    Sigma_conditional = Sigma_11 - Sigma_12%*%pseudo_inverse%*%t(Sigma_12)
+    Sigma_conditional = (Sigma_conditional + t(Sigma_conditional))/2
+    eig_Sigma = eigen(Sigma_conditional)
+    eig_vectors = eig_Sigma$vectors
+    eig_values = eig_Sigma$values
+    eig_values[eig_values < 0 ] = 0
+    max_K = min(which(cumsum(eig_values)/sum(eig_values) > 0.9999))
+    T = eig_vectors[,1:max_K]%*%diag(sqrt(eig_values[1:max_K]))
+    imputed_obs = mu_conditional + T%*%rnorm(ncol(T))
+    data[missing_spots] = imputed_obs
   }
   
   
