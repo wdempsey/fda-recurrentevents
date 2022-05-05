@@ -15,6 +15,7 @@
 
 num_bootstraps = 200
 num_imputes = 2
+library(refund); library(lubridate); library(dynr); library(Matrix)
 set.seed(1391307)
   
 ## WINDOWS
@@ -41,7 +42,6 @@ for (type in set_of_types){
   ## COVARIANCE: \Sigma_11 - \Sigma{12} \sigma_{22}^plus \Sigma_{12}
   ## \Sigma_22 =T' T 
   ## \Sigma_22^\plus = T'(T' T)^{-2} T
-  library(refund); library(lubridate); library(dynr); library(Matrix)
   full_obs = apply(X = bootstrap_event_complete, MARGIN = 1, FUN = function(x){!any(is.na(x))})
   how_bad = apply(X = bootstrap_event_complete, MARGIN = 1, FUN = function(x){mean(is.na(x))})
 
@@ -70,17 +70,46 @@ for (type in set_of_types){
     max_K = min(which(cumsum(eig_values)/sum(eig_values) > 0.9999))
     T = eig_vectors[,1:max_K]%*%diag(sqrt(eig_values[1:max_K]))
     pseudo_inverse = T%*%solve(t(T)%*%T) %*% solve(t(T)%*%T, t(T))
-    mu_conditional = mu_1 + Sigma_12%*%pseudo_inverse %*% (observed_data - mu_2)
-    Sigma_conditional = Sigma_11 - Sigma_12%*%pseudo_inverse%*%t(Sigma_12)
-    Sigma_conditional = (Sigma_conditional + t(Sigma_conditional))/2
-    eig_Sigma = eigen(Sigma_conditional)
-    eig_vectors = eig_Sigma$vectors
-    eig_values = eig_Sigma$values
-    eig_values[eig_values < 0 ] = 0
-    max_K = min(which(cumsum(eig_values)/sum(eig_values) > 0.9999))
-    T = eig_vectors[,1:max_K]%*%diag(sqrt(eig_values[1:max_K]))
-    imputed_obs = mu_conditional + T%*%rnorm(ncol(T))
+    if(sum(missing_spots) > 1) {
+      mu_conditional = mu_1 + Sigma_12%*%pseudo_inverse %*% (observed_data - mu_2)
+      Sigma_conditional = Sigma_11 - Sigma_12%*%pseudo_inverse%*%t(Sigma_12)
+      Sigma_conditional = (Sigma_conditional + t(Sigma_conditional))/2
+      eig_Sigma = eigen(Sigma_conditional)
+      eig_vectors = eig_Sigma$vectors
+      eig_values = eig_Sigma$values
+      eig_values[eig_values < 0 ] = 0
+      if(sum(eig_values) == 0) {
+        T = matrix(0, nrow = nrow(mu_conditional), ncol = ncol(eig_vectors))
+      } else{
+        max_K = min(which(cumsum(eig_values)/sum(eig_values) > 0.9999))
+        if(max_K > 1) {
+          T = eig_vectors[,1:max_K]%*%diag(sqrt(eig_values[1:max_K]))
+        } else{
+          T = eig_vectors[,1:max_K]%*%as.matrix(sqrt(eig_values[1:max_K]))
+        }
+      }
+      imputed_obs = mu_conditional + T%*%rnorm(ncol(T))
+    } else {
+      mu_conditional = mu_1 + t(Sigma_12)%*%pseudo_inverse%*%(observed_data - mu_2)
+      Sigma_conditional = Sigma_11 - t(Sigma_12)%*%pseudo_inverse%*%Sigma_12
+      eig_Sigma = eigen(Sigma_conditional)
+      eig_vectors = eig_Sigma$vectors
+      eig_values = eig_Sigma$values
+      eig_values[eig_values < 0 ] = 0
+      if(sum(eig_values) == 0) {
+        T = matrix(0, nrow = nrow(mu_conditional), ncol = ncol(eig_vectors))
+      } else{
+        max_K = min(which(cumsum(eig_values)/sum(eig_values) > 0.9999))
+        if(max_K > 1) {
+          T = eig_vectors[,1:max_K]%*%diag(sqrt(eig_values[1:max_K]))
+        } else{
+          T = eig_vectors[,1:max_K]%*%as.matrix(sqrt(eig_values[1:max_K]))
+        }
+      }
+      imputed_obs = mu_conditional + T%*%rnorm(ncol(T))
+    }
     data[missing_spots] = imputed_obs
+    bootstrap_event_complete[row,4:length(current_row)] = data
   }
   
   
