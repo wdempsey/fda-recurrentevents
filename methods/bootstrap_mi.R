@@ -13,6 +13,8 @@
 ## hatX(t,s) = coefficients%*%eigenvectors + mu(t,s) 
 ## And seeing how close hatX(t,s) is to X(t,s).
 
+current_boostrap = 1 # CONVERT TO ACCEPT THIS 
+
 num_bootstraps = 200
 num_imputes = 2
 library(refund); library(lubridate); library(dynr); library(Matrix)
@@ -23,6 +25,7 @@ setwd("Z:/SI_data/")
 ## LINUX
 setwd('/mnt/turbo/SI_data/')
 
+# set.seed(123193871)
 set_of_types = c("eda", "acc")
 for (type in set_of_types){
   event_complete = readRDS(paste(type, "_event_complete_HLP_2021-11-20.RDS", sep = ""))
@@ -44,107 +47,110 @@ for (type in set_of_types){
   ## \Sigma_22^\plus = T'(T' T)^{-2} T
   full_obs = apply(X = bootstrap_event_complete, MARGIN = 1, FUN = function(x){!any(is.na(x))})
   how_bad = apply(X = bootstrap_event_complete, MARGIN = 1, FUN = function(x){mean(is.na(x))})
-
+  
   ## Remove the inflation factor
   inflation = 100
   impute_Sigma = event_Sigma/inflation^2
-  for(row in which(!full_obs)) {
-    current_row = bootstrap_event_complete[row,]
-    current_time = current_row[3]
-    data = current_row[,4:length(current_row)]
-    ## FIND MOST CLOSE MEAN FUNCTION
-    distance = abs(current_time - event_times)
-    current_mean = event_means[which(distance == min(distance))[1],]
-    ## EXTRACT CONDITIONAL VARIANCE
-    missing_spots = is.na(data)
-    observed_data = data[!missing_spots]
-    Sigma_11 = as.matrix(impute_Sigma[missing_spots, missing_spots], nrow = sum(missing_spots))
-    Sigma_12 = as.matrix(impute_Sigma[missing_spots, !missing_spots], nrow = sum(missing_spots))
-    Sigma_22 = as.matrix(impute_Sigma[!missing_spots, !missing_spots])
-    mu_1 = current_mean[missing_spots]
-    mu_2 = current_mean[!missing_spots]
-    eig_Sigma = eigen(Sigma_22)
-    eig_vectors = eig_Sigma$vectors
-    eig_values = eig_Sigma$values
-    eig_values[eig_values < 0 ] = 0
-    max_K = min(which(cumsum(eig_values)/sum(eig_values) > 0.9999))
-    T = eig_vectors[,1:max_K]%*%diag(sqrt(eig_values[1:max_K]))
-    pseudo_inverse = T%*%solve(t(T)%*%T) %*% solve(t(T)%*%T, t(T))
-    if(sum(missing_spots) > 1) {
-      mu_conditional = mu_1 + Sigma_12%*%pseudo_inverse %*% (observed_data - mu_2)
-      Sigma_conditional = Sigma_11 - Sigma_12%*%pseudo_inverse%*%t(Sigma_12)
-      Sigma_conditional = (Sigma_conditional + t(Sigma_conditional))/2
-      eig_Sigma = eigen(Sigma_conditional)
+  
+  for(current_mi in 1:num_imputes) {
+    for(row in which(!full_obs)) {
+      current_row = bootstrap_event_complete[row,]
+      current_time = current_row[3]
+      data = current_row[,4:length(current_row)]
+      ## FIND MOST CLOSE MEAN FUNCTION
+      distance = abs(current_time - event_times)
+      current_mean = event_means[which(distance == min(distance))[1],]
+      ## EXTRACT CONDITIONAL VARIANCE
+      missing_spots = is.na(data)
+      observed_data = data[!missing_spots]
+      Sigma_11 = as.matrix(impute_Sigma[missing_spots, missing_spots], nrow = sum(missing_spots))
+      Sigma_12 = as.matrix(impute_Sigma[missing_spots, !missing_spots], nrow = sum(missing_spots))
+      Sigma_22 = as.matrix(impute_Sigma[!missing_spots, !missing_spots])
+      mu_1 = current_mean[missing_spots]
+      mu_2 = current_mean[!missing_spots]
+      eig_Sigma = eigen(Sigma_22)
       eig_vectors = eig_Sigma$vectors
       eig_values = eig_Sigma$values
       eig_values[eig_values < 0 ] = 0
-      if(sum(eig_values) == 0) {
-        T = matrix(0, nrow = nrow(mu_conditional), ncol = ncol(eig_vectors))
-      } else{
-        max_K = min(which(cumsum(eig_values)/sum(eig_values) > 0.9999))
-        if(max_K > 1) {
-          T = eig_vectors[,1:max_K]%*%diag(sqrt(eig_values[1:max_K]))
+      max_K = min(which(cumsum(eig_values)/sum(eig_values) > 0.9999))
+      T = eig_vectors[,1:max_K]%*%diag(sqrt(eig_values[1:max_K]))
+      pseudo_inverse = T%*%solve(t(T)%*%T) %*% solve(t(T)%*%T, t(T))
+      if(sum(missing_spots) > 1) {
+        mu_conditional = mu_1 + Sigma_12%*%pseudo_inverse %*% (observed_data - mu_2)
+        Sigma_conditional = Sigma_11 - Sigma_12%*%pseudo_inverse%*%t(Sigma_12)
+        Sigma_conditional = (Sigma_conditional + t(Sigma_conditional))/2
+        eig_Sigma = eigen(Sigma_conditional)
+        eig_vectors = eig_Sigma$vectors
+        eig_values = eig_Sigma$values
+        eig_values[eig_values < 0 ] = 0
+        if(sum(eig_values) == 0) {
+          T = matrix(0, nrow = nrow(mu_conditional), ncol = ncol(eig_vectors))
         } else{
-          T = eig_vectors[,1:max_K]%*%as.matrix(sqrt(eig_values[1:max_K]))
+          max_K = min(which(cumsum(eig_values)/sum(eig_values) > 0.9999))
+          if(max_K > 1) {
+            T = eig_vectors[,1:max_K]%*%diag(sqrt(eig_values[1:max_K]))
+          } else{
+            T = eig_vectors[,1:max_K]%*%as.matrix(sqrt(eig_values[1:max_K]))
+          }
         }
-      }
-      imputed_obs = mu_conditional + T%*%rnorm(ncol(T))
-    } else {
-      mu_conditional = mu_1 + t(Sigma_12)%*%pseudo_inverse%*%(observed_data - mu_2)
-      Sigma_conditional = Sigma_11 - t(Sigma_12)%*%pseudo_inverse%*%Sigma_12
-      eig_Sigma = eigen(Sigma_conditional)
-      eig_vectors = eig_Sigma$vectors
-      eig_values = eig_Sigma$values
-      eig_values[eig_values < 0 ] = 0
-      if(sum(eig_values) == 0) {
-        T = matrix(0, nrow = nrow(mu_conditional), ncol = ncol(eig_vectors))
-      } else{
-        max_K = min(which(cumsum(eig_values)/sum(eig_values) > 0.9999))
-        if(max_K > 1) {
-          T = eig_vectors[,1:max_K]%*%diag(sqrt(eig_values[1:max_K]))
+        imputed_obs = mu_conditional + T%*%rnorm(ncol(T))
+      } else {
+        mu_conditional = mu_1 + t(Sigma_12)%*%pseudo_inverse%*%(observed_data - mu_2)
+        Sigma_conditional = Sigma_11 - t(Sigma_12)%*%pseudo_inverse%*%Sigma_12
+        eig_Sigma = eigen(Sigma_conditional)
+        eig_vectors = eig_Sigma$vectors
+        eig_values = eig_Sigma$values
+        eig_values[eig_values < 0 ] = 0
+        if(sum(eig_values) == 0) {
+          T = matrix(0, nrow = nrow(mu_conditional), ncol = ncol(eig_vectors))
         } else{
-          T = eig_vectors[,1:max_K]%*%as.matrix(sqrt(eig_values[1:max_K]))
+          max_K = min(which(cumsum(eig_values)/sum(eig_values) > 0.9999))
+          if(max_K > 1) {
+            T = eig_vectors[,1:max_K]%*%diag(sqrt(eig_values[1:max_K]))
+          } else{
+            T = eig_vectors[,1:max_K]%*%as.matrix(sqrt(eig_values[1:max_K]))
+          }
         }
+        imputed_obs = mu_conditional + T%*%rnorm(ncol(T))
       }
-      imputed_obs = mu_conditional + T%*%rnorm(ncol(T))
+      data[missing_spots] = imputed_obs
+      bootstrap_event_complete[row,4:length(current_row)] = data
     }
-    data[missing_spots] = imputed_obs
-    bootstrap_event_complete[row,4:length(current_row)] = data
+    
+    full_obs = apply(X = bootstrap_event_complete, MARGIN = 1, FUN = function(x){!any(is.na(x))})
+    Y = bootstrap_event_complete[full_obs,sensor_obs]
+    Y = as.matrix(Y, nrow = nrow(Y), ncol = ncol(Y))
+    x = as.numeric(bootstrap_event_complete[full_obs,3])
+    z = sequence
+    
+    est <- fbps(Y,list(x=x,z=z))
+    residual = inflation*(Y-est$Yhat)
+    ## TAKE PAIRS OF ROWS and CALCULATE THE MSE
+    print(paste("Made it to event, linear Sigma calc for", type, "under imputation #", current_mi))
+    eig_Sigma_est = eigen(event_Sigma)
+    eig_vectors = eig_Sigma_est$vectors
+    eig_values = eig_Sigma_est$values
+    eig_values[eig_values< 0] = 0
+    K = 35
+    print(paste("Variance explained: ", (cumsum(eig_values)/sum(eig_values))[K]))
+    phi_vectors = eig_vectors[,1:K]
+    coef = residual%*%phi_vectors
+    ## To show the impact of K
+    obs = 20
+    optK = 10
+    optphi_vectors = eig_vectors[,1:optK]
+    optcoef = residual%*%optphi_vectors
+    ## Timestamps
+    timestamp = bootstrap_event_complete[full_obs,2]
+    ## SAVE THE MEAN, COEFFICIENT MATRIX, AND FIRST K EIGEN VECTORS
+    saveRDS(object = est$Yhat, file = paste("./bootstrap_files/",type, "_lin_event_means_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
+    saveRDS(object = coef/inflation, file = paste("./bootstrap_files/", type, "_lin_event_coef_matrix_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
+    saveRDS(object = phi_vectors, file = paste("./bootstrap_files/", type, "_lin_event_eigen_vectors_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
+    saveRDS(object = x, file = paste("./bootstrap_files/", type, "_lin_event_complete_case_timesincebaseline_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
+    saveRDS(object = timestamp, file = paste("./bootstrap_files/", type, "_lin_event_complete_case_timestamp_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
+    saveRDS(object = as.numeric(event_complete[full_obs,1]), 
+            file = paste("./bootstrap_files/", type, "_lin_event_complete_case_ids_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
   }
-  
-  
-  Y = event_complete[full_obs,sensor_obs]
-  Y = as.matrix(Y, nrow = nrow(Y), ncol = ncol(Y))
-  x = as.numeric(event_complete[full_obs,3])
-  z = sequence
-  
-  est <- fbps(Y,list(x=x,z=z))
-  residual = inflation*(Y-est$Yhat)
-  ## TAKE PAIRS OF ROWS and CALCULATE THE MSE
-  print(paste("Made it to event, linear Sigma calc for", type))
-  eig_Sigma_est = eigen(event_Sigma)
-  eig_vectors = eig_Sigma_est$vectors
-  eig_values = eig_Sigma_est$values
-  eig_values[eig_values< 0] = 0
-  K = 35
-  print(paste("Variance explained: ", (cumsum(eig_values)/sum(eig_values))[K]))
-  phi_vectors = eig_vectors[,1:K]
-  coef = residual%*%phi_vectors
-  ## To show the impact of K
-  obs = 20
-  optK = 10
-  optphi_vectors = eig_vectors[,1:optK]
-  optcoef = residual%*%optphi_vectors
-  ## Timestamps
-  timestamp = event_complete[full_obs,2]
-  ## SAVE THE MEAN, COEFFICIENT MATRIX, AND FIRST K EIGEN VECTORS
-  saveRDS(object = est$Yhat, file = paste(type, "_lin_event_means_",today(),".RDS", sep=""))
-  saveRDS(object = coef/inflation, file = paste(type, "_lin_event_coef_matrix_",today(),".RDS", sep=""))
-  saveRDS(object = phi_vectors, file = paste(type, "_lin_event_eigen_vectors_",today(),".RDS", sep=""))
-  saveRDS(object = x, file = paste(type, "_lin_event_complete_case_timesincebaseline_",today(),".RDS", sep=""))
-  saveRDS(object = timestamp, file = paste(type, "_lin_event_complete_case_timestamp_",today(),".RDS", sep=""))
-  saveRDS(object = as.numeric(event_complete[full_obs,1]), 
-          file = paste(type, "_lin_event_complete_case_ids_",today(),".RDS", sep=""))
   
 }
 
