@@ -257,51 +257,52 @@ for (type in set_of_types){
       data[missing_spots] = imputed_obs
       bootstrap_nonevent_complete[row,4:length(current_row)] = data
     }
-  
-  full_obs = apply(X = bootstrap_nonevent_complete, MARGIN = 1, FUN = function(x){!any(is.na(x))})
-  ## print(paste(length(which(!full_obs)), "out of", length(full_obs), "missing at least 1 entry"))
-  Y = bootstrap_nonevent_complete[,sensor_obs]
-  Y = as.matrix(Y, nrow = nrow(Y), ncol = ncol(Y))
-  x = as.numeric(bootstrap_nonevent_complete[,3])
-  z = sequence
-  id = bootstrap_nonevent_complete[,1]
-  ## Timestamps
-  timestamp = bootstrap_nonevent_complete[,2]
-  rm("nonevent_complete", "nonevent_means") # Remove the full data to free up memory
-  
-  est <- fbps(Y,list(x=x,z=z))
-  ## COMPUTE ESTIMATED MARGINAL COVARIANCE 
-  inflation = 100
-  residual = inflation*(Y-est$Yhat)
-  saveRDS(object = est$Yhat, file = paste("./bootstrap_files/", type, "_lin_nonevent_means_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
-  rm("Y"); rm("est")
-  ## TAKE PAIRS OF ROWS and CALCULATE THE MSE
-  print(paste("Made it to nonevent, linear Sigma calc for", type))
-  Sigma = matrix(nrow = ncol(residual), ncol = ncol(residual))
-  for (i in 1:ncol(residual)) {
-    for (j in 1:ncol(residual)) {
-      Sigma[i,j] = sum(residual[,i]*residual[,j])/nrow(residual)
+    
+    full_obs = apply(X = bootstrap_nonevent_complete, MARGIN = 1, FUN = function(x){!any(is.na(x))})
+    ## print(paste(length(which(!full_obs)), "out of", length(full_obs), "missing at least 1 entry"))
+    Y = bootstrap_nonevent_complete[,sensor_obs]
+    Y = as.matrix(Y, nrow = nrow(Y), ncol = ncol(Y))
+    x = as.numeric(bootstrap_nonevent_complete[,3])
+    z = sequence
+    id = bootstrap_nonevent_complete[,1]
+    ## Timestamps
+    timestamp = bootstrap_nonevent_complete[,2]
+    rm("nonevent_complete", "nonevent_means") # Remove the full data to free up memory
+    
+    est <- fbps(Y,list(x=x,z=z))
+    ## COMPUTE ESTIMATED MARGINAL COVARIANCE 
+    inflation = 100
+    residual = inflation*(Y-est$Yhat)
+    saveRDS(object = est$Yhat, file = paste("./bootstrap_files/", type, "_lin_nonevent_means_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
+    rm("Y"); rm("est")
+    ## TAKE PAIRS OF ROWS and CALCULATE THE MSE
+    print(paste("Made it to nonevent, linear Sigma calc for", type))
+    Sigma = matrix(nrow = ncol(residual), ncol = ncol(residual))
+    for (i in 1:ncol(residual)) {
+      for (j in 1:ncol(residual)) {
+        Sigma[i,j] = sum(residual[,i]*residual[,j])/nrow(residual)
+      }
     }
+    Sigma_est <- fbps(Sigma)
+    final_Sigma = (Sigma_est$Yhat + t(Sigma_est$Yhat))/2
+    saveRDS(object = final_Sigma, file = paste("./bootstrap_files/", type, "_nonevent_Sigma_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
+    eig_Sigma_est = eigen(final_Sigma)
+    eig_vectors = eig_Sigma_est$vectors
+    eig_values = eig_Sigma_est$values
+    eig_values[eig_values<0] = 0
+    
+    K = 35
+    print(paste("Variance explained: ", (cumsum(eig_values)/sum(eig_values))[K]))
+    phi_vectors = eig_vectors[,1:K]
+    coef = residual%*%phi_vectors
+    
+    
+    ## SAVE THE MEAN, COEFFICIENT MATRIX, AND FIRST K EIGEN VECTORS
+    saveRDS(object = coef/inflation, file = paste("./bootstrap_files/", type, "_lin_nonevent_coef_matrix_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
+    saveRDS(object = phi_vectors, file = paste("./bootstrap_files/", type, "_lin_nonevent_eigen_vectors_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
+    saveRDS(object = x, file = paste("./bootstrap_files/", type, "_lin_nonevent_complete_case_timesincebaseline_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
+    saveRDS(object = timestamp, file = paste("./bootstrap_files/", type, "_lin_nonevent_complete_case_timestamp_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
+    saveRDS(object = id, 
+            file = paste("./bootstrap_files/", type, "_nonevent_complete_case_ids_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
   }
-  Sigma_est <- fbps(Sigma)
-  final_Sigma = (Sigma_est$Yhat + t(Sigma_est$Yhat))/2
-  saveRDS(object = final_Sigma, file = paste("./bootstrap_files/", type, "_nonevent_Sigma_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
-  eig_Sigma_est = eigen(final_Sigma)
-  eig_vectors = eig_Sigma_est$vectors
-  eig_values = eig_Sigma_est$values
-  eig_values[eig_values<0] = 0
-  
-  K = 35
-  print(paste("Variance explained: ", (cumsum(eig_values)/sum(eig_values))[K]))
-  phi_vectors = eig_vectors[,1:K]
-  coef = residual%*%phi_vectors
-  
-  
-  ## SAVE THE MEAN, COEFFICIENT MATRIX, AND FIRST K EIGEN VECTORS
-  saveRDS(object = coef/inflation, file = paste("./bootstrap_files/", type, "_lin_nonevent_coef_matrix_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
-  saveRDS(object = phi_vectors, file = paste("./bootstrap_files/", type, "_lin_nonevent_eigen_vectors_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
-  saveRDS(object = x, file = paste("./bootstrap_files/", type, "_lin_nonevent_complete_case_timesincebaseline_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
-  saveRDS(object = timestamp, file = paste("./bootstrap_files/", type, "_lin_nonevent_complete_case_timestamp_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
-  saveRDS(object = id, 
-          file = paste("./bootstrap_files/", type, "_nonevent_complete_case_ids_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
 }
