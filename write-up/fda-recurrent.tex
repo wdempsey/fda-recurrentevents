@@ -203,7 +203,7 @@ U_n (\theta) = \sum_{i=1}^{n} \left ( \sum_{j=1}^{k_i} \frac{h^{(1)}_i
 \]
 with $h_i^{(1)} (T_{i,j}; \theta)$ and $H_i^{(1)} (\tau_{i}; \theta)$ are derivatives with respect to $\theta$.
 
-In classical joint models~\citep{Henderson2000, Tsiatis2004}, time-varying covariates~$x_i (t)$ are observed only intermittently at appointment times. In our current setting, maximizing the likelihood is computationally prohibitive since for any~$\theta$ we must compute the cumulative hazard functions~$H_{i} (\tau_i; \theta)$ which require integration of~$h_i(t;\theta)$ given by~\eqref{eq:hazardlinear} which itself depends on the integral~$\int_{t-\Delta}^t x_i (s) \beta(s) ds$ that is a function of the unknown functional parameter $\beta(\cdot)$.  That is, the risk model now depends on an integrated past history of the time-varying covariate which leads to severe increase in computational complexity.
+In classical joint models~\citep{Henderson2000, Tsiatis2004}, time-varying covariates~$x_i (t)$ are observed only intermittently at appointment times. In our current setting, maximizing the likelihood is computationally prohibitive since for any~$\theta$ we must compute the cumulative hazard functions~$H_{i} (\tau_i; \theta)$ which requires integration of~$h_i(t;\theta)$ given by~\eqref{eq:hazardlinear} which itself depends on the integral~$\int_{t-\Delta}^t x_i (s) \beta(s) ds$ that is a function of the unknown functional parameter $\beta(\cdot)$.  That is, the risk model now depends on an integrated past history of the time-varying covariate which leads to severe increase in computational complexity.
 
 \subsection{Probabilistic subsampling framework}
 
@@ -240,7 +240,7 @@ Probabilistic subsampling converts the single sensor stream~$\bfx_i$ into a sequ
 
 \subsection{Estimation of the windowed covariate history}
 \label{sec:margcov}
-We start by defining~$X(t,s) = x(t-s)$ to be the sensor measurement~$0 \leq s \leq \Delta$ time units prior to time~$t \in \bfT_i \cup \bfD_i$. We use the sandwich smoother~\citep{Xiao2013} to estimate the mean~$\mu_y(t,s) = \E_y [ X(t,s)]$ where the expectation is indexed by whether $t$ is an event ($y=1$) or subsampled ($y=0$) time respectively. Alternative bivariate smoothers exist, such as the kernel-based local linear smoother~\citep{Hastie2009}, bivariate tensor product splines~\citep{Wood2006}, and the bivariate penalized spline smoother~\citep{MarxEilers2005}. The sandwich smoother was chosen for its computational efficiency and estimation accuracy. We then define~$\tilde X(t,s) = X(t,s) - \hat \mu_y(t,s)$ to be the mean-zero process at each time~$t \in \bfT_i \cup \bfD_i$.
+We start by defining~$X(t,s) = x(t-s)$ to be the sensor measurement~$0 \leq s \leq \Delta$ time units prior to time~$t \in \bfT_i \cup \bfD_i$. The sandwich smoother~\citep{Xiao2013} is used to estimate the mean~$\mu_y(t,s) = \E_y [ X(t,s)]$ where the expectation is indexed by whether $t$ is an event ($y=1$) or subsampled ($y=0$) time respectively. Alternative bivariate smoothers exist, such as the kernel-based local linear smoother~\citep{Hastie2009}, bivariate tensor product splines~\citep{Wood2006}, and the bivariate penalized spline smoother~\citep{MarxEilers2005}. The sandwich smoother was chosen for its computational efficiency and estimation accuracy. We then define~$\tilde X(t,s) = X(t,s) - \hat \mu_y(t,s)$ to be the mean-zero process at each time~$t \in \bfT_i \cup \bfD_i$.
 
 As in~\cite{Park2018}, define the \emph{marginal covariance} by
 \[
@@ -300,7 +300,7 @@ Under weights~\eqref{eq:waage_weights} and the log-linear intensity function~\eq
 where~$\tilde W_{i,t} = -W_{i,t}$. This is the score function for logistic regression with binary response~$Y_i(t)$ for $t \in \bfT_i \cup \bfD_i$ and~$i \in [n]$ where~$Y_i(t) = 1[t \in \bfT_i]$, offset~$\log \pi_i (t)$, and covariates~$\tilde W_{i,t}$.
 \end{lemma}
 
-This connection established by Lemma~\ref{lemma:logistic} between our proposed methodology and logistic regression allows us to leverage ``off-the-shelf'' software.  The main complication is pre-processing of the functional data; however, these additional steps can also be taken care of via existing software.  Therefore, the entire data analytic pipeline is easy-to-implement and requires minimal additional effort by the end-user. To see this, we briefly review the proposed inference procedure.
+The connection established by Lemma~\ref{lemma:logistic} between our proposed methodology and logistic regression allows us to leverage ``off-the-shelf'' software.  The main complication is pre-processing of the functional data; however, these additional steps can also be taken care of via existing software.  Therefore, the entire data analytic pipeline is easy-to-implement and requires minimal additional effort by the end-user. To see this, we briefly review the proposed inference procedure.
 
 \begin{rmk}[Inference procedure review] \normalfont
 Given observed recurrent event and high frequency data~$\{ \bfT_i, \bfx_i \}_{i=1}^n$,
@@ -561,7 +561,8 @@ $\mathbold{\mu}_i (t) = \E [ \bfx_i (t) \given Y_i (t) = y] = \{
 \mu_y (s_{j}, t) \}_{j=1}^r$ and~$\mu_y (s,t)$ is the mean of~$X(t,s)$
 from group~$y$, and~$\Sigma_t ( s^\prime, s)$ is the covariance
 between~$X(s^\prime,t)$ and $X(s,t)$ for $s^\prime, s \in [0, \Delta]$
-and~$t \in \mathbb{R}_+$.  To account for overlap between $\Delta$-windows for $t \in \bfT_i \cup \bfD_i$ - i.e., avoid imputing values at a particular time to different values -- imputation is performed sequentially over this set.
+and~$t \in \mathbb{R}_+$. 
+%To account for overlap between $\Delta$-windows for $t \in \bfT_i \cup \bfD_i$ - i.e., avoid imputing values at a particular time to different values -- imputation is performed sequentially over this set.
 %$\{ (t,t') : t, t^\prime \in \bfT_i \cup \bfD_i \& |t - t'| < \Delta \}$
 
 \subsubsection{Multiple imputation under uncongeniality}
