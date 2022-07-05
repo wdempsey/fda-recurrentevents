@@ -618,7 +618,7 @@ Figure~\ref{fig:buttons} visualizes button presses versus time since study entry
       \label{tab:anova}
 \end{table}
 
-Here, we focus on two physiological processes -- (1) electrodermal activity (EDA), a measure of skin conductance measured at 4Hz, and  (2) \emph{activity index}~\cite{10.1371/journal.pone.0160644}, a coordinate-free feature built from accelerometer data collected at 32Hz that measures physical movement.  Electrodermal activity can be significantly impacted by external factors (e.g., room temperature).  To account for the high between user-day variation, we analyze EDA standardized per study-day and  device. The individual EDA and AI trajectories are highly variable which tends to obscure patterns and trends.  In Figure~\ref{fig:mean_edacc}, the mean trajectories of EDA and AI are plotted in reverse time from button press timestamps, which shows sharp changes in EDA and AI in the 10 minutes prior to button presses.
+Here, we focus on two physiological processes -- (1) electrodermal activity (EDA), a measure of skin conductance measured at 4Hz, and  (2) \emph{activity index}~\citep{10.1371/journal.pone.0160644}, a coordinate-free feature built from accelerometer data collected at 32Hz that measures physical movement.  Electrodermal activity can be significantly impacted by external factors (e.g., room temperature).  To account for the high between user-day variation, we analyze EDA standardized per study-day and  device. The individual EDA and AI trajectories are highly variable which tends to obscure patterns and trends.  In Figure~\ref{fig:mean_edacc}, the mean trajectories of EDA and AI are plotted in reverse time from button press timestamps, which shows sharp changes in EDA and AI in the 10 minutes prior to button presses.
 
 \begin{figure}[!th]
 \centering
@@ -640,12 +640,26 @@ Here, we focus on two physiological processes -- (1) electrodermal activity (EDA
 
 \subsection{Complete-case analysis}
 
-Inspection of~Figure\ref{fig:mean_eda} and Figure~\ref{fig:mean_acc} suggests setting $\Delta = 30$ minutes is adequate to capturing the proximal impact of EDA and AI
+Inspection of Figures~\ref{fig:mean_eda} and~\ref{fig:mean_acc} suggest setting $\Delta = 30$ minutes is adequate to capturing the proximal impact of EDA and AI on the risk of a button press.  To ensure minimal loss of efficiency, the subsampling rate was set to once every fifteen minutes.  Given the daily button press rate, this ensures an average of $44$ non-events to $2.5$ events per day.  Based on Table~\ref{tab:compvseff}, this ensures we can achieve a substantial data reduction at a minimal loss of efficiency.  After sampling non-event times, complete-case analyses are performed, i.e., sampled times where sensors included in the model have any level of missing data are ignored.
+
+We analyzed activity index (AI) and electrodermal activity separately as given in equation~~\eqref{eq:hazardlinear} as well as jointly in a multivariate model as in equation~\eqref{eq:multihazardlinear}.  Results did not change substantially.  Figure~\ref{fig:eda_estimate} and~\ref{fig:acc_estimate} presents the estimates from the separate analyses with their associated 95\% confidence intervals.  We highlight in gray the statistically significant regions.  Here, we see that standardized EDA is not associated with increased risk of button press in our population-level model, while activity index sees a positive association in the final few minutes prior to a button press.  In section~\ref{sec:missingdata_heterogeneity}, we investigate whether the population-level results are sensitive to missing data and whether individual-level coefficients,~$\beta(t) + b_i (t)$, effects show stronger dependence on EDA and/or AI for certain individuals.
 
 \begin{figure}[!th]
-\rule{3cm}{3cm}%
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{../figures/eda_coef.png}
+  \caption{Electrodermal activity (EDA)}
+  \label{fig:eda_estimate}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{../figures/acc_coef.png}
+  \caption{Activity Index (AI)
+}  \label{fig:acc_estimate}
+\end{subfigure}
 \caption{$\beta (t)$ for ACC and EDA with 95\% CI; solid line is complete-case analysis, while dotted line is for }
-\label{}
+\label{fig:mean_edacc}
 \end{figure}
 
 \subsection{Accounting for missing data and heterogeneity}
