@@ -23,7 +23,7 @@ set.seed(1391307)
 ## WINDOWS
 setwd("Z:/SI_data/")
 ## LINUX
-setwd('/mnt/turbo/SI_data/')
+# setwd('/mnt/turbo/SI_data/')
 
 # set.seed(123193871)
 set_of_types = c("eda", "acc")
@@ -142,29 +142,6 @@ for (type in set_of_types){
     optcoef = residual%*%optphi_vectors
     ## Timestamps
     timestamp = bootstrap_event_complete[full_obs,2]
-    ## SAVE THE MEAN, COEFFICIENT MATRIX, AND FIRST K EIGEN VECTORS
-    saveRDS(object = est$Yhat, file = paste("./bootstrap_files/",type, "_lin_event_means_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
-    saveRDS(object = coef/inflation, file = paste("./bootstrap_files/", type, "_lin_event_coef_matrix_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
-    saveRDS(object = phi_vectors, file = paste("./bootstrap_files/", type, "_lin_event_eigen_vectors_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
-    saveRDS(object = x, file = paste("./bootstrap_files/", type, "_lin_event_complete_case_timesincebaseline_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
-    saveRDS(object = timestamp, file = paste("./bootstrap_files/", type, "_lin_event_complete_case_timestamp_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
-    saveRDS(object = as.numeric(event_complete[full_obs,1]), 
-            file = paste("./bootstrap_files/", type, "_lin_event_complete_case_ids_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
-    
-    ## GENERATE MODEL MATRIX
-    print(paste("Building", type, "event model matrix"))
-    event_eigen_vectors = readRDS(paste(type, "_lin_event_eigen_vectors_2021-12-20.RDS", sep = ""))
-    event_coef = readRDS(paste(type, "_lin_event_coef_matrix_2021-12-20.RDS", sep = ""))
-    event_means = readRDS(paste(type, "_lin_event_means_2021-12-20.RDS", sep = ""))
-    event_timesincebaseline = readRDS(paste(type, "_lin_event_complete_case_timesincebaseline_2021-12-20.RDS", sep = ""))
-    event_timestamp = readRDS(paste(type, "_lin_event_complete_case_timestamp_2021-12-20.RDS", sep = ""))
-    event_id = readRDS(paste(type, "_lin_event_complete_case_ids_2021-12-20.RDS", sep = ""))
-    
-    event_J_coef = event_coef%*%t(event_eigen_vectors)%*%bb
-    event_J_means = event_means%*%bb
-    event_model.matrix = cbind(event_id, event_timesincebaseline, hour(event_timestamp), event_J_coef + event_J_means)
-    event_model.matrix = data.frame(event_model.matrix)
-    names(event_model.matrix) = c("id", "timesincebaseline", "hour", paste("acc_X", 1:ncol(event_J_coef), sep = ""))
     
     ## GENERATE SPLINES
     if (type == "eda") {
@@ -179,6 +156,22 @@ for (type in set_of_types){
     bb = cbind(1, sequence, sequence^2, sapply(knots, function(k) ((sequence - k > 0) * (sequence - k)) ^ 2))
     print("Generated Splines")
     
+    ## GENERATE MODEL MATRIX
+    print(paste("Building", type, "event model matrix"))
+    event_eigen_vectors = phi_vectors
+    event_coef = coef/inflation
+    event_means = est$Yhat
+    event_timesincebaseline = x
+    event_timestamp = timestamp
+    event_id = as.numeric(event_complete[full_obs,1])
+    event_J_coef = event_coef%*%t(event_eigen_vectors)%*%bb
+    event_J_means = event_means%*%bb
+    event_model.matrix = cbind(event_id, event_timesincebaseline, hour(event_timestamp), event_J_coef + event_J_means)
+    event_model.matrix = data.frame(event_model.matrix)
+    names(event_model.matrix) = c("id", "timesincebaseline", "hour", paste("acc_X", 1:ncol(event_J_coef), sep = ""))
+    
+    saveRDS(event_model.matrix, file = paste("bootstrap_files/",type, "_event_modelmatrix_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep = ""))
+    
   }
   
 }
@@ -192,7 +185,7 @@ library(refund); library(lubridate)
 ## WINDOWS
 setwd("Z:/SI_data/")
 ## Linux
-setwd('/mnt/turbo/SI_data/')
+# setwd('/mnt/turbo/SI_data/')
 
 set_of_types = c("eda", "acc")
 for (type in set_of_types){
@@ -295,14 +288,15 @@ for (type in set_of_types){
     z = sequence
     id = bootstrap_nonevent_complete[,1]
     ## Timestamps
-    timestamp = bootstrap_nonevent_complete[,2]
+    timestamp = as_datetime(bootstrap_nonevent_complete[,2])
+    nonevent_id = as.numeric(bootstrap_nonevent_complete[full_obs,1])
     rm("nonevent_complete", "nonevent_means") # Remove the full data to free up memory
     
     est <- fbps(Y,list(x=x,z=z))
     ## COMPUTE ESTIMATED MARGINAL COVARIANCE 
     inflation = 100
     residual = inflation*(Y-est$Yhat)
-    saveRDS(object = est$Yhat, file = paste("./bootstrap_files/", type, "_lin_nonevent_means_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
+    nonevent_means = est$Yhat
     rm("Y"); rm("est")
     ## TAKE PAIRS OF ROWS and CALCULATE THE MSE
     print(paste("Made it to nonevent, linear Sigma calc for", type))
@@ -314,7 +308,6 @@ for (type in set_of_types){
     }
     Sigma_est <- fbps(Sigma)
     final_Sigma = (Sigma_est$Yhat + t(Sigma_est$Yhat))/2
-    saveRDS(object = final_Sigma, file = paste("./bootstrap_files/", type, "_nonevent_Sigma_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
     eig_Sigma_est = eigen(final_Sigma)
     eig_vectors = eig_Sigma_est$vectors
     eig_values = eig_Sigma_est$values
@@ -325,13 +318,32 @@ for (type in set_of_types){
     phi_vectors = eig_vectors[,1:K]
     coef = residual%*%phi_vectors
     
+    ## GENERATE SPLINES
+    if (type == "eda") {
+      sequence <- seq(-30,0, by = 1/60)
+    } else if (type == "acc") {
+      sequence <- seq(-30,0, by = 1/6)
+    }
+    K_b = 35
+    num=K_b-3
+    qtiles <- seq(0, 1, length = num + 2)[-c(1, num + 2)]
+    knots <- quantile(sequence, qtiles)
+    bb = cbind(1, sequence, sequence^2, sapply(knots, function(k) ((sequence - k > 0) * (sequence - k)) ^ 2))
+    print("Generated Splines")
     
-    ## SAVE THE MEAN, COEFFICIENT MATRIX, AND FIRST K EIGEN VECTORS
-    saveRDS(object = coef/inflation, file = paste("./bootstrap_files/", type, "_lin_nonevent_coef_matrix_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
-    saveRDS(object = phi_vectors, file = paste("./bootstrap_files/", type, "_lin_nonevent_eigen_vectors_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
-    saveRDS(object = x, file = paste("./bootstrap_files/", type, "_lin_nonevent_complete_case_timesincebaseline_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
-    saveRDS(object = timestamp, file = paste("./bootstrap_files/", type, "_lin_nonevent_complete_case_timestamp_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
-    saveRDS(object = id, 
-            file = paste("./bootstrap_files/", type, "_nonevent_complete_case_ids_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
+    ## GENERATE MODEL MATRIX
+    print(paste("Building", type, "nonevent model matrix"))
+    nonevent_eigen_vectors = phi_vectors
+    nonevent_coef = coef/inflation
+    nonevent_timesincebaseline = x
+    nonevent_timestamp = timestamp
+    nonevent_J_coef = nonevent_coef%*%t(nonevent_eigen_vectors)%*%bb
+    nonevent_J_means = nonevent_means%*%bb
+    nonevent_model.matrix = cbind(nonevent_id, nonevent_timesincebaseline, hour(nonevent_timestamp), nonevent_J_coef + nonevent_J_means)
+    nonevent_model.matrix = data.frame(nonevent_model.matrix)
+    names(nonevent_model.matrix) = c("id", "timesincebaseline", "hour", paste("acc_X", 1:ncol(nonevent_J_coef), sep = ""))
+    
+    saveRDS(nonevent_model.matrix, file = paste("bootstrap_files/",type, "_nonevent_modelmatrix_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep = ""))
+    
   }
 }
