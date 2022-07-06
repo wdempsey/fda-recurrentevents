@@ -13,7 +13,7 @@
 ## hatX(t,s) = coefficients%*%eigenvectors + mu(t,s) 
 ## And seeing how close hatX(t,s) is to X(t,s).
 
-current_boostrap = 1 # CONVERT TO ACCEPT THIS 
+current_bootstrap = 1 # CONVERT TO ACCEPT THIS 
 
 num_bootstraps = 200
 num_imputes = 2
@@ -150,13 +150,42 @@ for (type in set_of_types){
     saveRDS(object = timestamp, file = paste("./bootstrap_files/", type, "_lin_event_complete_case_timestamp_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
     saveRDS(object = as.numeric(event_complete[full_obs,1]), 
             file = paste("./bootstrap_files/", type, "_lin_event_complete_case_ids_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep=""))
+    
+    ## GENERATE MODEL MATRIX
+    print(paste("Building", type, "event model matrix"))
+    event_eigen_vectors = readRDS(paste(type, "_lin_event_eigen_vectors_2021-12-20.RDS", sep = ""))
+    event_coef = readRDS(paste(type, "_lin_event_coef_matrix_2021-12-20.RDS", sep = ""))
+    event_means = readRDS(paste(type, "_lin_event_means_2021-12-20.RDS", sep = ""))
+    event_timesincebaseline = readRDS(paste(type, "_lin_event_complete_case_timesincebaseline_2021-12-20.RDS", sep = ""))
+    event_timestamp = readRDS(paste(type, "_lin_event_complete_case_timestamp_2021-12-20.RDS", sep = ""))
+    event_id = readRDS(paste(type, "_lin_event_complete_case_ids_2021-12-20.RDS", sep = ""))
+    
+    event_J_coef = event_coef%*%t(event_eigen_vectors)%*%bb
+    event_J_means = event_means%*%bb
+    event_model.matrix = cbind(event_id, event_timesincebaseline, hour(event_timestamp), event_J_coef + event_J_means)
+    event_model.matrix = data.frame(event_model.matrix)
+    names(event_model.matrix) = c("id", "timesincebaseline", "hour", paste("acc_X", 1:ncol(event_J_coef), sep = ""))
+    
+    ## GENERATE SPLINES
+    if (type == "eda") {
+      sequence <- seq(-30,0, by = 1/60)
+    } else if (type == "acc") {
+      sequence <- seq(-30,0, by = 1/6)
+    }
+    K_b = 35
+    num=K_b-3
+    qtiles <- seq(0, 1, length = num + 2)[-c(1, num + 2)]
+    knots <- quantile(sequence, qtiles)
+    bb = cbind(1, sequence, sequence^2, sapply(knots, function(k) ((sequence - k > 0) * (sequence - k)) ^ 2))
+    print("Generated Splines")
+    
   }
   
 }
 
 ## CLEAR WORKSPACE
 rm(list=ls()) 
-current_boostrap = 1 # CONVERT TO ACCEPT THIS 
+current_bootstrap = 1 # CONVERT TO ACCEPT THIS 
 num_imputes = 2
 library(refund); library(lubridate)
 
@@ -191,7 +220,7 @@ for (type in set_of_types){
   
   ## Remove the inflation factor
   inflation = 100
-  impute_Sigma = event_Sigma/inflation^2
+  impute_Sigma = nonevent_Sigma/inflation^2
   
   for(current_mi in 1:num_imputes) {
     for(row in which(!full_obs)) {
