@@ -65,16 +65,20 @@ for (type in set_of_types){
       observed_data = data[!missing_spots]
       Sigma_11 = as.matrix(impute_Sigma[missing_spots, missing_spots], nrow = sum(missing_spots))
       Sigma_12 = as.matrix(impute_Sigma[missing_spots, !missing_spots], nrow = sum(missing_spots))
-      Sigma_22 = as.matrix(impute_Sigma[!missing_spots, !missing_spots])
-      mu_1 = current_mean[missing_spots]
-      mu_2 = current_mean[!missing_spots]
-      eig_Sigma = eigen(Sigma_22)
-      eig_vectors = eig_Sigma$vectors
-      eig_values = eig_Sigma$values
-      eig_values[eig_values < 0 ] = 0
-      max_K = min(which(cumsum(eig_values)/sum(eig_values) > 0.9999))
-      T = eig_vectors[,1:max_K]%*%diag(sqrt(eig_values[1:max_K]))
-      pseudo_inverse = T%*%solve(t(T)%*%T) %*% solve(t(T)%*%T, t(T))
+      if(all(is.na(data))) {
+        pseudo_inverse = 0
+      } else {
+        Sigma_22 = as.matrix(impute_Sigma[!missing_spots, !missing_spots])
+        mu_1 = current_mean[missing_spots]
+        mu_2 = current_mean[!missing_spots]
+        eig_Sigma = eigen(Sigma_22)
+        eig_vectors = eig_Sigma$vectors
+        eig_values = eig_Sigma$values
+        eig_values[eig_values < 0 ] = 0
+        max_K = min(which(cumsum(eig_values)/sum(eig_values) > 0.9999))
+        T = eig_vectors[,1:max_K]%*%diag(sqrt(eig_values[1:max_K]))
+        pseudo_inverse = T%*%solve(t(T)%*%T) %*% solve(t(T)%*%T, t(T))
+      }
       if(sum(missing_spots) > 1) {
         mu_conditional = mu_1 + Sigma_12%*%pseudo_inverse %*% (observed_data - mu_2)
         Sigma_conditional = Sigma_11 - Sigma_12%*%pseudo_inverse%*%t(Sigma_12)
