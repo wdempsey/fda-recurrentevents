@@ -13,12 +13,27 @@
 ## hatX(t,s) = coefficients%*%eigenvectors + mu(t,s) 
 ## And seeing how close hatX(t,s) is to X(t,s).
 
-current_bootstrap = 1 # CONVERT TO ACCEPT THIS 
+args=(commandArgs(TRUE))
 
-num_bootstraps = 200
+print(args)
+
+##args is now a list of character vectors
+## First check to see if arguments are passed.
+## Then cycle through each element of the list and evaluate the expressions.
+if(length(args)==0){
+  print("No arguments supplied.")
+  ##supply default values
+  current_bootstrap = 1 # CONVERT TO ACCEPT THIS 
+}else{
+  current_bootstrap = as.numeric(args[[1]])
+}
+
+print(paste("Current bootstrap:", current_bootstrap))
+
+# num_bootstraps = 200
 num_imputes = 2
 library(refund); library(lubridate); library(dynr); library(Matrix)
-set.seed(1391307)
+# set.seed(1391307)
   
 ## WINDOWS
 setwd("Z:/SI_data/")
@@ -53,7 +68,9 @@ for (type in set_of_types){
   impute_Sigma = event_Sigma/inflation^2
   
   for(current_mi in 1:num_imputes) {
+    print(paste("Number of rows to impute:", length(which(!full_obs))))
     for(row in which(!full_obs)) {
+      print(paste("Current rows:", which(row == which(!full_obs))))
       current_row = bootstrap_event_complete[row,]
       current_time = current_row[3]
       data = current_row[,4:length(current_row)]
@@ -63,6 +80,7 @@ for (type in set_of_types){
       ## EXTRACT CONDITIONAL VARIANCE
       missing_spots = is.na(data)
       observed_data = data[!missing_spots]
+      print(paste("Number of missing entries:", sum(!missing_spots)))
       Sigma_11 = as.matrix(impute_Sigma[missing_spots, missing_spots], nrow = sum(missing_spots))
       Sigma_12 = as.matrix(impute_Sigma[missing_spots, !missing_spots], nrow = sum(missing_spots))
       if(all(is.na(data))) {
@@ -181,7 +199,10 @@ for (type in set_of_types){
 }
 
 ## CLEAR WORKSPACE
-rm(list=ls()) 
+rm(list=c("eig_Sigma", "eig_Sigma_est", "eig_vectors", "eigen_Sigma", "est", 
+           "event_coef", "event_complete", "event_eigen_vectors", "event_J_coef",
+           "event_means", "event_J_means", "event_model.matrix", "event_Sigma", "impute_Sigma",
+           "pseudo_inverse", "residual", "Sigma_11", "Sigma_12", "Sigma_22", "Y"))
 current_bootstrap = 1 # CONVERT TO ACCEPT THIS 
 num_imputes = 2
 library(refund); library(lubridate)
