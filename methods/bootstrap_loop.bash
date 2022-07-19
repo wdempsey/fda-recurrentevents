@@ -4,10 +4,10 @@ for BOOTSTRAP in {1..200}; do
     echo "${BOOTSTRAP}"
     export BOOTSTRAP
     #
-    sbatch -o MCsim_${BOOTSTRAP}.stdout.txt \
-	   -e MCsim_${BOOTSTRAP}.stdout.txt \
-           --job-name=my_analysis_${BOOTSTRAP} \
-	   simsloop.sbatch
+    sbatch -o bootstrapsim_${BOOTSTRAP}.stdout.txt \
+	   -e bootstrapsim_${BOOTSTRAP}.stdout.txt \
+           --job-name=bootstrap_analysis_${BOOTSTRAP} \
+	   bootstrap_loop.sbatch
     #
     sleep 1 # pause to be kind to the scheduler
 done
