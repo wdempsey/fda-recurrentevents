@@ -1,5 +1,5 @@
 #!/bin/bash
-for BOOTSTRAP in {1..200}; do
+for BOOTSTRAP in {1..2}; do
     #
     echo "${BOOTSTRAP}"
     export BOOTSTRAP
