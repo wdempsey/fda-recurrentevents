@@ -100,10 +100,10 @@ df_eda_summary <- data.frame(sequence = eda_temp_mi1$sequence,
                              lowerCI = eda_theta_bs_final - 1.96 * eda_stderr,
                              upperCI = eda_theta_bs_final + 1.96 * eda_stderr)
 
-png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_coef_joint_bootstrap.png",
-    width = 480, height = 480, units = "px", pointsize = 16)
+# png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_coef_joint_bootstrap.png",
+#     width = 480, height = 480, units = "px", pointsize = 16)
 ggplot(df_eda_summary, aes(x=sequence, y=estimate)) +
   geom_line(size=1, alpha=0.8) +
   geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
   xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
-dev.off()
+# dev.off()
