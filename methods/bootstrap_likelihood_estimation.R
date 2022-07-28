@@ -1,14 +1,34 @@
+## Arguments for the estimation
+## 2 arguments: bootstrap and MI
+args=(commandArgs(TRUE))
+
+print(args)
+
+##args is now a list of character vectors
+## First check to see if arguments are passed.
+## Then cycle through each element of the list and evaluate the expressions.
+if(length(args)==0){
+  print("No arguments supplied.")
+  ##supply default values
+  current_bootstrap = 1 # CONVERT TO ACCEPT THIS 
+  current_mi = 1
+}else{
+  current_bootstrap = as.numeric(args[[1]])
+  current_mi = as.numeric(args[[2]])
+}
+
+print(paste("Current bootstrap:", current_bootstrap))
+print(paste("Current mi:", current_mi))
+
 ## WINDOWS
-setwd("Z:/SI_data/bootstrap_files")
-## LINUX 
-setwd('/mnt/turbo/SI_data/bootstrap_files')
+# setwd("Z:/SI_data/bootstrap_files")
+# ## LINUX 
+# setwd('/mnt/turbo/SI_data/bootstrap_files')
+## Turbo
 
 ## LIBRARIES
 library(ggplot2)
 library('dplyr')
-
-current_bootstrap = 12
-current_mi = 1
 
 ## Read in acc and eda model.matrix
 ## ACC
@@ -17,14 +37,14 @@ acc_event_model.matrix = readRDS(paste("event_RDS/acc_event_modelmatrix_bootstra
                                        "_2022-07-20.RDS", sep = ""))
 acc_nonevent_model.matrix = readRDS(paste("nonevent_RDS/acc_nonevent_modelmatrix_bootstrap_",
                                           current_bootstrap, "_mi_", current_mi,
-                                          "_2022-07-22.RDS", sep = ""))
+                                          "_2022-07-25.RDS", sep = ""))
 ## EDA
 eda_event_model.matrix = readRDS(paste("event_RDS/eda_event_modelmatrix_bootstrap_",
                                        current_bootstrap, "_mi_", current_mi,
                                        "_2022-07-20.RDS", sep = ""))
 eda_nonevent_model.matrix = readRDS(paste("nonevent_RDS/eda_nonevent_modelmatrix_bootstrap_",
                                           current_bootstrap, "_mi_", current_mi,
-                                          "_2022-07-22.RDS", sep = ""))
+                                          "_2022-07-25.RDS", sep = ""))
 
 ## GENERATE SPLINES
 K_b = 35
@@ -116,7 +136,6 @@ ridge.fit.cv <- cv.glmnet(all_model.matrix[daytime_obs,], all_Y[daytime_obs],
                           family = "binomial")
 # Stop the clock
 runtime = proc.time() - ptm
-
 ridge.fit.lambda <- ridge.fit.cv$lambda.min
 # plot(ridge.fit.cv)
 
@@ -127,8 +146,8 @@ intercept <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[1]
 acc_betaHat.net <- acc_bb %*% ridge.coef[1:35]
 eda_betaHat.net <- eda_bb %*% ridge.coef[36:70]
 
-plot(acc_sequence, acc_betaHat.net)
-plot(eda_sequence, eda_betaHat.net)
+# plot(acc_sequence, acc_betaHat.net)
+# plot(eda_sequence, eda_betaHat.net)
 
 ## STDERR
 X = cbind(1,all_model.matrix[daytime_obs,])
@@ -137,7 +156,7 @@ probs = 1/(1+exp(-totals))
 W = diag(as.vector(probs * (1-probs)))
 fisher_info = t(X)%*%W%*%X
 ridge_vector = ridge.fit.lambda*c(1,p.fac)
-ridge_vector[ridge_vector == 0] = 0.1
+ridge_vector[ridge_vector == 0] = ridge.fit.lambda * 0.01
 ridge_penalty = diag(ridge_vector)
 Sigma = solve(fisher_info+ridge_penalty)
 updated_Sigma = Sigma[-1,-1]
@@ -147,41 +166,54 @@ acc_stderr = sqrt(diag(acc_bb%*%acc_updated_Sigma%*%t(acc_bb)))
 eda_stderr = sqrt(diag(eda_bb%*%eda_updated_Sigma%*%t(eda_bb)))
 
 ## JOINT FIGURES
-df_acc_summary <- data.frame(sequence = acc_sequence+30, 
-                             estimate = acc_betaHat.net,
-                             lowerCI = acc_betaHat.net - 1.96 * acc_stderr,
-                             upperCI = acc_betaHat.net + 1.96 * acc_stderr)
-
 # df_acc_summary <- data.frame(sequence = acc_sequence+30, 
 #                              estimate = acc_betaHat.net,
-#                              std_err = acc_stderr)
+#                              lowerCI = acc_betaHat.net - 1.96 * acc_stderr,
+#                              upperCI = acc_betaHat.net + 1.96 * acc_stderr)
+
+df_acc_summary <- data.frame(sequence = acc_sequence+30,
+                             estimate = acc_betaHat.net,
+                             std_err = acc_stderr)
 
 # acc_xmax = max(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
 # acc_xmin = min(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
 
 # # png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/acc_coef_joint.png",
 # #     width = 480, height = 480, units = "px", pointsize = 16)
-ggplot(df_acc_summary, aes(x=sequence, y=estimate)) +
-  geom_line(size=1, alpha=0.8) +
-  geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
-  # annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
-  xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
+# ggplot(df_acc_summary, aes(x=sequence, y=estimate)) +
+#   geom_line(size=1, alpha=0.8) +
+#   geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
+#   # annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
+#   xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
 # # dev.off()
 #   # geom_line(data=df_tidy, aes(x=Time, y=Ratio, group=Cell), color="grey") +
 
-df_eda_summary <- data.frame(sequence = eda_sequence+30, estimate = eda_betaHat.net,
-                         lowerCI = eda_betaHat.net - 1.96 * eda_stderr,
-                         upperCI = eda_betaHat.net + 1.96 * eda_stderr)
+# df_eda_summary <- data.frame(sequence = eda_sequence+30, estimate = eda_betaHat.net,
+#                          lowerCI = eda_betaHat.net - 1.96 * eda_stderr,
+#                          upperCI = eda_betaHat.net + 1.96 * eda_stderr)
+
+df_eda_summary <- data.frame(sequence = eda_sequence+30, 
+                             estimate = eda_betaHat.net,
+                             std_err = eda_stderr)
 
 # # eda_xmax = max(df_eda_summary$sequence[which(df_eda_summary$lowerCI > 0)])
 # # eda_xmin = min(df_eda_summary$sequence[which(df_eda_summary$lowerCI > 0)])
 # 
 # # png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_coef_joint.png",
 # #     width = 480, height = 480, units = "px", pointsize = 16)
-ggplot(df_eda_summary, aes(x=sequence, y=estimate)) +
-  geom_line(size=1, alpha=0.8) +
-  geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
-  # annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
-  xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
+# ggplot(df_eda_summary, aes(x=sequence, y=estimate)) +
+#   geom_line(size=1, alpha=0.8) +
+#   geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
+#   # annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
+#   xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
 # # dev.off()
+library(lubridate)
+
+saveRDS(df_acc_summary, paste("bootstrap_fits/acc_bootstrap_",
+                              current_bootstrap, "_mi_", current_mi,
+                              "_", today(), ".RDS", sep = ""))
+
+saveRDS(df_eda_summary, paste("bootstrap_fits/eda_bootstrap_",
+                              current_bootstrap, "_mi_", current_mi,
+                              "_", today(), ".RDS", sep = ""))
 
