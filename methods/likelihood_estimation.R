@@ -173,7 +173,8 @@ n.tmp = length(all_Y)
 p.tmp = ncol(all_model.matrix)
 subsample_offset = rep(log_sampling_rate,nrow(all_model.matrix))
 p.fac = rep(1, ncol(all_model.matrix))
-p.fac[c(1:3)] = 0 #no penalty on the first 4 variables
+p.fac[c(1:3)] = 0 #no penalty on the first 3 acc variables
+p.fac[c(36:38)] = 0 # no penalty on the first 3 eda as well
 
 # set.seed("97139817")
 # Start the clock!

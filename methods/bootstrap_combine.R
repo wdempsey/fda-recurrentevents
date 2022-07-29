@@ -1,3 +1,6 @@
+## SETWD
+setwd("Z:/SI_data/bootstrap_files")
+
 number_bootstraps = 200
 number_mi = 2
 
@@ -66,44 +69,56 @@ eda_msb = eda_msb/(eda_B-1)
 edaSigma_BM = (eda_msb * (1+1/eda_B) - eda_msw)/2
 eda_stderr = sqrt(diag(edaSigma_BM))
 
+## CALCULATE Satterthwaite
+
+numerator = ((diag(acc_msb)*(1+1/acc_B) - diag(acc_msw))/2)^2
+denominator = diag(acc_msb)^2 * (1+1/acc_B)^2/4 / (acc_B -1) + diag(acc_msw)^2/(acc_B * 4 * (2-1))
+satt_df = numerator/denominator
+acct_stat = qt(0.975, satt_df)
+
+numerator = ((diag(eda_msb)*(1+1/eda_B) - diag(eda_msw))/2)^2
+denominator = diag(eda_msb)^2 * (1+1/eda_B)^2/4 / (eda_B -1) + diag(eda_msw)^2/(eda_B * 4 * (2-1))
+satt_df = numerator/denominator
+edat_stat = qt(0.975, satt_df)
+
 plot(acc_temp_mi1$sequence, acc_theta_bs_final, ylim = c(-6e-04, 10e-04), type = "l", col = "red")
-lines(acc_temp_mi1$sequence, acc_theta_bs_final - acc_stderr * 1.96, col = "red", lty = 2)
-lines(acc_temp_mi1$sequence, acc_theta_bs_final + acc_stderr * 1.96, col = "red", lty = 2)
+lines(acc_temp_mi1$sequence, acc_theta_bs_final - acc_stderr * t_stat, col = "red", lty = 2)
+lines(acc_temp_mi1$sequence, acc_theta_bs_final + acc_stderr * t_stat, col = "red", lty = 2)
 abline(h=0, lty = 2)
 
 plot(eda_temp_mi1$sequence, eda_theta_bs_final, ylim = c(-3e-3, 3e-03), type = "l", col = "red")
-lines(eda_temp_mi1$sequence, eda_theta_bs_final - eda_stderr * 1.96, col = "red", lty = 2)
-lines(eda_temp_mi1$sequence, eda_theta_bs_final + eda_stderr * 1.96, col = "red", lty = 2)
+lines(eda_temp_mi1$sequence, eda_theta_bs_final - eda_stderr * t_stat, col = "red", lty = 2)
+lines(eda_temp_mi1$sequence, eda_theta_bs_final + eda_stderr * t_stat, col = "red", lty = 2)
 abline(h=0, lty = 2)
 
 ## PLOT OF BOOTSTRAP
 library(ggplot2)
 df_acc_summary <- data.frame(sequence = acc_temp_mi1$sequence,
                              estimate = acc_theta_bs_final,
-                             lowerCI = acc_theta_bs_final - 1.96 * acc_stderr,
-                             upperCI = acc_theta_bs_final + 1.96 * acc_stderr)
+                             lowerCI = acc_theta_bs_final - acct_stat * acc_stderr,
+                             upperCI = acc_theta_bs_final + acct_stat * acc_stderr)
 
 acc_xmax = max(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
 acc_xmin = min(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
 
-# png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/acc_coef_joint_bootstrap.png",
-#     width = 480, height = 480, units = "px", pointsize = 16)
+png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/acc_coef_joint_bootstrap.png",
+    width = 480, height = 480, units = "px", pointsize = 16)
 ggplot(df_acc_summary, aes(x=sequence, y=estimate)) +
   geom_line(size=1, alpha=0.8) +
   geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
   annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
   xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
-# dev.off()
+dev.off()
 
 df_eda_summary <- data.frame(sequence = eda_temp_mi1$sequence,
                              estimate = eda_theta_bs_final,
-                             lowerCI = eda_theta_bs_final - 1.96 * eda_stderr,
-                             upperCI = eda_theta_bs_final + 1.96 * eda_stderr)
+                             lowerCI = eda_theta_bs_final - edat_stat * eda_stderr,
+                             upperCI = eda_theta_bs_final + edat_stat * eda_stderr)
 
-# png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_coef_joint_bootstrap.png",
-#     width = 480, height = 480, units = "px", pointsize = 16)
+png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_coef_joint_bootstrap.png",
+    width = 480, height = 480, units = "px", pointsize = 16)
 ggplot(df_eda_summary, aes(x=sequence, y=estimate)) +
   geom_line(size=1, alpha=0.8) +
   geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
   xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
-# dev.off()
+dev.off()
