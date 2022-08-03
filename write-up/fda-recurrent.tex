@@ -35,6 +35,8 @@
 \usepackage{multirow}
 \usepackage[shortlabels]{enumitem}
 \def\pr{\mathop{\text{pr}}\nolimits}
+\def\var{\mathop{\text{var}}\nolimits}
+\def\cov{\mathop{\text{cov}}\nolimits}
 \def\k{{\bf k}}
 \def\z{{\bf z}}
 \def\W{{\bf W}}
@@ -129,9 +131,9 @@
 \begin{document}
 
 \title[Recurrent event analysis with functional covariates via random subsampling]{Recurrent event analysis in the presence of real-time high frequency data via random subsampling}
-\author{Walter Dempsey}
-\address {Department of Biostatistics, University of Michigan, 1415 Washington Heights, Ann Arbor, MI 48109, USA}
- \email{wdem@umich.edu}
+% \author{Walter Dempsey}
+% \address {Department of Biostatistics, University of Michigan, 1415 Washington Heights, Ann Arbor, MI 48109, USA}
+% \email{wdem@umich.edu}
 
 \date{\today}
 
@@ -147,7 +149,7 @@ Digital monitoring studies collect real-time high frequency data via mobile sens
 
 Advancement in mobile technology has led to the rapid integration of mobile and wearable sensors into behavioral health~\citep{Freeetal2013}. Take HeartSteps, for example, a mobile health (mHealth) study designed to increase physical activity in sedentary adults \citep{KlasnjaHS2019}. Here, a Jawbone sensor is used to monitor step count every minute of the participant's study day. Of interest in many mHealth studies is the relation of such real-time high frequency sensor data to an adverse, recurrent event process. In a smoking cessation mHealth study~\citep{Sense2Stop}, for example, the relation between a time-varying sensor-based measure of physiological stress and smoking lapse is of scientific interest. In a suicidal ideation mHealth study~\citep{Kleiman2018}, the relation of electrodermal activity (EDA) and accelerometer with self-identified moments of suicidal ideation is of scientific interest.
 
-The goal of this paper is two-fold: (1) to discuss the appropriate choice of statistical model for joint high-frequency sensor data and the recurrent event data, and (2) to construct a simple, easy-to-implement method for parameter estimation and inference. For (1), we discuss an important issue regarding measurement-error models when paired with recurrent event outcomes. For (2), we introduce a random subsampling procedure that has several benefits.  First, the resulting inference is unbiased; however, there is a computation-efficiency trade-off. In particular, a higher sampling rate can decrease estimator variance at the cost of increased computation.  We show via simulations that the benefits of incredibly high sampling rates is often negligible, as the contribution to the variation is small relative to the variation in the underlying stochastic processes. Second, derived estimating equations are optimal, implying loss of statistical efficiency is only due to subsampling procedure and not the derived methodology.  Finally, implementation can leverage existing, standard software for functional data analysis and logistic regression, leading to fast adoption by domain scientists.
+The goal of this paper is two-fold: (1) to discuss the appropriate choice of statistical model for joint high-frequency sensor data and the recurrent event data, and (2) to construct a simple, easy-to-implement method for parameter estimation and inference. For (1), we discuss an important issue regarding measurement-error models when paired with recurrent event outcomes. For (2), we introduce a random subsampling procedure that has several benefits.  First, the resulting inference is unbiased; however, there is a computation-efficiency trade-off. In particular, a higher sampling rate can decrease estimator variance at the cost of increased computation.  We show via simulations that the benefits of very high sampling rates is often negligible, as the contribution to the variation is small relative to the variation in the underlying stochastic processes. Second, derived estimating equations are optimal, implying loss of statistical efficiency is only due to subsampling procedure and not the derived methodology.  Finally, implementation can leverage existing, standard software for functional data analysis and logistic regression, leading to fast adoption by domain scientists.
 
 \section{Recurrent event process and associated high frequency data}
 
@@ -160,7 +162,7 @@ h_i \left( t \Given H_{i,t}^{NX} ; \theta \right) =
 \lim_{\delta \to 0} \delta^{-1} \pr \left( N_i(t+\delta) - N_i(t) > 0
   \given H_{i,t}^{NX} \right),
 \end{equation}
-where~$\theta$ is the parameter vector. For high frequency physiological data, we assume that current risk is log-additive and depends on a linear functional of the health process over some recent window of time and some pre-specified features of the counting process; that is,
+where~$\theta$ is the parameter vector. For high frequency physiological data, we assume that current risk is log-additive and depends on a linear functional of the health process over some recent window of time and pre-specified features of the counting process; that is,
 \begin{equation}
 \label{eq:hazardlinear}
 h_i \left( t \given  H_{i,t}^{NX} ; \theta \right) =
@@ -185,7 +187,7 @@ where~$\epsilon_i(t)$ is a white-noise measurement error term. Thus, $\eta_i (t)
 \pr \left ( T_j > t+s \Given \H_{i,\tau_i}^X, \bfT_{-j} = \bft_{-j}, T_j > t \right) = E \left( - \exp \left( \int_{t}^{t+s} h_i (u \given \eta ) du \right) \Given \bfx_i, \bfT_{-j} = \bft_{-j} \right),
 \]
 where the expectation is a Gaussian integral, albeit infinite-dimensional.  For most choices of covariance structure, if the white-noise error term is non-zero then the above calculation will show the conditional survival function depends not only on past $x$-values, but also on future $x$-values, i.e.,~$\bfx$ and~$\bfT$ do not satisfy \emph{independent evolution}~\citep{DempseyPMCC2}. This is quite unnatural, as~\eqref{eq:jm} suggests the instantaneous risk of an event at time~$t$ depends on future values of the sensor process. To ensure independent evolution, we set~$\epsilon (t) \equiv 0$ and treat~$\bfx_i$ as a Gaussian process measured without a white-noise error term.
-Our procedure will only rely on the Gaussian assumption when~$\bfx$ is not fully observed (see Section~\ref{section:missingdata}).
+Our procedure will only rely on the Gaussian assumption when~$\bfx$ is not fully observed; see Section~\ref{section:missingdata} for details on handling of missing data.
 
 \subsection{Likelihood calculation}
 
@@ -236,7 +238,7 @@ The approximate score equations given by~\eqref{eq:approxscore} arise in design-
 \section{Longitudinal functional principal components within
   event-history analysis}
 
-Probabilistic subsampling converts the single sensor stream~$\bfx_i$ into a sequence of functions observed repeatedly at sampled times~$\bfD_i$ and event times~$\bfT_i$. Such a data structure is commonly referred to as \emph{longitudinal functional data}~\citep{Xiao2013, GoldSmith2015}. Given the large increase in longitudinal functional data in recent years, corresponding analysis has received much recent attention~\citep{Morris2003, MorrisCarroll2006, Baladandayuthapani2008, Di2009, Greven2010, Staicu2010, ChenMuller2012, LiGuan2014}. Here, we combine work by~\cite{Park2018} and~\cite{Goldsmith2011} to construct a computationally efficient penalized functional method for solving the estimation equations~$\hat U_n (\theta)$.
+Probabilistic subsampling converts the single sensor stream~$\bfx_i$ into a sequence of functions observed repeatedly at sampled times~$\bfD_i$ and event times~$\bfT_i$ over windows of length~$\Delta$. Such a data structure is commonly referred to as \emph{longitudinal functional data}~\citep{Xiao2013, GoldSmith2015}. Given the large increase in longitudinal functional data in recent years, corresponding analysis has received much recent attention~\citep{Morris2003, MorrisCarroll2006, Baladandayuthapani2008, Di2009, Greven2010, Staicu2010, ChenMuller2012, LiGuan2014}. Here, we combine work by~\cite{Park2018} and~\cite{Goldsmith2011} to construct a computationally efficient penalized functional method for solving the estimation equations~$\hat U_n (\theta)$.
 
 \subsection{Estimation of the windowed covariate history}
 \label{sec:margcov}
@@ -325,7 +327,7 @@ Our theoretical analysis requires assumptions regarding the subsampling procedur
 \label{assumption:events}\normalfont
 We assume the following holds:
 \begin{enumerate}[label=(E.\arabic*)]
-\item\label{E1} The subsampling rate is both lower and upper bounded for all at-risk times; that is,~$0 < L < \pi_i (t) < U < \infty$ for all~$i=1,2,\ldots$ and~$t \in [0,\tau]$ such that $R_i (t) = 1$
+\item\label{E1} The subsampling rate is both lower and upper bounded at all at-risk times; that is,~$0 < L < \pi_i (t) < U < \infty$ for all~$i=1,2,\ldots$ and~$t \in [0,\tau]$ such that $R_i (t) = 1$
 \item\label{E2} There exists a nonnegative definite matrix~$\Xi (\theta)$ such that
   \[
     n^{-1} \Xi_n (\theta) = n^{-1} \sum_{i=1}^n \int_0^\tau w_i (t; \theta) \times \left[ \frac{h_i^{(1)}(t; \theta) h_i^{(1)} (t;\theta)^\top}{h_i (t; \theta)} \right] \times   R_i (t) dt \overset{P}{\to} \Xi (\theta).
@@ -370,7 +372,7 @@ where
 \]
 and~$\tau$ is the random censoring time of the event process.
 \end{lemma}
-An estimator for~$\Xi(\theta)$ is
+A design-unbiased estimator for~$\Xi(\theta)$ is
 \begin{equation}
 \label{eq:fisher}
   \hat \Xi (\theta) = n^{-1} \sum_{i=1}^n \sum_{t \in \bfT_i \cup D_i}
@@ -455,14 +457,14 @@ We generate $1000$ datasets, each consisting of $500$ user-days.  For a given si
 
 Since we are primarily interested in accuracy, we report the mean integrated squared error (MISE) defined as~$\frac{1}{1000} \sum_{i=1}^{1000} \int_{0}^{\infty} ( \hat \beta_{i,j} (s) - \beta(s))^2 ds$ for $j=0.5,1,2,4$ where~$\beta(s) \equiv 0$ for $s > \Delta$.  The MISE is defined in this manner to account for settings where~$\Delta$ is unknown.  Next, let $\bar \beta_{j} (t) = \frac{1}{1000} \sum_{i=1}^{1000} \hat \beta_{i,j} (t)$ denote the average estimate for $j=0.5,1,2,4$.  Then the squared bias is given by $\int_{0}^{\infty} ( \bar \beta_{j} (s) - \beta (s))^2 ds$ and the variance is given by $\frac{1}{1000} \sum_{j=1}^{1000} \int_{0}^{\infty} ( \hat \beta_{i,j} (s) - \bar \beta_j(s))^2 ds$.  The subsampling variance is defined as $\frac{1}{1000} \sum_{i=1}^{1000} \int_{0}^{\infty} ( \hat \beta_{i,j} (s) - \hat \beta_{i,0.5} (s))^2 ds$.  Table~\ref{tab:mise} show the MISE decomposed into the variance and squared biased as well as the subsampling variance.  To allow fair comparisons across the two choices of $\beta(s)$, all reported numbers are scaled by the integrated square of the true function $\int_{0}^{\infty} \beta(s)^2 ds$. The average runtime (in seconds) is also reported.
 
-Table~\ref{tab:mise} demonstrates that the variance does increase as the sampling rate decreases.  However, the rate of increase in the MISE is quite low relative.  In the second case study, for example, the MISE increases by 6\% while the run time is 3 times faster.  In the first case study, the MISE remains roughly constant but the run time is 4.7 times faster.  This highlights the efficiency-computation trade-off.  Extrapolating to a complete data analysis, we can see that the run time will continue to increase significantly with minimal improvement in the mean integrated squared error.
+Table~\ref{tab:mise} demonstrates that the variance does increase as the sampling rate decreases.  However, the rate of increase in the MISE is relatively quite low.  In the second case study, for example, the MISE increases by 6\% while the run time is 3 times faster.  In the first case study, the MISE remains roughly constant but the run time is 4.7 times faster.  This highlights the efficiency-computation trade-off.  Extrapolating to a complete data analysis, we can see that the run time will continue to increase significantly with minimal improvement in the mean integrated squared error.
 
 \begin{table}[!th]
 \begin{tabular}{c | p{2cm} p{2cm} p{2cm} p{2cm}}
 & \multicolumn{4}{c}{Sampling rate} \\ \cline{2-5}
  & 0.5 & 1 & 2 & 4 \\ \hline
 Subsampling variance & - & $9.0 \times 10^{-7}$ & $2.9 \times 10^{-6}$ & $5.8 \times 10^{-6}$  \\
-Variance & $7.9 \times 10^{-3}$ & $9.2 \times 10^{-3}$ & $1.0 \times 10^{-2}$ & $1.30 \times 10^{-2}$ \\
+Variance & $7.9 \times 10^{-3}$ & $9.2 \times 10^{-3}$ & $1.0 \times 10^{-2}$ & $1.3 \times 10^{-2}$ \\
 Squared Bias & $9.8 \times 10^{-2}$ & $9.5 \times 10^{-2}$ & $9.3 \times 10^{-2}$ & $9.2 \times 10^{-2}$   \\
 MISE & $1.1 \times 10^{-1}$ & $1.0 \times 10^{-1}$ & $1.0 \times 10^{-1}$ & $1.0 \times 10^{-1}$ \\ \hline
 Avg. runtime (secs) & 317 & 177 & 104 & 68 \\ \hline
@@ -566,14 +568,15 @@ and~$t \in \mathbb{R}_+$.
 %$\{ (t,t') : t, t^\prime \in \bfT_i \cup \bfD_i \& |t - t'| < \Delta \}$
 
 \subsubsection{Multiple imputation under uncongeniality}
+\label{section:miuncong}
 
 Multiple imputation yields valid frequentist inferences when the imputation and analysis procedure are congenial~\citep{Meng1994};  the above procedure is derived for function-on-scalar multiple imputation for binary outcomes, which ignored the joint nature of recurrent event analysis in the presence of high frequency sensor data. The main advantage of the above imputation framework is its simplicity and approximate congeniality when events are rare and the sampling rate is low.  The main disadvantage is that the above framework is uncongenial under many events and/or high sampling rates. Again, congeniality ensures good frequentist coverage properties.  A key question is whether we can use the above imputation methods within a general procedure to handle uncongeniality.
 
-To address this, we use the recommendation from~\cite{Bartlett2020} and consider a method that first bootstraps a sample from the dataset and then apply multiple imputation to each bootstrap sample.  This general approach was originally proposed by~\cite{Shao1994} and~\cite{Little2002}. We suppose $B$ bootstraps and $M$ imputations per bootstrap; let $\hat \theta_{b,m}$ denote the estimator for the $m$th imputation of the $b$th bootstrap.  The point estimator is given by $(B)^{-1} \sum_{b=1}^B \hat \theta_{b}$ where $\hat \theta_b = M^{-1} \sum_{m=1}^M \hat \theta_{b,m}$. To construct the confidence interval, we require mean sum of squares with and between boostraps, i.e., $MSW = \frac{1}{B(M-1)} \sum_{b=1}^B \sum_{m=1}^M (\hat \theta_{b,m} - \hat \theta_b ) (\hat \theta_{b,m} - \hat \theta_b )^\top$ and $MSB = \frac{1}{B-1} \sum_{b=1}^B M \cdot (\hat \theta_b - \hat \theta)(\hat \theta_b - \hat \theta)^\top$ respectively. Then the estimator of the variance-covariance matrix of $\hat \theta$ is given by $\hat \Sigma_{B,M} = \left( \frac{B+1}{BM} \right) MSB - MSW/M$.  We obtain the varaiance for~$\beta(t)$ by $\phi (t) \hat \Sigma_{B,M} \phi(t)^\top$.  We follow~\cite{Bartlett2020} and construct confidence intervals based on Satterthwaite’s degrees of freedom, which here is given by
+To address this, we use the recommendation from~\cite{Bartlett2020} and consider a method that first bootstraps a sample from the dataset and then apply multiple imputation to each bootstrap sample.  This general approach was originally proposed by~\cite{Shao1994} and~\cite{Little2002}. We suppose $B$ bootstraps and $M$ imputations per bootstrap; let $\hat \theta_{b,m}$ denote the estimator for the $m$th imputation of the $b$th bootstrap.  The point estimator is given by $(B)^{-1} \sum_{b=1}^B \hat \theta_{b}$ where $\hat \theta_b = M^{-1} \sum_{m=1}^M \hat \theta_{b,m}$. To construct the confidence interval, we require mean sum of squares with and between boostraps, i.e., $MSW = \frac{1}{B(M-1)} \sum_{b=1}^B \sum_{m=1}^M (\hat \theta_{b,m} - \hat \theta_b ) (\hat \theta_{b,m} - \hat \theta_b )^\top$ and $MSB = \frac{1}{B-1} \sum_{b=1}^B (\hat \theta_b - \hat \theta)(\hat \theta_b - \hat \theta)^\top$ respectively. Then the estimator of the variance-covariance matrix of $\hat \theta$ is given by $\hat \Sigma_{B,M} = \left( \frac{B+1}{BM} \right) MSB - MSW/M$.  We obtain the varaiance for~$\beta(t)$ by $\phi (t) \hat \Sigma_{B,M} \phi(t)^\top$.  We follow~\cite{Bartlett2020} and construct confidence intervals based on Satterthwaite’s degrees of freedom, which here is given by
 $$
 \hat \nu = \frac{\left[ \left( \frac{B+1}{BM} \right) MSB - \frac{MSW}{M} \right]^2}{ (B-1)^{-1} \left( \frac{B+1}{BM} \right)^2 MSB^2 + \frac{MSW^2}{BM^2(M-1)}}
 $$
-The bootstrap followed by multiple imputation procedure has been studied extensively by~\cite{Bartlett2020} and is robust to uncongeniality.  The main disadvantage of this approach is its considerable computational intensity.  Recall likelihood calculations were computationally prohibitive by themselves, so combining with bootstrap and MI would further increase this large-scale computation.  The random subsampling framework thus simplifies handling of missing data via connections to function-on-scalar multiple imputation by~\cite{Petrovich2018} as well as to bootstrap to handle uncongeniality by~\cite{Bartlett2020}. Ignoring the computational time of bootstrap sampling, the computational time for the first choise in the simulation study with $B=200$ bootstraps and $M=2$ imputations per bootstrap leads to $35$ hours for a sampling rate of $0.5$ compared to $7$ hours for a sampling rate of $4$, which highlights the benefits of the proposed framework.
+The bootstrap followed by multiple imputation procedure has been studied extensively by~\cite{Bartlett2020} and is robust to uncongeniality.  The main disadvantage of this approach is its considerable computational intensity.  Recall likelihood calculations were computationally prohibitive by themselves, so combining with bootstrap and MI would further increase this large-scale computation.  The random subsampling framework thus simplifies handling of missing data via connections to function-on-scalar multiple imputation by~\cite{Petrovich2018} as well as to bootstrap to handle uncongeniality by~\cite{Bartlett2020}. Ignoring the computational time of bootstrap sampling, the computational time for the first choice in the simulation study with $B=200$ bootstraps and $M=2$ imputations per bootstrap leads to $35$ hours for a sampling rate of $0.5$ compared to $7$ hours for a sampling rate of $4$, which highlights the benefits of the proposed framework.
 
 
 
@@ -588,7 +591,9 @@ h_i \left( t \given  H_{i,t}^{NX} ; \theta, b_i \right) \approx
   + \left[ M_{i,t}^\top + C_{i,t}^\top J_{\hat \psi, \phi}\right] (\beta + b_i) \right)
 = \exp \left( W_{i,t}^\top \theta  + Z_{i,t}^\top b_i \right),
 \end{equation}
-where $Z_{i,t} = M_{i,t} + C_{i,t} J_{\hat \psi, \phi}$. Lemma~\ref{lemma:logistic} implies that the random subsampling framework applied to equation~\eqref{eq:multilevel} leads to a penalized logistic mixed-effects model.  As far as the authors are aware, the combination of mixed-effects and $L_2$-penalization on a subset of parameters has not been addressed in existing packages.  To address this, we derive a penalized adaptive Gaussian quadarture (PADQ) for estimation.  For conciseness, the algorithm is presented in Appendix~\ref{app:penlogit}.
+where $Z_{i,t} = M_{i,t} + C_{i,t} J_{\hat \psi, \phi}$. Lemma~\ref{lemma:logistic} implies that the random subsampling framework applied to equation~\eqref{eq:multilevel} leads to a penalized logistic mixed-effects model.  As far as the authors are aware, the combination of mixed-effects and $L_2$-penalization on a subset of parameters is not available in existing software.
+% An penalized adaptive Gaussian quadarture (PADQ) algorithm can be derived.  estimation is presented in Appendix~\ref{app:penlogit}.
+Given the paper's focus on ``off-the-shelf'' software implementations, multilevel models are considered important future work.
 
 \section{A worked example: Adolescent psychiatric inpatient mHealth study} \label{section:example}
 
@@ -642,7 +647,8 @@ Here, we focus on two physiological processes -- (1) electrodermal activity (EDA
 
 Inspection of Figures~\ref{fig:mean_eda} and~\ref{fig:mean_acc} suggest setting $\Delta = 30$ minutes is adequate to capturing the proximal impact of EDA and AI on the risk of a button press.  To ensure minimal loss of efficiency, the subsampling rate was set to once every fifteen minutes.  Given the daily button press rate, this ensures an average of $44$ non-events to $2.5$ events per day.  Based on Table~\ref{tab:compvseff}, this ensures we can achieve a substantial data reduction at a minimal loss of efficiency.  After sampling non-event times, complete-case analyses are performed, i.e., sampled times where sensors included in the model have any level of missing data are ignored.
 
-We analyzed activity index (AI) and electrodermal activity separately as given in equation~~\eqref{eq:hazardlinear} as well as jointly in a multivariate model as in equation~\eqref{eq:multihazardlinear}.  Results did not change substantially.  Figure~\ref{fig:eda_estimate} and~\ref{fig:acc_estimate} presents the estimates from the separate analyses with their associated 95\% confidence intervals.  We highlight in gray the statistically significant regions.  Here, we see that standardized EDA is not associated with increased risk of button press in our population-level model, while activity index sees a positive association in the final few minutes prior to a button press.  In section~\ref{sec:missingdata_heterogeneity}, we investigate whether the population-level results are sensitive to missing data and whether individual-level coefficients,~$\beta(t) + b_i (t)$, effects show stronger dependence on EDA and/or AI for certain individuals.
+We analyzed activity index (AI) and electrodermal activity separately as given in equation~~\eqref{eq:hazardlinear} as well as jointly in a multivariate model as in equation~\eqref{eq:multihazardlinear}.  Results did not change substantially.  Figure~\ref{fig:eda_estimate} and~\ref{fig:acc_estimate} presents the estimates from the joint analysis with their associated 95\% confidence intervals.  We highlight in gray the statistically significant regions.  Here, we see that standardized EDA is not associated with increased risk of button press, while activity index sees a positive association in the final few minutes prior to a button press.  In section~\ref{sec:missingdata_heterogeneity}, we investigate whether the results are sensitive to missing data.
+ % and whether individual-level coefficients,~$\beta(t) + b_i (t)$, effects show stronger dependence on EDA and/or AI for certain individuals.
 
 \begin{figure}[!th]
 \centering
@@ -658,14 +664,33 @@ We analyzed activity index (AI) and electrodermal activity separately as given i
   \caption{Activity Index (AI)
 }  \label{fig:acc_estimate}
 \end{subfigure}
-\caption{$\beta (t)$ for ACC and EDA with 95\% CI; solid line is complete-case analysis, while dotted line is for }
+\caption{$\beta (t)$ for ACC and EDA with 95\% CI; solid line is point estimate for the complete-case analysis, while highlighted region are the model-based pointwise 95\% confidence intervals.}
 \label{fig:mean_edacc}
 \end{figure}
 
-\subsection{Accounting for missing data and heterogeneity}
+\subsection{Accounting for missing data}
 \label{sec:missingdata_heterogeneity}
 
-TBD.
+
+In Appendix~\ref{app:csmissing}, Figures~\ref{fig:missing_eda} and~\ref{fig:missing_acc} present the per-patient average fraction with missing EDA and AI in 30-minute windows respectively. For EDA, we have a wide range of missingness -- from $0\%$ to over $40$\% across individuals with most between $5\%$ and $30\%$ average fraction missing.  For AI, the missingness is less pronounced -- from $0\%$ to $15\%$ across individuals with most between $0\%$ and $10\%$ average fraction missing.  To assess the impact of missing data, we perform the imputation under uncongeniality using the boostrap and multiple imputation strategy described in Section~\ref{section:miuncong}.  Here we see that the EDA curve remains non-significant while the region where the AI curve is significant widens slightly to be the prior 4 minutes.
+
+\begin{figure}[!th]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{../figures/eda_coef_joint_bootstrap.png}
+  \caption{Electrodermal activity (EDA)}
+  \label{fig:eda_estimate_bs}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{../figures/acc_coef_joint_bootstrap.png}
+  \caption{Activity Index (AI)
+}  \label{fig:acc_estimate_bs}
+\end{subfigure}
+\caption{$\beta (t)$ for ACC and EDA with 95\% CI; solid line is point estimate for the missing data analysis, while highlighted region are the boostrap and MI based pointwise 95\% confidence intervals.}
+\label{fig:mean_edacc}
+\end{figure}
 
 % \subsection{Effect of electrodermal activity and activity index on moments of distress}
 
@@ -673,7 +698,7 @@ TBD.
 % patient~$u$ had eight appointments with prothrombin values as follows:
 
 \section{Discussion}
-In this paper, we have presented a methodology for translating a difficult functional analysis with recurrent events problem into a traditional logistic regression.  The translation leveraged subsampling and weighting techniques, specifically the use of weights suggested by~\cite{Waagepetersen2008}, along with flexible functional data analysis methods of~\cite{Goldsmith2011} with marginal covariance methods for longitudinal functional data of~\cite{Park2018}.  The proposed methodology abides by the comment of Robert Gentleman on big data: ``make data as small as possible as fast as possible.''  Subsampling and  weighting converts the problem to well-known territory which allowed us to leverage existing software.  We show limited loss of efficiency when the subsampling is properly tuned to the event rates.  Important extensions to an online sampling algorithm, optimal weighting when the Poisson point process assumption does not hold, and non-linear functional data methods are considered important future work.
+In this paper, we have presented a methodology for translating a difficult functional analysis with recurrent events problem into a traditional logistic regression.  The translation leveraged subsampling and weighting techniques, specifically the use of weights suggested by~\cite{Waagepetersen2008}, along with flexible functional data analysis methods of~\cite{Goldsmith2011} with marginal covariance methods for longitudinal functional data of~\cite{Park2018}.  The proposed methodology abides by the idea that we should \emph{make data as small as possible as fast as possible}.  Subsampling and  weighting converts the problem to well-known territory which allows us to leverage existing software.  We show limited loss of efficiency when the subsampling is properly tuned to the event rates.  Important extensions to an online sampling algorithm, optimal weighting when the Poisson point process assumption does not hold, and non-linear functional data methods are all considered important future work.
 
 \bibliographystyle{plainnat}
 \bibliography{si-fda-refs}
@@ -760,7 +785,7 @@ where~$h(\cdot; \theta_0)$ is given by~\eqref{eq:hazardlinear}. Lenglart's inequ
   \sum_{l=1}^{K_b} \int_{t-\Delta}^t \hat \psi_k (s) \phi_l (s) b_l
   \right \| \\
 &= \frac{M}{4} n^{-1} \sum_{i=1}^n \sum_{t \in \bfT_i \cup \bfD_i}
-  \times \sum_{l=1}^{K_b} \left \| \int_{t-\Delta}^t
+  \sum_{l=1}^{K_b} \left \| \int_{t-\Delta}^t
   \left( X(t,s) - \sum_{k=1}^{K_x} \hat c_{i,k} (t) \psi_k (s) \right)
   \phi_l (s) b_l\right \| \\
 &\to \frac{M}{4} \int_0^\tau \sum_{l=1}^{K_b} \left \| \int_{t-\Delta}^t
@@ -864,89 +889,108 @@ $$
 which completes the proof.
 \end{proof}
 
-\section{Penalized logistic mixed-effects model}
-\label{app:penlogit}
+% \section{Penalized logistic mixed-effects model}
+% \label{app:penlogit}
 
-Here we derive a penalized adaptive Gaussian quadrature (PADQ) to fit the   penalized logistic mixed-effects model.  Here, for clarity, we write $Y_{ij} \in \{ 0, 1 \}$ to be the sequence of binary indicators for participant $i = 1,\ldots,n$ and $j$ indexes the event and subsampled times.  We write $W_{ij}$ to denote the time-varying covariate.  Then the score equations for the penalized logistic regression with offset $\log(\pi_{ij})$ is written as
-$$
-\sum_{i=1}^n \sum_{j=1}^{k_i} \left( y_{ij} - \frac{1}{1+\exp (- W_{ij} \theta - \log (\pi_{ij}) )} \right) W_{ij} - \frac{1}{\sigma^2} \sum_{k=3}^{K_b} \beta_k
-$$
-Let $B$ be the matrix that extracts the entries in $\theta$ corresponding to $\{ \beta_k\}_{k=3}^{K_b}$ (i.e., $B \theta = ({\bf 0}, \beta_3, \ldots, \beta_{K_b},{\bf 0})$).  Let $\W_i$ be a $k_i \times p$ matrix with the $j$th row equal to $W_{ij}$. Let $\mu(\W_i; \theta, \pi_i)$ be the vector of length $k_i$ with the $j$th entry equal to $\mu(W_{ij}; \theta, \pi_{ij}) = \frac{1}{1+\exp(-W \theta - \log(\pi))}$.  Finally, let $Y_i = (y_{i1},\ldots, y_{i k_i}$ and $E_i (\theta) = Y_i - \mu(\W_i; \theta, \pi_i)$. Then we can succinctly write the above as $\sum_{i=1}^n \W_i^\top E_i (\theta)- \frac{1}{\sigma^2} B \theta$.
+% Here we derive a penalized adaptive Gaussian quadrature (PADQ) to fit the   penalized logistic mixed-effects model.  Here, for clarity, we write $Y_{ij} \in \{ 0, 1 \}$ to be the sequence of binary indicators for participant $i = 1,\ldots,n$ and $j$ indexes the event and subsampled times.  We write $W_{ij}$ to denote the time-varying covariate.  Then the score equations for the penalized logistic regression with offset $\log(\pi_{ij})$ is written as
+% $$
+% \sum_{i=1}^n \sum_{j=1}^{k_i} \left( y_{ij} - \frac{1}{1+\exp (- W_{ij} \theta - \log (\pi_{ij}) )} \right) W_{ij} - \frac{1}{\sigma^2} \sum_{k=3}^{K_b} \beta_k
+% $$
+% Let $B$ be the matrix that extracts the entries in $\theta$ corresponding to $\{ \beta_k\}_{k=3}^{K_b}$ (i.e., $B \theta = ({\bf 0}, \beta_3, \ldots, \beta_{K_b},{\bf 0})$).  Let $\W_i$ be a $k_i \times p$ matrix with the $j$th row equal to $W_{ij}$. Let $\mu(\W_i; \theta, \pi_i)$ be the vector of length $k_i$ with the $j$th entry equal to $\mu(W_{ij}; \theta, \pi_{ij}) = \frac{1}{1+\exp(-W \theta - \log(\pi))}$.  Finally, let $Y_i = (y_{i1},\ldots, y_{i k_i}$ and $E_i (\theta) = Y_i - \mu(\W_i; \theta, \pi_i)$. Then we can succinctly write the above as $\sum_{i=1}^n \W_i^\top E_i (\theta)- \frac{1}{\sigma^2} B \theta$.
 
-We derive the iteratively re-weighted least squares algorithm next. First, take the derivative with respect to $\theta$ to construct the Hessian
-$$
-- \left[ \sum_{i=1}^n \sum_{j=1}^{k_i} \frac{W_{ij} W_{ij}^\top}{(1+\exp (- W_{ij} \theta - \log (\pi_{ij}) ))^2} \exp(-W_{ij} \theta - \log (\pi_{ij})) + \frac{B}{\sigma^2} \right].
-$$
-Define the matrix $V_i (\theta)$ be the diagonal matrix with the $(j,j)$th entry equal to $\mu(W_{ij}; \theta, \pi_{ij}) \cdot (1-\mu(W_{ij}; \theta, \pi_{ij})$. Then we can express the Hessian more succinctly as $- \left[ \sum_{i=1}^n \W_i^\top V_i (\theta) \W_i + \frac{B}{\sigma^2} \right]$.  Combining these, starting at an initial estimate, the Newton-Rhapson update given current parameter value $\hat \theta_k$ is given by
-$$
-\hat \theta_{k+1} = \hat \theta_{k} + \left[ \sum_{i=1}^n \W_i^\top V_i (\hat \theta_k) \W_i + \frac{B}{\sigma^2} \right]^{-1} \left(\sum_{i=1}^n \W_i^\top E_i (\hat \theta_k) - \frac{1}{\sigma^2} B \hat \theta_k \right)
-$$
+% We derive the iteratively re-weighted least squares algorithm next. First, take the derivative with respect to $\theta$ to construct the Hessian
+% $$
+% - \left[ \sum_{i=1}^n \sum_{j=1}^{k_i} \frac{W_{ij} W_{ij}^\top}{(1+\exp (- W_{ij} \theta - \log (\pi_{ij}) ))^2} \exp(-W_{ij} \theta - \log (\pi_{ij})) + \frac{B}{\sigma^2} \right].
+% $$
+% Define the matrix $V_i (\theta)$ be the diagonal matrix with the $(j,j)$th entry equal to $\mu(W_{ij}; \theta, \pi_{ij}) \cdot (1-\mu(W_{ij}; \theta, \pi_{ij})$. Then we can express the Hessian more succinctly as $- \left[ \sum_{i=1}^n \W_i^\top V_i (\theta) \W_i + \frac{B}{\sigma^2} \right]$.  Combining these, starting at an initial estimate, the Newton-Rhapson update given current parameter value $\hat \theta_k$ is given by
+% $$
+% \hat \theta_{k+1} = \hat \theta_{k} + \left[ \sum_{i=1}^n \W_i^\top V_i (\hat \theta_k) \W_i + \frac{B}{\sigma^2} \right]^{-1} \left(\sum_{i=1}^n \W_i^\top E_i (\hat \theta_k) - \frac{1}{\sigma^2} B \hat \theta_k \right)
+% $$
 
-To learn $\sigma^2$, we use the connection to the mixed-effects literature.
-Fixing $\theta$, the log-likelihood components related to $\sigma^2$ is given by $-\frac{1}{2\sigma^2} \theta^\top B \theta - \frac{B {\bf 1}}{2} \log (\sigma^2)$.  Differentiating and setting equal to zero yields the estimator
-$\hat \sigma^2 = \frac{\theta^\top B \theta}{B {\bf 1}}$.  The complete algorithm is then alternating between Netwon-Rhapson for fixed $\sigma^2$ to estimate $\theta$ and then estimating $\sigma^2$ for fixed $\theta$ using the above formula.
+% To learn $\sigma^2$, we use the connection to the mixed-effects literature.
+% Fixing $\theta$, the log-likelihood components related to $\sigma^2$ is given by $-\frac{1}{2\sigma^2} \theta^\top B \theta - \frac{B {\bf 1}}{2} \log (\sigma^2)$.  Differentiating and setting equal to zero yields the estimator
+% $\hat \sigma^2 = \frac{\theta^\top B \theta}{B {\bf 1}}$.  The complete algorithm is then alternating between Netwon-Rhapson for fixed $\sigma^2$ to estimate $\theta$ and then estimating $\sigma^2$ for fixed $\theta$ using the above formula.
 
-\subsection{Estimation of random-effects via Newton-Rhapson}
+% \subsection{Estimation of random-effects via Newton-Rhapson}
 
-\textcolor{red}{Assume fixed $\lambda$.}
+% \textcolor{red}{Assume fixed $\lambda$.}
 
-In standard logistic mixed-effects model, with $b_i \sim N(0, \Psi)$ and $b_i \in \mathbb{R}^q$, then the likelihood is given by
-$$
-\begin{aligned}
-& \prod_{i=1}^n \int \prod_{j=1}^{k_i} \left( \frac{\exp(W_{ij} \theta + Z_{ij} b_i + \log \pi_{ij})}{1 + \exp(W_{ij} \beta + Z_{ij} b_i + \log \pi_{ij})} \right)^{y_{ij}} \left( \frac{1}{1 + \exp(W_{ij} \beta + Z_{ij} b_i + \log \pi_{ij})} \right)^{1-y_{ij}} \phi (b_i; \sigma_b^2) db_i \\
-\propto & \prod_{i=1}^n \int \exp \left[ \sum_{j=1}^{k_i} \left( y_{ij} \left( W_{ij} \theta + Z_{ij} b_i + \log \pi_{ij} \right) - \log \left( 1 + \exp \left( W_{ij} \theta + Z_{ij} b_i + \log \pi_{ij} \right) \right) \right) - b_i^\top \Psi^{-1} b_i /2 \right] db_i \\
-\propto& \prod_{i=1}^n \int \exp \left[ g(\theta, b_i, \pi_{ij}, \Psi) \right] db_i,
-\end{aligned}
-$$
-where the second and third line ignore the constant $(2\pi)^{q/2} |\Psi|^{-1/2}$. Differentiating the function $g(\theta, b_i, \pi_{ij}, \Psi)$ with respect to $b_i$, the connection to the prior section can be used.  Re-defining terms appropriately allows us to express the derivatives as
-$$
-\begin{aligned}
-\frac{\partial g(\theta, b_i, \pi_{i}, \Psi)}{\partial b_i} &= Z_i E_i (\theta, b_i) - \Psi^{-1} b_i \\
-\frac{\partial g(\theta, b_i, \pi_{i}, \Psi)}{\partial b_i^2} &= - \left[ Z_i V_i (\theta, b_i) Z_i + \Psi^{-1} \right]
-\end{aligned}
-$$
-For fixed $\theta$, the function $g$ is stictly concave function of $b_i$ and therefore we can estimate the unique maximum $\hat b_i$ via Newton-Rhapson method as follows:
-$$
-\hat b_i^{(k+1)} = \hat b_i^{(k)} + \left[ Z_i V_i (\theta, \hat b_i^{(k)}) Z_i + \Psi^{-1} \right]^{-1}  \left( Z_i E_i (\theta, \hat b_i^{(k)}) - \Psi^{-1} \hat b_i^{(k)} \right)
-$$
+% In standard logistic mixed-effects model, with $b_i \sim N(0, \Psi)$ and $b_i \in \mathbb{R}^q$, then the likelihood is given by
+% $$
+% \begin{aligned}
+% & \prod_{i=1}^n \int \prod_{j=1}^{k_i} \left( \frac{\exp(W_{ij} \theta + Z_{ij} b_i + \log \pi_{ij})}{1 + \exp(W_{ij} \beta + Z_{ij} b_i + \log \pi_{ij})} \right)^{y_{ij}} \left( \frac{1}{1 + \exp(W_{ij} \beta + Z_{ij} b_i + \log \pi_{ij})} \right)^{1-y_{ij}} \phi (b_i; \sigma_b^2) db_i \\
+% \propto & \prod_{i=1}^n \int \exp \left[ \sum_{j=1}^{k_i} \left( y_{ij} \left( W_{ij} \theta + Z_{ij} b_i + \log \pi_{ij} \right) - \log \left( 1 + \exp \left( W_{ij} \theta + Z_{ij} b_i + \log \pi_{ij} \right) \right) \right) - b_i^\top \Psi^{-1} b_i /2 \right] db_i \\
+% \propto& \prod_{i=1}^n \int \exp \left[ g(\theta, b_i, \pi_{ij}, \Psi) \right] db_i,
+% \end{aligned}
+% $$
+% where the second and third line ignore the constant $(2\pi)^{q/2} |\Psi|^{-1/2}$. Differentiating the function $g(\theta, b_i, \pi_{ij}, \Psi)$ with respect to $b_i$, the connection to the prior section can be used.  Re-defining terms appropriately allows us to express the derivatives as
+% $$
+% \begin{aligned}
+% \frac{\partial g(\theta, b_i, \pi_{i}, \Psi)}{\partial b_i} &= Z_i E_i (\theta, b_i) - \Psi^{-1} b_i \\
+% \frac{\partial g(\theta, b_i, \pi_{i}, \Psi)}{\partial b_i^2} &= - \left[ Z_i V_i (\theta, b_i) Z_i + \Psi^{-1} \right]
+% \end{aligned}
+% $$
+% For fixed $\theta$, the function $g$ is stictly concave function of $b_i$ and therefore we can estimate the unique maximum $\hat b_i$ via Newton-Rhapson method as follows:
+% $$
+% \hat b_i^{(k+1)} = \hat b_i^{(k)} + \left[ Z_i V_i (\theta, \hat b_i^{(k)}) Z_i + \Psi^{-1} \right]^{-1}  \left( Z_i E_i (\theta, \hat b_i^{(k)}) - \Psi^{-1} \hat b_i^{(k)} \right)
+% $$
 
-Fixing $\hat b_i$, we then need to estimate $\Psi$ and $\theta$. Here we employ adaptive gaussian quadrature (cites) as it has been shown that for infrequent events the Laplace approximation tends to underestimate effects (cites).  Let $R_i^\top R_i = Z_i^\top V_i (\theta, b_i) Z_i + \Psi^{-1}$, $z_j$ and $w_j$ for $j=1,\ldots, N_{GQ}$ be the weights for the one-dimensional Gaussian quadrature rule.  Let $\z_\k = (z_{k_1},\ldots, z_{k_q})$, $\tilde b_{i \k} = \hat b_i + R_i^{-1} \z_\k$, and $W_{\k} = \exp ( \| \z_\k \|^2 ) \prod_{l=1}^{q} w_{k_l}$.  Then the AGQ rule is given by
-$$
-\begin{aligned}
-&\int \exp \left[ g(\theta, b_i, \pi_{i}, \Psi) \right] db_i \\
-=& \int | R_i |^{-1} \exp \left[ g(\theta, \hat b_i + R_i^{-1} \z, \pi_{i}, \Psi) + \| \z \|^2 / 2 \right] \exp ( - \| \z \|^2 / 2 ) d\z \\
-=& (2 \pi)^{q/2} | R_i |^{-1} \sum_{j_1 =1}^{N_{GQ}} \cdots \sum_{j_q =1}^{N_{GQ}} \exp \left[ g(\theta, \tilde b_{i \k}, \pi_{i}, \Psi) \right] W_{\k}
-\end{aligned}
-$$
-The score equations
-$$
-\sum_{j_1 =1}^{N_{GQ}} \cdots \sum_{j_q =1}^{N_{GQ}}
-\left( \sum_{j_1 =1}^{N_{GQ}} \cdots \sum_{j_q =1}^{N_{GQ}} \exp \left[ g(\theta, \tilde b_{i \k}, \pi_{i}, \Psi) \right] W_{\k} \right)^{-1}
-\left( \exp \left[ g(\theta, \tilde b_{i \k}, \pi_{i}, \Psi) \right] W_{\k} \right) \frac{\partial}{\partial \theta} g(\theta, \tilde b_{i \k}, \pi_i, \Psi)
-$$
-Define $\omega(\theta, \tilde b_{i \k}, \pi_i, \Psi)$ to be the weights.  Then we can express score and Hessian as:
-$$
-\begin{aligned}
-&\sum_{\k} \omega(\theta, \tilde b_{i \k}, \pi_i, \Psi) \cdot \frac{\partial}{\partial \theta} g(\theta, \tilde b_{i \k}, \pi_i, \Psi) \\
-&\sum_{\k}
-\omega(\theta, \tilde b_{i \k}, \pi_i, \Psi) \cdot \frac{\partial^2}{\partial \theta \partial \theta^\top} g(\theta, \tilde b_{i \k}, \pi_i, \Psi) +
-\sum_{\k} \omega(\theta, \tilde b_{i \k}, \pi_i, \Psi) \cdot \left [\frac{\partial}{\partial \theta} g(\theta, \tilde b_{i \k}, \pi_i, \Psi) \right] \left [\frac{\partial}{\partial \theta} g(\theta, \tilde b_{i \k}, \pi_i, \Psi) \right]^\top \\
-&- \left[ \sum_{\k} \omega(\theta, \tilde b_{i \k}, \pi_i, \Psi) \frac{\partial}{\partial \theta} g(\theta, \tilde b_{i \k}, \pi_i, \Psi) \right] \left[ \sum_{\k} \omega(\theta, \tilde b_{i \k}, \pi_i, \Psi) \frac{\partial}{\partial \theta} g(\theta, \tilde b_{i \k}, \pi_i, \Psi) \right]^\top
-\end{aligned}
-$$
+% Fixing $\hat b_i$, we then need to estimate $\Psi$ and $\theta$. Here we employ adaptive gaussian quadrature (cites) as it has been shown that for infrequent events the Laplace approximation tends to underestimate effects (cites).  Let $R_i^\top R_i = Z_i^\top V_i (\theta, b_i) Z_i + \Psi^{-1}$, $z_j$ and $w_j$ for $j=1,\ldots, N_{GQ}$ be the weights for the one-dimensional Gaussian quadrature rule.  Let $\z_\k = (z_{k_1},\ldots, z_{k_q})$, $\tilde b_{i \k} = \hat b_i + R_i^{-1} \z_\k$, and $W_{\k} = \exp ( \| \z_\k \|^2 ) \prod_{l=1}^{q} w_{k_l}$.  Then the AGQ rule is given by
+% $$
+% \begin{aligned}
+% &\int \exp \left[ g(\theta, b_i, \pi_{i}, \Psi) \right] db_i \\
+% =& \int | R_i |^{-1} \exp \left[ g(\theta, \hat b_i + R_i^{-1} \z, \pi_{i}, \Psi) + \| \z \|^2 / 2 \right] \exp ( - \| \z \|^2 / 2 ) d\z \\
+% =& (2 \pi)^{q/2} | R_i |^{-1} \sum_{j_1 =1}^{N_{GQ}} \cdots \sum_{j_q =1}^{N_{GQ}} \exp \left[ g(\theta, \tilde b_{i \k}, \pi_{i}, \Psi) \right] W_{\k}
+% \end{aligned}
+% $$
+% The score equations
+% $$
+% \sum_{j_1 =1}^{N_{GQ}} \cdots \sum_{j_q =1}^{N_{GQ}}
+% \left( \sum_{j_1 =1}^{N_{GQ}} \cdots \sum_{j_q =1}^{N_{GQ}} \exp \left[ g(\theta, \tilde b_{i \k}, \pi_{i}, \Psi) \right] W_{\k} \right)^{-1}
+% \left( \exp \left[ g(\theta, \tilde b_{i \k}, \pi_{i}, \Psi) \right] W_{\k} \right) \frac{\partial}{\partial \theta} g(\theta, \tilde b_{i \k}, \pi_i, \Psi)
+% $$
+% Define $\omega(\theta, \tilde b_{i \k}, \pi_i, \Psi)$ to be the weights.  Then we can express score and Hessian as:
+% $$
+% \begin{aligned}
+% &\sum_{\k} \omega(\theta, \tilde b_{i \k}, \pi_i, \Psi) \cdot \frac{\partial}{\partial \theta} g(\theta, \tilde b_{i \k}, \pi_i, \Psi) \\
+% &\sum_{\k}
+% \omega(\theta, \tilde b_{i \k}, \pi_i, \Psi) \cdot \frac{\partial^2}{\partial \theta \partial \theta^\top} g(\theta, \tilde b_{i \k}, \pi_i, \Psi) +
+% \sum_{\k} \omega(\theta, \tilde b_{i \k}, \pi_i, \Psi) \cdot \left [\frac{\partial}{\partial \theta} g(\theta, \tilde b_{i \k}, \pi_i, \Psi) \right] \left [\frac{\partial}{\partial \theta} g(\theta, \tilde b_{i \k}, \pi_i, \Psi) \right]^\top \\
+% &- \left[ \sum_{\k} \omega(\theta, \tilde b_{i \k}, \pi_i, \Psi) \frac{\partial}{\partial \theta} g(\theta, \tilde b_{i \k}, \pi_i, \Psi) \right] \left[ \sum_{\k} \omega(\theta, \tilde b_{i \k}, \pi_i, \Psi) \frac{\partial}{\partial \theta} g(\theta, \tilde b_{i \k}, \pi_i, \Psi) \right]^\top
+% \end{aligned}
+% $$
 
 
 
-When $N_{GQ} = 1$, the AGQ approximation is equivalent to a Laplacian approximation.
-
+% When $N_{GQ} = 1$, the AGQ approximation is equivalent to a Laplacian approximation.
 
 \section{Optimal weights}
 
 \begin{proof}[Proof of Proposition~\ref{prop:optimal}]
-The above proof establishes asymptotic normality for all
-The main additional assumption is
+The proof follows closely from~\cite{Rathbun2012} and~\cite{Ferreira82}.  Revisiting the central limit theorem above, we can see that for any weights~$w(s; \theta_0)$ that the asymptotic normality is guaranteed with the asymptotic variance $\Sigma(\theta_0; w) := \Xi(\theta_0; w)^{-1} V(\theta_0; w) \Xi(\theta_0; w)^{-1}$ where
+$$
+V(\theta_0; w) = \int_0^\tau w^2 (s; \theta_0) \frac{h^{(1)}(s; \theta_0) [h^{(1)} (s;\theta_0)]^\top}{h (s;\theta_0)} \left[ \frac{\pi (s) + h(s;\theta_0)}{\pi (s)} \right] ds
+$$
+and dependence on $w$ is made explicit for ease of comprehension.
+To prove optimality of our particular weight choice we study a standardized set of estimating equations~$\Xi (\theta; w)^{-1} U_n (\theta; w)$.  Let $w^\star$ denote the Waagepeterson weights from~\eqref{eq:waage_weights}.  Then consider the covariance of estimators using the standardized estimating equations with weights $w$ and $w^\star$ respectively. Based on the asymptotic normality arguments above, the covariance will have a similar sandwich form $\Xi (\theta_0; w)^{-1} \cov (\theta_0; w,w^\star) \Xi(\theta_0; w^\star)^{-1}$ where the middle term is given by
+\begin{align*}
+&\int_0^\tau w(s;\theta_0) w^\star (s; \theta_0) \frac{h^{(1)}(s; \theta_0) [h^{(1)} (s;\theta_0)]^\top}{h (s;\theta_0)} \left[ \frac{\pi (s) + h(s;\theta_0)}{\pi (s)} \right] ds \\
+=&\int_0^\tau w(s;\theta_0) \frac{h^{(1)}(s; \theta_0) [h^{(1)} (s;\theta_0)]^\top}{h (s;\theta_0)} ds \\
+&= \Xi (\theta_0; w).
+\end{align*}
+This implies the covariance is equal to $\Xi(\theta_0; w^\star)^{-1}$.  Optimality is defined as the difference in variances being positive semi-definite.  This can now be easily shown by considering the stacked estimating equations variance which is positive semi-definite by definition.  For any~$\alpha \in \mathbb{R}^{p}$,
+\begin{align*}
+0 &\leq \left( \alpha^\top - \alpha^\top \right)
+\left( \begin{array}{c c} \Sigma(\theta_0; w) & \Xi (\theta_0; w^\star)^{-1} \\ \Xi(\theta_0; w^\star)^{-1} & \Xi (\theta_0; w^\star)^{-1} \end{array} \right)
+\left( \begin{array}{c} \alpha & - \alpha \end{array} \right)\\
+&= \alpha^\top \left( \Sigma(\theta_0; w) - \Xi (\theta_0; w^\star)^{-1} \right) \alpha.
+\end{align*}
+which demonstrates optimality of the Waagepetersen weights from~\eqref{eq:waage_weights}.
 
-The argument
+Uniqueness is not guaranteed by the above.  Let $w$ be another estimator with minimal variance.  Then define the estimating equation $\tilde U_n (
+\theta; w) - \tilde U_n (\theta; w^\star)$.  By definition of the estimating equations, the difference is simply another estimation equation of the same weighted form with different weights~$w_1$. Thus, under the standardized set of estimating equations we have the variance is equal to
+$\Sigma (\theta; w_1) = \Sigma (\theta; w) - \Sigma(\theta; w^\star)$,
+but $\Sigma (\theta; w^\star) - \Sigma(\theta; w)$ is non-negative definite by the above argument.  This implies~$\Sigma(\theta;w_1) = 0$ and thus the two standardized estimating equations are equivalent.  Thus, there exists a non-singular linear transformation (specifically, $\Xi (\theta_0; w) \Xi (\theta_0; w^\star)^{-1}$) that maps the estimating equations $U(\theta;w^\star)$ to those of the other optimal estimating equations~$U(\theta; w)$.
 
 \end{proof}
 
@@ -984,6 +1028,29 @@ $\Delta=$ & & 0.5 & 1 & 2 & 4 \\ \hline
 \label{tab:appmise}
 \end{table}
 
+\section{Summary of missing data for the case study}
+\label{app:csmissing}
+
+Here we present missing data information for electrodermal EDA and activity index.  Figure~\ref{fig:missing_eda} and~\ref{fig:missing_acc} presents the patient average fractino of missing EDA and AI data in 30-minute windows respectively. We see that the missingness levels vary by individual and are on average higher for EDA than AI.
+
+
+\begin{figure}[!th]
+\centering
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{../figures/missing_data_eda.png}
+  \caption{Electrodermal activity (EDA)}
+  \label{fig:missing_eda}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{../figures/missing_data_ai.png}
+  \caption{Activity Index (AI)
+}  \label{fig:missing_acc}
+\end{subfigure}
+\caption{Patient average fraction missingness in 30-minute windows.}
+\label{fig:mean_edacc}
+\end{figure}
 
 \end{document}
 
