@@ -244,7 +244,7 @@ The event times~$T_i$ depend heavily on the event intensity function~$h_i (t;\th
 We have added mean and covariance functions to the supplementary materials as suggested.  The plots demonstrate distinct behavior in the means for $y=0$ and $y=1$; while the covariance functions are XXXX.
 \vspace{5mm}
 
-\item {\it Page 9, line 6, isn’t the integral in (2) $\int_{t-\Delta}^t X(s) \beta(s)ds$? The whole development assumes the integral to be $\int_{t-\Delta}^t X(t−s) \beta(s)ds$. The interpretation of the coefficient function $\beta()$ would be different for two cases. Please clarify.}
+\item {\it Page 9, line 6, isn’t the integral in (2) $\int_{t-\Delta}^t X(s) \beta(s)ds$? The whole development assumes the integral to be $\int_{t-\Delta}^t X(t-s) \beta(s)ds$. The interpretation of the coefficient function $\beta()$ would be different for two cases. Please clarify.}
 
 \vspace{5mm}
 We apologize for the confusion.  In Section 3.1, we started by defining the double-indexed $X(t,s)$ to be equal to $X(t-s)$ in order to make the notation a bit cleaner but we see that this has added confusion.  We not add a remark to make this more clear.  The reason for the notation was that writing $X(t,s)$ allows us to write the integrals over $0$ to $\Delta$ rather than having to constantly index integrals by $t$.  Moreover, we thought it helps the reader to understand we are saying ``the process $s$ units prior to time~$t$.''
@@ -322,7 +322,7 @@ uncongenial comes from Meng. We cite and provide a short formal definition with 
 turning up. Add longer history to both the Figures.
 
 
-\item {\it Doesn’t Figure 3 suggest smaller ∆?}
+\item {\it Doesn’t Figure 3 suggest smaller $\Delta$?}
 
 \vspace{5mm}
 We agree.  We re-run the analysis with a window length of 15 minutes as well and move the current analysis as a sensitivity to the supplementary materials.
@@ -341,12 +341,14 @@ As this was illustrative we only included time-of-day.
 
 {\bf Response to Reviewer \#2}
 
-I am incredibly grateful for this review.  I agree that the paper has evolved beyond the current title.  This was not updated in the prior submission simply to ensure continuity of presentation (i.e., didn't want to change from first submission).  Here we replace with the title ``Addressing selection bias and measurement error in COVID-19 case count data using auxiliary information''.  We next address the reviewers specific comments.
+I am incredibly grateful for this review.  I am very happy that the referee found that this paper makes a nice contribution to the field of functional data; we, of course, agree. The application was what drove this methodology so we are also happy to hear that the referee found the application interesting. We next address the reviewers specific comments.
 
 \begin{enumerate}
-\item {\it The paper states some facts about the SARS-CoV-2 virus that are outdated, for example “Upon infection with SARS-CoV-2, an incubation period starts and lasts approximately five days [Lauer et al., 2020] before the viral load is high enough to be detected.” (Page 5). Lauer was based on the original
-strain, we see different disease dynamics with the delta strain. Perhaps to be more precise, the author could clarify that this is an example of the original SARS-CoV-2 incubation rather than definitative as there will likely be future variants that will change this further. Similarly, on page 13, the serial
-interval of 7 is stated as fact – this is again based on the original strain rather than the current disease dynamics. Stating these numbers as an example rather than definitive would be preferable, I believe.}
+\item {\it There exists a good amount of recent efforts modeling event data with functional data predictor or joint modeling, so a literature review on relevant papers would be useful. See, for example, papers by Dr. Ciprian Crainiceanu from Johns Hopkins, Dr. Sheng Luo from Duke, and Dr. Jiguo Cao from Simon Fraser.}
+
+\vspace{5mm}
+XXXXXX.
+We added Section XX to describe the related work and connect our methodology to the existing literature.
 \vspace{5mm}
 \end{enumerate}
 
