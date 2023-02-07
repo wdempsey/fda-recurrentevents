@@ -173,6 +173,26 @@ The goal of this paper is two-fold: (1) to discuss the appropriate choice of sta
 
 \subsection{Related work}
 
+The use of smart devices and other wearables to passively monitor patients has led to a rapid increase in the number of studies with high-frequency sensor streams that can be conceptualized as studies where measurements are functions.
+The development of such applications have been accompanied by intense methodological development in regression models where some covariates are functions.  In this article, we devleop a novel inferential approach to functional regression~\citep{James2002,JamesSilverman2005,muller2005,Ramsay2005,kokoszka2017,doi:10.1198/jasa.2009.tm08564,doi:10.1198/016214507000000527}.
+
+Recently, modeling time-to-event data with functional predictors has received a fair bit of attention.  Functional linear Cox regression model (FLCRM) considers the association between a time-to-event and a set of functional~$\{ X(s) \}$ and scalar predictors~$Z \in \mathbb{R}^p$~\citep{https://doi.org/10.1111/biom.12748}. In this setting, the functional and scalar predictors are observed at baseline and the hazard function depends on a non-parametric baseline, a functional linear model~$\int_S X(s) \beta(s)ds$ and a linear model for the baseline scalar predictors~$Z^\top \gamma$.
+Since the linear assumption may be too restrictive,~\cite{doi:10.1080/10618600.2020.1853550} consider a more flexible additive functional Cox model for multivariate functional predictors in which the hazard depends on $\int  F \{s, h_{is}[X_i (s)]\} ds$ where $F$ is an unspecified bivariate twice differntiable function.
+
+In our setting, the high frequency sensor process is an outcome and must therefore be jointly modelled with the time-to-event process.  Recently, \cite{Li2022} proposed a functional approach to joint modelling of multivariate longitudinal biomarkers and a time-to-event outcome~\cite{Tsiatis2004,Rizopoulos2010}.  Here, as in traditional joint models, the longitudinal biomarker is observed at only a few observation times (typically $<10$) and is modelled via a functional principal components analysis.   Shared  process  of  to identify the shared progression pattern and outcome-specific progression patterns of the outcomes.
+
+Here a design-based perspective is taken which subsamples non-event times to  avoid some of the computationally demanding aspects of joint models
+Subsampling in the context of functional data analysis for massive data has recently been investigated~\cite{https://doi.org/10.48550/arxiv.2104.03446} in which a functional L-optimality criterion is derived.
+
+
+The use of historical functional linear models....
+
+The main contribution of this paper is to combine advances in historical functional linear models with techniques from design-based inference to circumvent computationally challenging joint models.
+
+The combination leads to a natural penalized generalized linear model that can be estimated with off-the-shelf software.
+
+
+
 \section{Recurrent event process and associated high frequency data}
 
 Suppose $n$ subjects are independently sampled with observed event times~$\bfT_{i} = \{ T_{i,1}, \ldots, T_{i,k_i}\}$ over some observation window $[0, \tau_i]$ for each subject $i = 1,\ldots, n$.  Assume the event times are ordered, i.e., $T_{i,j} < T_{i,j^\prime}$ for $j < j^\prime$. The observation window length, $\tau_i$, is the censoring time and is assumed independent of the event process. Let~$N_{i} (t)$ denote the associated counting process of $\bfT_{i}$; that is, $N_i (t) = \sum_{j=1}^{k_i} 1 [ T_{i,j} < t ]$. In this section, we assume a single-dimensional health process~$\bfx_i = \{ x_i (s) \}_{0 < s < \tau_i}$ for each participant is measured at a dense grid of time points.  Accelerometer, for example, is measured at a rate of 32Hz (i.e., $32$ times per second). Electrodermal activity (EDA), on the other hand, is measured at a rate of 4Hz (i.e., 4 times per second).  Given the high frequency nature of sensor data, this paper assumes the process is measured continuously.
