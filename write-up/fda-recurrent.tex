@@ -216,22 +216,6 @@ where~$h_0(t;\gamma)$ is a parametrized baseline hazard function,~$\Delta$ is an
 
 An alternative to~\eqref{eq:hazardlinear} would be to construct features from the sensor data history~$f_t ( H_{i,t}^{X}) \in \mathbb{R}^q$ and incorporated these features in the place of the final term. Our current approach builds linear features of~$H_{i,t}^X$ directly from the integrated history, avoiding the feature construction problem -- a highly nontrivial issue for high frequency time-series data.  The main caveat is the additional parameter~$\Delta$; however, as long as the estimated~$\hat \Delta$ exceeds~$\Delta$, then resulting estimation is unbiased albeit at a loss of efficiency.  Moreover, sensitivity analysis can be performed to determine how choice of $\hat \Delta$ affects inference.  One limitation of the approach presented here is that only fully parametric hazard models may be fit to the data. However, a spline model for the log baseline hazard affords sufficient model flexibility.
 
-\subsection{Measurement-error models with event processes}
-\label{section:memproblems}
-
-One potential criticism for~\eqref{eq:hazard} is that the health process may be measured with error. A common mathematical strategy for joint models is to consider an unobservable, latent process~$\eta_i$ such that~$\bfT_i \indep x_i \given \eta_i$, i.e., the two processes are conditionally independent given the latent trajectory. For example, take~$\eta_i$ to be a zero-mean Gaussian process with
-\begin{equation}\label{eq:jm}
-x_i(t) = \eta_i (t) + \epsilon_i (t),\quad \text{ and } \log h_i (t
-\given \eta ) = \log h_0 (t) + g_t \left( H_{i,t}^N \right)^{\prime}
-\alpha + \int_{t-\Delta}^t \eta_i (s) \beta (s) ds
-\end{equation}
-where~$\epsilon_i(t)$ is a white-noise measurement error term. Thus, $\eta_i (t)$ is the ``true and unobserved value of the longitudinal outcome'' \citep[Sec. 2.1, pp.3]{Rizopoulos2010}. The conditional survival function of the $j$th event~$T_j$ given~$\bfx_i$ and all prior events~$\bfT_{-j} := \{ T_1, \ldots, T_{j-1} \}$ is
-\[
-\pr \left ( T_j > t+s \Given \H_{i,\tau_i}^X, \bfT_{-j} = \bft_{-j}, T_j > t \right) = E \left( - \exp \left( \int_{t}^{t+s} h_i (u \given \eta ) du \right) \Given \bfx_i, \bfT_{-j} = \bft_{-j} \right),
-\]
-where the expectation is a Gaussian integral, albeit infinite-dimensional.  For most choices of covariance structure, if the white-noise error term is non-zero then the above calculation will show the conditional survival function depends not only on past $x$-values, but also on future $x$-values, i.e.,~$\bfx$ and~$\bfT$ do not satisfy \emph{independent evolution}~\citep{DempseyPMCC2}. This is quite unnatural, as~\eqref{eq:jm} suggests the instantaneous risk of an event at time~$t$ depends on future values of the sensor process. To ensure independent evolution, we set~$\epsilon (t) \equiv 0$ and treat~$\bfx_i$ as a Gaussian process measured without a white-noise error term.
-Our procedure will only rely on the Gaussian assumption when~$\bfx$ is not fully observed; see Section~\ref{section:missingdata} for details on handling of missing data.
-
 \subsection{Likelihood calculation}
 
 For the sake of notational simplicity, we leave the dependency of the conditional hazard function on~$H_{i,t}^{NX}$ implicit, and write~$h_i (t; \theta)$. The component of the log-likelihood related to the event process is then given by
@@ -551,7 +535,7 @@ $\Delta=$ & & 0.5 & 1 & 2 & 4 \\ \hline
   & P-MISE & 0.473 & 0.470 & 0.469 & 0.470 \\\hline
 \end{tabular}
 \caption{Mean-integrated squared error (MISE), variance, and partial MISE as a function of $\Delta^\star$ and sampling rate when true $\Delta = 32$ minutes.}
-\label{tab:mise}
+\label{tab:mise_delta}
 \end{table}
 
 \subsection{Computational comparison to alternative methods} \label{section:simcomparisons}
@@ -689,8 +673,6 @@ Here, we focus on two physiological processes -- (1) electrodermal activity (EDA
 }  \label{fig:mean_acc}
 \end{subfigure}
 \caption{Average scaled EDA and AI in the 30 minutes prior to button presses}
-\label{Reduced Rank Mixed Effects Models for Spatially Correlated Hierarchical Functional Data
-}
 \label{fig:mean_edacc}
 \end{figure}
 
@@ -1100,7 +1082,7 @@ In this paper, we have presented a methodology for translating a difficult funct
 % }  \label{fig:missing_acc}
 % \end{subfigure}
 % \caption{Patient average fraction missingness in 30-minute windows.}
-% \label{fig:mean_edacc}
+% \label{fig:mean_edacc2}
 % \end{figure}
 
 \end{document}

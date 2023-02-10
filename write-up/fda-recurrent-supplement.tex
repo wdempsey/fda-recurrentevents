@@ -168,6 +168,23 @@ Section~\ref{app:extrasims} contains additional simulations and case study detai
 
 \appendix
 
+\section{Measurement-error models with event processes}
+\label{section:memproblems}
+
+One potential criticism for~\eqref{eq:hazard} is that the health process may be measured with error. A common mathematical strategy for joint models is to consider an unobservable, latent process~$\eta_i$ such that~$\bfT_i \indep x_i \given \eta_i$, i.e., the two processes are conditionally independent given the latent trajectory. For example, take~$\eta_i$ to be a zero-mean Gaussian process with
+\begin{equation}\label{eq:jm}
+x_i(t) = \eta_i (t) + \epsilon_i (t),\quad \text{ and } \log h_i (t
+\given \eta ) = \log h_0 (t) + g_t \left( H_{i,t}^N \right)^{\prime}
+\alpha + \int_{t-\Delta}^t \eta_i (s) \beta (s) ds
+\end{equation}
+where~$\epsilon_i(t)$ is a white-noise measurement error term. Thus, $\eta_i (t)$ is the ``true and unobserved value of the longitudinal outcome'' \citep[Sec. 2.1, pp.3]{Rizopoulos2010}. The conditional survival function of the $j$th event~$T_j$ given~$\bfx_i$ and all prior events~$\bfT_{-j} := \{ T_1, \ldots, T_{j-1} \}$ is
+\[
+\pr \left ( T_j > t+s \Given \H_{i,\tau_i}^X, \bfT_{-j} = \bft_{-j}, T_j > t \right) = E \left( - \exp \left( \int_{t}^{t+s} h_i (u \given \eta ) du \right) \Given \bfx_i, \bfT_{-j} = \bft_{-j} \right),
+\]
+where the expectation is a Gaussian integral, albeit infinite-dimensional.  For most choices of covariance structure, if the white-noise error term is non-zero then the above calculation will show the conditional survival function depends not only on past $x$-values, but also on future $x$-values, i.e.,~$\bfx$ and~$\bfT$ do not satisfy \emph{independent evolution}~\citep{DempseyPMCC2}. This is quite unnatural, as~\eqref{eq:jm} suggests the instantaneous risk of an event at time~$t$ depends on future values of the sensor process. To ensure independent evolution, we set~$\epsilon (t) \equiv 0$ and treat~$\bfx_i$ as a Gaussian process measured without a white-noise error term.
+Our procedure will only rely on the Gaussian assumption when~$\bfx$ is not fully observed; see Section~\ref{section:missingdata} for details on handling of missing data.
+
+
 \section{Derivation of the design-unbiased score equations}
 \label{app:prooflemma31}
 
