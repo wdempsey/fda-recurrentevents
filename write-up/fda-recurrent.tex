@@ -147,6 +147,8 @@
 \DeclareMathOperator*{\argmin}{arg\,min}
 \mathchardef\mhyphen="2D
 % display breaks
+\newenvironment{newmaterial}{\par\color{blue}}{\par}
+
 
 \begin{document}
 
@@ -173,27 +175,26 @@ The goal of this paper is two-fold: (1) to discuss the appropriate choice of sta
 
 \subsection{Related work}
 
-The use of smart devices and other wearables to passively monitor patients has led to a rapid increase in the number of studies with high-frequency sensor streams that can be conceptualized as studies where measurements are functions.
-The development of such applications have been accompanied by intense methodological development in regression models where some covariates are functions.  In this article, we devleop a novel inferential approach to functional regression~\citep{James2002,JamesSilverman2005,muller2005,Ramsay2005,kokoszka2017,doi:10.1198/jasa.2009.tm08564,doi:10.1198/016214507000000527}.
+\begin{newmaterial}
+The use of smart devices and other wearables to passively monitor patients has led to a rapid increase in the number of studies with high-frequency sensor streams that can be conceptualized as studies measurements are functions.
+The development of such applications have been accompanied by intense methodological development in regression models with functional covariates~\citep{James2002,JamesSilverman2005,muller2005,Ramsay2005,kokoszka2017,doi:10.1198/jasa.2009.tm08564,doi:10.1198/016214507000000527}.
 
-Recently, modeling time-to-event data with functional predictors has received a fair bit of attention.  Functional linear Cox regression model (FLCRM) considers the association between a time-to-event and a set of functional~$\{ X(s) \}$ and scalar predictors~$Z \in \mathbb{R}^p$~\citep{https://doi.org/10.1111/biom.12748}. In this setting, the functional and scalar predictors are observed at baseline and the hazard function depends on a non-parametric baseline, a functional linear model~$\int_S X(s) \beta(s)ds$ and a linear model for the baseline scalar predictors~$Z^\top \gamma$.
-Since the linear assumption may be too restrictive,~\cite{doi:10.1080/10618600.2020.1853550} consider a more flexible additive functional Cox model for multivariate functional predictors in which the hazard depends on $\int  F \{s, h_{is}[X_i (s)]\} ds$ where $F$ is an unspecified bivariate twice differntiable function.
+Recently, modelling time-to-event data with functional covariates has received a fair bit of attention.  The functional linear Cox regression model (FLCRM) considers the association between a time-to-event and a set of functional~$\{ X(s) \}$ and scalar predictors~$Z \in \mathbb{R}^p$~\citep{https://doi.org/10.1111/biom.12748}. In this setting, the functional and scalar predictors are observed at baseline and the hazard function satisfies the proportional hazards assumption and involves a non-parametric baseline hazard with the exponential adjustment including both a functional linear model~$\int_S X(s) \beta(s)ds$ and a linear model for the baseline scalar predictors~$Z^\top \gamma$.
+Since the linear assumption may be too restrictive,~\cite{doi:10.1080/10618600.2020.1853550} consider a more flexible additive functional Cox model for multivariate functional predictors in which the hazard depends on $\int  F \{s, h_{is}[X_i (s)]\} ds$ where $F$ is an unspecified bivariate twice differentiable function.
 
-In our setting, the high frequency sensor process is an outcome and must therefore be jointly modelled with the time-to-event process.  Recently, \cite{Li2022} proposed a functional approach to joint modelling of multivariate longitudinal biomarkers and a time-to-event outcome~\cite{Tsiatis2004,Rizopoulos2010}.  Here, as in traditional joint models, the longitudinal biomarker is observed at only a few observation times (typically $<10$) and is modelled via a functional principal components analysis.   Shared  process  of  to identify the shared progression pattern and outcome-specific progression patterns of the outcomes.
+In our setting, the high frequency sensor process is an outcome and must therefore be jointly modelled with the recurrent event process.  Recently, \cite{Li2022} proposed a functional approach to joint modelling of multivariate longitudinal biomarkers and a time-to-event outcome~\cite{Tsiatis2004,Rizopoulos2010}.  Here, as in traditional joint models, the longitudinal biomarker is observed at only a few observation times (typically on the order of tens of observations) and is modelled via a functional principal components analysis.  The eigenscores are the shared parameters across the longitudinal and survival submodels.  A similar joint model was proposed in~\cite{Dong2021}.  Inference proceeds by Monte Carlo EM which can require very large Monte Carlo sample size to ensure good performance, and na{\"i}ve implementation may not recover EM's ascent property~\cite{Caffo2005}.
 
-Here a design-based perspective is taken which subsamples non-event times to  avoid some of the computationally demanding aspects of joint models
-Subsampling in the context of functional data analysis for massive data has recently been investigated~\cite{https://doi.org/10.48550/arxiv.2104.03446} in which a functional L-optimality criterion is derived.
+In this paper, we also consider joint modelling of recurrent events and a high frequency sensor process. In contrast to traditional longitudinal biomarkers, sensor processes are observed multiple times per second leading to thousand and/or millions of observations per individual rather.  To address this increase in scale, a design-based perspective is taken in which we subsample non-event times to avoid some of the computationally demanding aspects of joint models.  Subsampling in the context of functional data analysis for massive data has recently been investigated~\citep{https://doi.org/10.48550/arxiv.2104.03446} in which a functional L-optimality criterion is derived. Subsampling is different in our current context, as our goal is to subsample from the individual sensor processes to produce a design-unbiased estimate of the cumulative hazard function.  Finally, traditional joint modeling often consider the hazard function to depend on the current or cumulative value of the health process~\citep{Li2022,Rizopoulos2010}. For high frequency sensor processes, we expect the hazard function to only depend on the recent sensor history; to do so, we use recent history functional linear models~\cite{KIM20111554}.  We combine these models with advances in longitudinal functional data analysis~\citep{Staicu2010} and penalized functional regression~\citep{Goldsmith2015} to perform scalable inference using off-the-shelf software.
 
+\section{Main contributions and outline}
 
-The use of historical functional linear models....
+The original contributions of this paper are three-fold.  In Section~\ref{section:modeloverview}, we define our joint model using historical functional linear models, and demonstrate how techniques from design-based inference can be used to circumvent computational challenges of joint modelling.
+In Section~\ref{section:longfpc}, we discuss longitudinal functional principal components analysis and demonstrate in Lemma~\ref{lemma:logistic} that the resulting approximate score equations are equivalent to score functions for logistic regression with binary response and an offset related to the subsampling rate meaning our proposed approach can be fit using off-the-shelf software.  An asymptotic analysis is presented in Section~\ref{section:theory}, with an accompanying discussion of the novel computational versus statistical efficiency tradeoff in Section~\ref{section:tradeoff}.   Section~\ref{section:simstudy} presents a simulation study to demonstrate the impact of subsampling rates, the window length parameter, and a computational comparison to existing methods.  Section~\ref{eq:jm} presents a multivariate extension as well as a method to handle missing data.  We end by illustrating our approach using data from a digital monitoring study of suicidal ideation in Section~\ref{section:example}.
 
-The main contribution of this paper is to combine advances in historical functional linear models with techniques from design-based inference to circumvent computationally challenging joint models.
-
-The combination leads to a natural penalized generalized linear model that can be estimated with off-the-shelf software.
-
-
+\end{newmaterial}
 
 \section{Recurrent event process and associated high frequency data}
+\label{section:modeloverview}
 
 Suppose $n$ subjects are independently sampled with observed event times~$\bfT_{i} = \{ T_{i,1}, \ldots, T_{i,k_i}\}$ over some observation window $[0, \tau_i]$ for each subject $i = 1,\ldots, n$.  Assume the event times are ordered, i.e., $T_{i,j} < T_{i,j^\prime}$ for $j < j^\prime$. The observation window length, $\tau_i$, is the censoring time and is assumed independent of the event process. Let~$N_{i} (t)$ denote the associated counting process of $\bfT_{i}$; that is, $N_i (t) = \sum_{j=1}^{k_i} 1 [ T_{i,j} < t ]$. In this section, we assume a single-dimensional health process~$\bfx_i = \{ x_i (s) \}_{0 < s < \tau_i}$ for each participant is measured at a dense grid of time points.  Accelerometer, for example, is measured at a rate of 32Hz (i.e., $32$ times per second). Electrodermal activity (EDA), on the other hand, is measured at a rate of 4Hz (i.e., 4 times per second).  Given the high frequency nature of sensor data, this paper assumes the process is measured continuously.
 
@@ -279,8 +280,9 @@ The approximate score equations given by~\eqref{eq:approxscore} arise in design-
 
 \section{Longitudinal functional principal components within
   event-history analysis}
+  \label{section:longfpc}
 
-Probabilistic subsampling converts the single sensor stream~$\bfx_i$ into a sequence of functions observed repeatedly at sampled times~$\bfD_i$ and event times~$\bfT_i$ over windows of length~$\Delta$. Such a data structure is commonly referred to as \emph{longitudinal functional data}~\citep{Xiao2013, GoldSmith2015}. Given the large increase in longitudinal functional data in recent years, corresponding analysis has received much recent attention~\citep{Morris2003, MorrisCarroll2006, Baladandayuthapani2008, Di2009, Greven2010, Staicu2010, ChenMuller2012, LiGuan2014}. Here, we combine work by~\cite{Park2018} and~\cite{Goldsmith2011} to construct a computationally efficient penalized functional method for solving the estimation equations~$\hat U_n (\theta)$.
+Probabilistic subsampling converts the single sensor stream~$\bfx_i$ into a sequence of functions observed repeatedly at sampled times~$\bfD_i$ and event times~$\bfT_i$ over windows of length~$\Delta$. Such a data structure is commonly referred to as \emph{longitudinal functional data}~\citep{Xiao2013,Goldsmith2015}. Given the large increase in longitudinal functional data in recent years, corresponding analysis has received much recent attention~\citep{Morris2003, MorrisCarroll2006, Baladandayuthapani2008, Di2009, Greven2010, Staicu2010, ChenMuller2012, LiGuan2014}. Here, we combine work by~\cite{Park2018} and~\cite{Goldsmith2011} to construct a computationally efficient penalized functional method for solving the estimation equations~$\hat U_n (\theta)$.
 
 \subsection{Estimation of the windowed covariate history}
 \label{sec:margcov}
@@ -308,7 +310,7 @@ where $\hat c^{(y)}_{i,k} (t) = \int_{t-\Delta}^t \tilde X_i (t,s) \hat \psi^{(y
 \subsection{Estimation of~$\beta(s)$}
 \label{section:beta}
 
-The next step of our method is modeling~$\beta(s)$. Here, we leverage ideas from the penalized spline literature~\citep{Ruppert2003, Wood2006book}. Let~$\mathbold{\phi} (s) = \{ \phi_1 (s), \ldots, \phi_{K_b} (x) \}$ be a spline basis and assume that~$\beta(s) = \sum_{j=1}^{K_b} b_j \phi_{j} (s) = \mathbold{\phi} (t) {\bf b}$ where~${\bf b} = [b_1, \ldots, b_{K_b}]^{\top}$. Thus, the integral in~\eqref{eq:hazardlinear} can be restated as
+The next step of our method is modelling~$\beta(s)$. Here, we leverage ideas from the penalized spline literature~\citep{Ruppert2003, Wood2006book}. Let~$\mathbold{\phi} (s) = \{ \phi_1 (s), \ldots, \phi_{K_b} (x) \}$ be a spline basis and assume that~$\beta(s) = \sum_{j=1}^{K_b} b_j \phi_{j} (s) = \mathbold{\phi} (t) {\bf b}$ where~${\bf b} = [b_1, \ldots, b_{K_b}]^{\top}$. Thus, the integral in~\eqref{eq:hazardlinear} can be restated as
 \begin{align*}
 \int_{t-\Delta}^t X(t,s) \beta(s) ds
   &\approx \int_{t-\Delta}^t \left[ \hat \mu(t,s) + {\bf c} (t)^\top
@@ -362,6 +364,7 @@ Given observed recurrent event and high frequency data~$\{ \bfT_i, \bfx_i \}_{i=
 
 
 \subsection{Theoretical analysis}
+\label{section:theory}
 
 Our theoretical analysis requires assumptions regarding the subsampling procedure, the event process, and the functional data. We state these assumptions and then our main theorems. We start by assuming there exists a~$\tau < \infty$ such that all individuals are no longer at risk (i.e.,~$\tau_i < \tau$ for all~$i$). Moreover, define $R_i (t)$ to be the at-risk indicator for participant~$i$, i.e., $R_i (t) = {\bf 1} [t \in (0,\tau_i)]$. Asymptotic theory provided in Lemma~\ref{lemma:simpleasym} will be proven under regularity conditions A-E in~\cite[pp. 420--421]{Andersen1993} along with the following additional assumptions:
 
@@ -435,6 +438,7 @@ If the event process is an inhomogeneous Poisson point process with intensity~$h
 \noindent Proposition~\ref{prop:optimal} ensures the only loss of statistical efficiency is due to subsampling and not using a suboptimal estimation procedure given subsampling.
 
 \subsection{Computation versus statistical efficiency tradeoff}
+\label{section:tradeoff}
 
 Under assumption~\ref{assumption:truncation}, we next consider the statistical efficiency of our proposed estimator when compared to complete-data maximum likelihood estimation. While subsampling introduces additional variation, it may significantly reduce the overall computational burden. It is this trade-off that we next make precise. In particular, we consider the following choice of subsampling rate,~$\pi(t) = c \times h(t; \theta)$ for $c>0$. That is, the subsampling rate is proportional to the intensity function with time-independent constant~$c > 0$. Under this subsampling rate, the weight function~\eqref{eq:waage_weights} is equal to $c/ (c+1)$. Under Lemma~\ref{lemma:simpleasym},
 \[
@@ -478,7 +482,7 @@ Recall theoretical results were proven under the assumption that there exists~$b
 
 Due to the connection with generalized mixed effects models, we can leverage existing inferential machinery to obtain variance-covariance estimates of model parameters. That is, if~$\hat \Sigma_{bb}$ is the $K_b \times K_b$ dimensional matrix obtained by plugging in the estimates of variance components into the formula for the variance of~$\hat b$, then the standard error for estimate at time~$t_0$ -- i.e., ~$\hat \beta (t_0) = \phi(t_0) \hat {\bf b}$ -- is given by~$\sqrt{ \phi (t_0 ) \hat \Sigma_{bb} \phi(t_0)^\top}$.  Then the approximate 95\% confidence interval can be constructed as~$\hat \beta (t_0) \pm 1.96 \sqrt{\phi (t_0) \hat \Sigma_{bb} \phi(t_0)^\top}$.
 
-We acknowledge two important limitations of confidence intervals obtained via this approach. First, penalization may lead to confidence intervals that perform poorly in regions where~$\hat \beta(t)$ is oversmoothed. Second, we ignore the variability inherent in the longitudinal functional principal component analysis; that is, our estimates ignore the variability in estimation of eigenfunctions~$\hat \psi$ as well as the coefficients~$\hat c_{i,k}(t)$. Joint modeling could be considered as in~\cite{Crainiceanu2010}, however, this is beyond the scope of this article.
+We acknowledge two important limitations of confidence intervals obtained via this approach. First, penalization may lead to confidence intervals that perform poorly in regions where~$\hat \beta(t)$ is oversmoothed. Second, we ignore the variability inherent in the longitudinal functional principal component analysis; that is, our estimates ignore the variability in estimation of eigenfunctions~$\hat \psi$ as well as the coefficients~$\hat c_{i,k}(t)$. Joint modelling could be considered as in~\cite{Crainiceanu2010}, however, this is beyond the scope of this article.
 
 \section{Simulation study} \label{section:simstudy}
 
@@ -550,10 +554,11 @@ $\Delta=$ & & 0.5 & 1 & 2 & 4 \\ \hline
 \label{tab:mise}
 \end{table}
 
-\subsection{Comparison to alternative methods} \label{section:simcomparisons}
+\subsection{Computational comparison to alternative methods} \label{section:simcomparisons}
 
 
 \section{Extensions}
+\label{section:extensions}
 
 In this section, we demonstrate the flexibility of the proposed approach by exploring extensions in several important directions to ensure these methods are robust for practical use with high frequency data. This section will continue to leverage the connection to generalized functional linear models provided by Lemma~\ref{lemma:logistic}.
 
@@ -684,6 +689,8 @@ Here, we focus on two physiological processes -- (1) electrodermal activity (EDA
 }  \label{fig:mean_acc}
 \end{subfigure}
 \caption{Average scaled EDA and AI in the 30 minutes prior to button presses}
+\label{Reduced Rank Mixed Effects Models for Spatially Correlated Hierarchical Functional Data
+}
 \label{fig:mean_edacc}
 \end{figure}
 
@@ -709,7 +716,7 @@ We analyzed activity index (AI) and electrodermal activity separately as given i
 }  \label{fig:acc_estimate}
 \end{subfigure}
 \caption{$\beta (t)$ for ACC and EDA with 95\% CI; solid line is point estimate for the complete-case analysis, while highlighted region are the model-based pointwise 95\% confidence intervals.}
-\label{fig:mean_edacc}
+\label{fig:edacc_estimate}
 \end{figure}
 
 \subsection{Accounting for missing data}
@@ -733,7 +740,7 @@ In Section~\ref{app:csmissing} of the supplementary materials, Figures~\ref{fig:
 }  \label{fig:acc_estimate_bs}
 \end{subfigure}
 \caption{$\beta (t)$ for ACC and EDA with 95\% CI; solid line is point estimate for the missing data analysis, while highlighted region are the boostrap and MI based pointwise 95\% confidence intervals.}
-\label{fig:mean_edacc}
+\label{fig:edacc_estimate_bs}
 \end{figure}
 
 % \subsection{Effect of electrodermal activity and activity index on moments of distress}
