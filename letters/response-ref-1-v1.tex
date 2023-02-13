@@ -75,68 +75,66 @@ We appreciate all of the very helpful comments from the editor, associate editor
 \item {\it This paper was reviewed by two referees, who tend to agree in their positive assessments of the value and novelty of your work, and provide some very specific comments for further improvements.}
 
 \vspace{5mm}
-We thank the associate editor.  We have addressed the two reviewers' specific comments.  Responses to their concerns are detailed below and have significantly improved the clarify of this manuscript.
+We thank the associate editor.  We have addressed the two reviewers' specific comments.  Responses to their concerns are detailed below and have significantly improved the clarify of this manuscript.   All major edits are highlighted in blue in order to help the referees know what has changed as part of the major revision.
 \vspace{5mm}
 
 \item {\it Expanded literature review on existing modeling approaches. Both referees raise this point, and I agree that the contrast with existing works could be more explicit. The second referee provides some specific suggestions on relevant works.}
 
 \vspace{5mm}
-XXXX
+We have added a detailed discussion of related work in Section 1.1, which includes the specific suggestions on relevant works provided by the second referee; specifically, we discuss recent modeling of time-to-event data with functional covariates as well as joint modelling from a functional regression perspective.  We contrast these approaches with our design-based approach which becomes necessary when considering high-frequency sensor processes rather than traditional longitudinal studies as the number of measurement occasions increase from tens to thousands/millions of times per individual.  We connect and contrast our use of subsampling with the general use of subsampling in handling massive data and its recent use in massive data with functional predictors.  As stated by the second referee, our proposed joint model includes a recent history functional linear model which we now link with the previous work by Damla Senturk and others.  This motivates Section XX which provides additional empirical study and discussion of the tuning parameter~$\Delta$.
 \vspace{5mm}
 
 \item {\it There appear to be some missing definitions of notation, and some transitions/equations need more details to justify them. The latter could potentially be put in the supplement to save space. The former should be added to the main manuscript to improve clarity.}
 
 \vspace{5mm}
-XXXX
+We have addressed the missing notation and helped to justify the transitions/equations.  These additions are highlighted in blue.
 \vspace{5mm}
 
 \item {\it As the first reviewer, I am confused by $\varepsilon(t) = 0$ on page 4, line 39, in line with equation (3) and measurement error methodology. I suspect comment 7 from the 2nd reviewer alludes to the same thing. I suspect this may be a notation issue rather than the modeling issue, but either way, it needs to be clarified.}
 
 \vspace{5mm}
-XXXX
+We have decided that the point we were trying to raise is non-essential to the current manuscript, so we have removed the discussion of \emph{independent evolution} and its implication that $\varepsilon (t) = 0$ for all $t >0$.  The key issue we were trying to clarify is that the traditional joint model formulation in which the observed health process and time-to-event are conditionally independent given the latent process implies that the hazard function conditional on the entire observed health process depends on values after the current time.  In the case study, for example, this implies that the expected risk of a button press given the entire sensor process will depend on future activity index and electrodermal activity.  This holds unless we assume the measurement error is set to zero.  While the author still thinks it an important point that he wishes was more well appreciated in the joint modeling literature, the current paper has enough content for this discussion to be omitted.  Moreover, the empirical impact seems to be limited and therefore it is better to make this point in a different manuscript and case study.
 \vspace{5mm}
 
 \item {\it Practical considerations, such as window size and smoothing parameter selection, need clarification.}
 
 \vspace{5mm}
-XXXX
+We added Section XX to discuss choice of window size; specifically, we consider selection based on Akaike information criteria as part of the simulation study rather than simply the impact of incorrect choice of $\Delta$. Figure XX shows that the adaptive tuning of $\Delta$ based on AIC does perofrm well empirically.  We now use this approach in selecting~$\Delta$ in the case study, and provide a plot of AIC across several choices of $\Delta$ in Figure XX in Appendix XX.
+\vspace{5mm}
+
+The smoothing parameter selection is also discussed in Section XX; given our connection to off-the-shelf penalized logistic regression, the smoothing parameter selection occurs as part of this implementation.  Therefore, we state how these are chosen generally in the software and provide some additional details in Appendix XX.
 \vspace{5mm}
 
 \item {\it Reviewer 2 suggests adding additional details on proof steps and lemma clarifications. I can't entirely agree that the proofs should go in the main manuscript as the paper is already on the longer side. When making adjustments to this section (theoretical analysis), please keep at most its current length, and move things to supplement as needed.}
 
 \vspace{5mm}
-XXXX
+To accommodate the second referee's request without making the discussion too long, we have added Remark XX and XX that provide some intuition.  We have re-written the technical proofs to first provide a sketch proof (with intuition) and then a detailed proof.  We hope this helps the reader develop intuition on the first read while giving them some helpful guidance in order to facilitate understanding of the detailed theoretical analysis.
 \vspace{5mm}
 
 \item {\it Both reviewers suggest additional simulation studies. I agree that it would be good to have a numerical benchmark of the magnitude of the computational issue that you allude to in lines 16-28 on page 5, especially for JCGS readership. I don’t think you need references for this, as the reviewer asks, as a numerical example would be more helpful and convincing in this case. However, I think you need another method for comparison, as the simulations are only done for your approach with different sampling rates. Perhaps some suggestions from the first referee could be useful. If some of these alternatives are computationally prohibitive, then doing a computational numerical comparison on even 1 rep will provide a convincing argument for why those methods are not tried.}
 
 \vspace{5mm}
-XXXX
+There does not exist a model that can do all so measures of bias and estimation accuracy may be inappropriate.  To handle this, we simply look at the average or the exponentially weighted where we can conceptualize it as a pre-processing step.  Then we can apply traditional joint models.  The issue is that the traditional jiont model cannot scale to this problem.  Instead, we
+In Section XX, we perform the comparison in a simulation when compared to an unpenalized $K_x = 10$ linear spline model.  WE see that both are unbiased and our glmnet takes XX minutes while joint modeling took over XX hours.  To further this comparison, we perform a back-of-the-envelope calculation.
 \vspace{5mm}
 
 \item {\it I also have additional comments that were not raised. A major one is the absence of code. A user-friendly software with the method’s implementation and documentation is a must for accepted JCGS papers. Please provide the code so that the results are reproducible.}
 
 \vspace{5mm}
-XXXX
+We apologize for this omission.  Upon original submission, we had a GitHub repository that included both our code and documentation.  We did not cite the repository simply because other journals ask for anonymous submissions which means the GitHub link needs to be removed.  Given JCGS does not require this, we have now cited the repository in the Appendix.  The GitHub repository has been improved to include better documentation to ensure users of our proposed method can properly implement our solution on their own problems. Again we apologize for not correcting this before originally submitting the article. We think the revision now meets the standards of JCGS papers in terms of user-friendly software.
 \vspace{5mm}
 
 \item {\it
 A minor one is the absence of truncation $K_x$ in the equation on line 37, page 8. Please reread everything carefully to ensure all notations are defined and the equations are consistent with the text.}
 
 \vspace{5mm}
-XXXX
+We apologize for this omission. We have reread everything and addressed any missing notation and equation consistency.
 \vspace{5mm}
 
 \item {\it Another minor one is your choice of smoothing the entire covariance, including the diagonals (page 8, lines 13-18). It’s unclear to me what the rationale is for changing this step compared to Park and Staicu, 2015, and how much it matters for the final performance.}
 
 \vspace{5mm}
-XXXX
-\vspace{5mm}
-
-\item {\it Expanded literature review on existing modeling approaches. Both referees raise this point, and I agree that the contrast with existing works could be more explicit. The second referee provides some specific suggestions on relevant works.}
-
-\vspace{5mm}
-XXXX
+We have removed the discussion of \emph{independent evolution}.  While the author still thinks it an important point that he wishes was more well appreciated in the joint modeling literature, the current paper has enough content for this discussion to be omitted.  Therefore, we revert to the step from Park and Staicu (2018) and report the smoothing of the covariance matrix as it comes from their prior work.
 \vspace{5mm}
 
 \end{enumerate}
@@ -151,35 +149,35 @@ I am very grateful to the referee for the incredibly detailed review.  The detai
 \item {\it The introduction it quite lacking. Please add more background literature review of prevailing/latest approaches (particularly in the area of joint modeling of longitudinal and time to event data) to the introduction.}
 
 \vspace{5mm}
-XXXXX
+We have added a detailed discussion of related work in Section 1.1, which includes the specific suggestions on relevant works provided by the second referee; specifically, we discuss recent modeling of time-to-event data with functional covariates as well as joint modelling from a functional regression perspective.  We contrast these approaches with our design-based approach which becomes necessary when considering high-frequency sensor processes rather than traditional longitudinal studies as the number of measurement occasions increase from tens to thousands/millions of times per individual.  We connect and contrast our use of subsampling with the general use of subsampling in handling massive data and its recent use in massive data with functional predictors.  As stated by the second referee, our proposed joint model includes a recent history functional linear model which we now link with the previous work by Damla Senturk and others.  This motivates Section XX which provides additional empirical study and discussion of the tuning parameter~$\Delta$.
 \vspace{5mm}
 
 \item {\it The measurement error part can be added to the end with other exten-
 sions. It does not seem to play a major role in developing the algorithm.}
 
 \vspace{5mm}
-We agree.  This point was over-emphasized in the original manuscript and so has been moved to the
+We agree.  This point was over-emphasized in the original manuscript. We have decided that the point we were trying to raise is non-essential to the current manuscript, so we have removed the discussion of \emph{independent evolution} and its implications.
 \vspace{5mm}
 
 \item {\it In equationn (4), page 4, do you mean that equation (2) and the mesurement error part $x_i (t) = \eta_i (t) + \epsilon_i (t)$ imply conditional hazard equation in (3)?  If yes, then why is $\int_{t-\Delta}^t \epsilon_i (s) \beta(s) ds = 0$?  Or are you assuming a model?  Please add more clarity.}
 
 \vspace{5mm}
-XXXXX
+We have now omitted this part from the current manuscript. The key issue we were trying to clarify is that the traditional joint model formulation in which the observed health process and time-to-event are conditionally independent given the latent process implies that the hazard function conditional on the entire observed health process depends on values after the current time.  In the case study, for example, this implies that the expected risk of a button press given the entire sensor process will depend on future activity index and electrodermal activity.  This holds unless we assume the measurement error is set to zero.  In this setting,~$\epsilon_i (t) = 0$ and so $\int_{t-\Delta}^t \epsilon_i (s) \beta(s)ds = 0$ by definition. While the author still thinks it an important point that he wishes was more well appreciated in the joint modeling literature, the current paper has enough content for this discussion to be omitted.  Moreover, the empirical impact seems to be limited and therefore it is better to make this point in a different manuscript and case study.
 \vspace{5mm}
 
 \item {\it Several notations in section 2.1 such as ${\bf x}_i, {\bf H}_{i,\tau_i}^X$ are not defined.}
 
 \vspace{5mm}
-XXXXX
+Both of these were defined in Section 3 but we agree that the definitions were obscured in the writing, which led to confusion.  To address this, we have added a notation glossary as Appendix XX.
 \vspace{5mm}
 
 \item {\it How did you get the equation in line 24, page 4.}
 
 \vspace{5mm}
-XXXXX
+We believe the referee is referring to the log-likelihood as its related to the event process. DO WE NEED NO MEASUREMENT ERROR IF WE DO IT THIS WAY? OTHERWISE WE WILL HAVE THE joint likelihood issue.
 \vspace{5mm}
 
-\item {\it In line 39, page 4, by assuming $\epsilon(t) = 0$, you assume there is no measure- ment error? Why is section 2.1 called measurement error if the error is 0? Should this be named missing data section instead?}
+\item {\it In line 39, page 4, by assuming $\epsilon(t) = 0$, you assume there is no measurement error? Why is section 2.1 called measurement error if the error is 0? Should this be named missing data section instead?}
 
 \vspace{5mm}
 The key point raised on page 4 (no Section XX), is that if $\epsilon(t)$ is not equivalently zero, your model assumes risk of an event at time $t$ depends on both the current and future measurements of the process ${\bf x}_i$. We argue this is not sensible since current risk should not depend on future risk and thus set $\epsilon(t) = 0$.
@@ -232,10 +230,12 @@ The term $\tau$ refers to the censoring time of the observation process. We make
 \vspace{5mm}
 
 
-\item {\it s there a difference between the mean and covariance functions for $y = 0$ and $y = 1$ especially if points in $D_i$ and $T_i$ are spread roughly evenly on a grid even if the sets are disjoint? For example, pick a grid of equidistant points and number them from $1-10$. If all odd points are events in $T_i$ and even ones are sampled in $D_i$, won't the pooled sample covariance for both be the same}
+\item {\it Is there a difference between the mean and covariance functions for $y = 0$ and $y = 1$ especially if points in $D_i$ and $T_i$ are spread roughly evenly on a grid even if the sets are disjoint? For example, pick a grid of equidistant points and number them from $1-10$. If all odd points are events in $T_i$ and even ones are sampled in $D_i$, won't the pooled sample covariance for both be the same}
 
 \vspace{5mm}
 The event times~$T_i$ depend heavily on the event intensity function~$h_i (t;\theta)$ and will not be guaranteed to be uniformly spread across points in $[0,\tau]$.  The subsampling times~$D_i$ depend on the subsampling intensity function~$\pi_i(t)$ and
+
+We also now clarify that the missing data imputation from XXXX requires distinct covariance functions and thus we keep as is.  We do think one could marginalize across the two if the mean and covariance functions aren't expected to differ greatly and state as such in Section XX (in blue).
 \vspace{5mm}
 
 \item {\it Add a plot of the mean, covariance functions for $y=0$ and $y=1$.}
