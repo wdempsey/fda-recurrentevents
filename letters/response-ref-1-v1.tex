@@ -174,26 +174,28 @@ Both of these were defined in Section 3 but we agree that the definitions were o
 \item {\it How did you get the equation in line 24, page 4.}
 
 \vspace{5mm}
-We believe the referee is referring to the log-likelihood as its related to the event process. DO WE NEED NO MEASUREMENT ERROR IF WE DO IT THIS WAY? OTHERWISE WE WILL HAVE THE joint likelihood issue.
+We believe the referee is referring to the log-likelihood related to the event process.   Conditional on the sensor process over the observation window $[0,\tau_i]$, i.e.,~$\{ x_i (t) \}_{t=0}^{\tau_i}$, we define the conditional intensity according to equation (2).  Then the probability of the observed event times per person follows from $\exp \left( - H_i (\tau_i ; \theta) \right) \prod_{j=1}^{k_i} h \left(T_{i,j};\theta \right)$.  Thus the log-likelihood of the even process is given by $L_n (\theta)$.
 \vspace{5mm}
 
 \item {\it In line 39, page 4, by assuming $\epsilon(t) = 0$, you assume there is no measurement error? Why is section 2.1 called measurement error if the error is 0? Should this be named missing data section instead?}
 
 \vspace{5mm}
-The key point raised on page 4 (no Section XX), is that if $\epsilon(t)$ is not equivalently zero, your model assumes risk of an event at time $t$ depends on both the current and future measurements of the process ${\bf x}_i$. We argue this is not sensible since current risk should not depend on future risk and thus set $\epsilon(t) = 0$.
+The key point raised on page 4 (now in Appendix XX), is that if $\epsilon(t)$ is not equivalently zero, your model assumes risk of an event at time $t$ depends on both the current and future measurements of the process ${\bf x}_i$. We argue this is not sensible since current risk should not depend on future risk and thus set $\epsilon(t) = 0$.
 \vspace{5mm}
 
 \item  {\it Is $\theta$ defined anywhere prior to section 2.2?}
 
 \vspace{5mm}
-It was used in equation (1) to refer to all the parameters underlying the model to distinguish it from the functional parameter~$\beta (s)$.
-We do XXXX to make this clearer.
+It was used in equation (1) to refer to all the parameters underlying the model to distinguish it from the functional parameter~$\beta (s)$. We have added a notation glossary in Appendix XX, and re-iterate its definition in Section 3 to make this clearer.
 \vspace{5mm}
 
 \item {\it On page 5, lines 16 - 28 you claim that computing the double integral is computationally expensive. Add some references. Also, to give a greater insight to the extent of the computational cost, solve the score equation in lines 8,9 i.e. without the sub-sampling framework in the simulations (there is another comment on this for the simulation section). Reporting a rough summary of computational cost such as ” it took x min to solve equations involving n samples” here, would help the reader understand
 the extent of the problem.}
 
 \vspace{5mm}
+We have added Remark XX and Section XX in the simulation study to give additional details and empirical evidence. First, there are two areas where we have computational improvements.  First, in the inner integral, we have
+
+Second, even if we have computed $\int_{t-\Delta} x(t-s)\beta(s) ds$
 We explain that if we were to compute it would have to be as a function of $\beta(s)$.  We implement a naive and demonstrate numerically the computational cost.  Specifically, each computation in simulation takes XXseconds, and we must compute this XX times to compute the likel
 \vspace{5mm}
 
