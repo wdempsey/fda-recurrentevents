@@ -147,7 +147,7 @@
 \DeclareMathOperator*{\argmin}{arg\,min}
 \mathchardef\mhyphen="2D
 % display breaks
-\newenvironment{newmaterial}{\par\color{blue}}{\par}
+\newenvironment{newmaterial}{\color{blue}}{\par}
 
 
 \begin{document}
@@ -262,7 +262,7 @@ the resulting approximate estimating equations can be re-written as
 \begin{equation}
 \label{eq:approxscore}
 \hat{U}_n (\theta) = \sum_{i=1}^n \left[ \sum_{u \in \bfT_i} w_i(u; \theta)
-  \frac{h^{(1)} (u; \theta)}{ h ( u; \theta)}  - \sum_{u \in \bfD_i} w_i(u;
+  \frac{h^{(1)}_i (u; \theta)}{ h_i ( u; \theta)}  - \sum_{u \in \bfD_i} w_i(u;
   \theta) \frac{h_i^{(1)} (u; \theta)}{ \pi_i (u) } \right].
 \end{equation}
 Equation~\eqref{eq:approxscore} represents the approximate score functions built via plug-in of the design-unbiased estimator of the derivative of the cumulative hazard given in~\eqref{eq:WPest}.
@@ -415,8 +415,12 @@ A design-unbiased estimator for~$\Xi(\theta)$ is
     \frac{h_i^{(1)} (t;\theta)}{h_i(t; \theta)} \right]^\top
 \end{equation}
 For the log-linear intensity model, the sampling-unbiased estimator for~$\hat \Xi(\theta)$ is equivalent to the Fisher information for the previously described logistic regression model.
-This implies that subsampling from an inhomogeneous Poisson process, standard logistic regression software can be used to fit the recurrent event model by specifying an offset equal to~$\log \pi_i (t)$. Not only this, Lemma~\ref{prop:optimal} shows weights~\eqref{eq:waage_weights} are optimal within a particular class of weighted estimating equations.
+This implies that subsampling from an inhomogeneous Poisson process, standard logistic regression software can be used to fit the recurrent event model by specifying an offset equal to~$\log \pi_i (t)$.
+\begin{newmaterial}
+Based on this, we can leverage existing inferential machinery to obtain variance-covariance estimates of model parameters. That is, if~$\hat \Sigma_{bb}$ is the $K_b \times K_b$ dimensional matrix obtained by plugging in the estimates of variance components into the formula for the variance of~$\hat b$, then the standard error for estimate at time~$t_0$ -- i.e., ~$\hat \beta (t_0) = \phi(t_0) \hat {\bf b}$ -- is given by~$\sqrt{ \phi (t_0 ) \hat \Sigma_{bb} \phi(t_0)^\top}$.  Then the approximate 95\% confidence interval can be constructed as~$\hat \beta (t_0) \pm 1.96 \sqrt{\phi (t_0) \hat \Sigma_{bb} \phi(t_0)^\top}$.  We acknowledge an important limitations of confidence intervals obtained via this approach. Specifically, we ignore the variability inherent in the longitudinal functional principal component analysis; that is, our estimates ignore the variability in estimation of eigenfunctions~$\hat \psi$ as well as the coefficients~$\hat c_{i,k}(t)$. Joint modeling could be considered as in~\cite{Crainiceanu2010}, however, this is beyond the scope of this article.
 
+Lemma~\ref{prop:optimal} shows~\eqref{eq:waage_weights} is optimal within a class of weighted estimating equations. The result ensures the only loss of statistical efficiency is due to subsampling and not using a suboptimal estimation procedure given subsampling.  Here, weights $w^\star$ are considered \emph{optimal} if the difference between the asympotic variance~$V (\theta_0; w^\star)$ and the asymptotic variance under any other choice of weights~$w$, $V(\theta_0; w)$ is positive semi-definite, i.e., any linear contrast has smaller asymptotic variance under weight $w^\star$ than under weight~$w$.
+\end{newmaterial}
 \begin{lemma} \normalfont
 \label{prop:optimal}
 % \textcolor{red}{
@@ -424,7 +428,7 @@ If the event process is an inhomogeneous Poisson point process with intensity~$h
 % WD: Consider larger class and show the proof doesn't extend to non PP models?}
 \end{lemma}
 
-\noindent Proposition~\ref{prop:optimal} ensures the only loss of statistical efficiency is due to subsampling and not using a suboptimal estimation procedure given subsampling.
+\noindent
 
 \subsection{Computation versus statistical efficiency tradeoff}
 \label{section:tradeoff}
@@ -465,13 +469,9 @@ Sensor measurements occur multiple times per second.  Suppose the intensity rate
 
 \subsection{Penalized functional regression models}
 
-Recall theoretical results were proven under the assumption that there exists~$b^\star$ such that~$\beta(t) = \phi(t) {\bf b}^\star$. To make this assumption plausible, we set~$K_b$ large enough (but less than~$K_x$ to ensure identifiability) to ensure the spline basis expansion is sufficiently expressive. However, in practice, such a choice of~$K_b$ may lead to overfitting the data. Following~\cite{Goldsmith2011}, we choose the polynomial spline model and set~$\phi(t) = b_0 + b_1 t + b_2 t^2 + \sum_{j=3}^{K_b} (t-\kappa_j)^3$ where~$\{ \kappa_j \}_{j=3}^{K_b}$ are the chosen knots and assume~$\{ b_j \}_{j=3}^{K_b} \sim N(0, \sigma^2 I)$ to induce smoothness on the spline model.  Combining the penalized spline formulation with Lemma~\ref{lemma:logistic} establishes a connection between our approximate score equations and solving a generalized mixed effects logistic regression with offset.
+Recall theoretical results were proven under the assumption that there exists~$b^\star$ such that~$\beta(t) = \phi(t) {\bf b}^\star$. To make this assumption plausible, we set~$K_b$ large enough (but less than~$K_x$ to ensure identifiability) to ensure the spline basis expansion is sufficiently expressive. However, in practice, such a choice of~$K_b$ may lead to overfitting the data. Following~\cite{Goldsmith2011}, we choose the polynomial spline model and set~$\phi(t) = b_0 + b_1 t + b_2 t^2 + \sum_{j=3}^{K_b} (t-\kappa_j)^3$ where~$\{ \kappa_j \}_{j=3}^{K_b}$ are the chosen knots and assume~$\{ b_j \}_{j=3}^{K_b} \sim N(0, \sigma^2 I)$ to induce smoothness on the spline model.  Combining the penalized spline formulation with Lemma~\ref{lemma:logistic} establishes a connection between our approximate score equations and solving a generalized mixed effects logistic regression with offset.  Given the connection with generalized mixed effects models, the inferential machinery to obtain variance-covariance estimates . In this context, we acknowledge another limitation.  Specificaly, penalization may lead to confidence intervals that perform poorly in regions where~$\hat \beta(t)$ is oversmoothed.
 
-\subsection{Confidence intervals for~$\beta(t)$}
 
-Due to the connection with generalized mixed effects models, we can leverage existing inferential machinery to obtain variance-covariance estimates of model parameters. That is, if~$\hat \Sigma_{bb}$ is the $K_b \times K_b$ dimensional matrix obtained by plugging in the estimates of variance components into the formula for the variance of~$\hat b$, then the standard error for estimate at time~$t_0$ -- i.e., ~$\hat \beta (t_0) = \phi(t_0) \hat {\bf b}$ -- is given by~$\sqrt{ \phi (t_0 ) \hat \Sigma_{bb} \phi(t_0)^\top}$.  Then the approximate 95\% confidence interval can be constructed as~$\hat \beta (t_0) \pm 1.96 \sqrt{\phi (t_0) \hat \Sigma_{bb} \phi(t_0)^\top}$.
-
-We acknowledge two important limitations of confidence intervals obtained via this approach. First, penalization may lead to confidence intervals that perform poorly in regions where~$\hat \beta(t)$ is oversmoothed. Second, we ignore the variability inherent in the longitudinal functional principal component analysis; that is, our estimates ignore the variability in estimation of eigenfunctions~$\hat \psi$ as well as the coefficients~$\hat c_{i,k}(t)$. Joint modeling could be considered as in~\cite{Crainiceanu2010}, however, this is beyond the scope of this article.
 
 \section{Simulation study} \label{section:simstudy}
 
