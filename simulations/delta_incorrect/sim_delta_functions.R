@@ -95,11 +95,11 @@ construct_J <- function(times, eig_Sigma, dataset, window_length) {
   ## Construct the J matrix
   K_b = 35
   local_times = times[1:window_length]
-  num=K_b-3
-  qtiles <- seq(0, local_times[length(local_times)], length = num + 2)[-c(1, num + 2)]
+  num=K_b-2
+  qtiles <- seq(0, 1, length = num + 2)[-c(1, num + 2)]
   knots <- quantile(local_times, qtiles)
   ## Basis = bs(t, kb)
-  Basis = cbind(1, local_times, sapply(knots, function(k) ((local_times - k > 0) * (local_times - k)) ^ 2))
+  Basis = cbind(1, local_times, sapply(knots, function(k) ((local_times - k > 0) * (local_times - k))))
   Psi = t(eig_Sigma$vectors[,1:K_x])
   Phi = Basis
   J = Psi%*%Phi
@@ -116,8 +116,8 @@ runglmnet <- function(sampling_rate, dataset, w, Basis, epsilon = 0.0001) {
   p.fac = rep(1, ncol(w))
   p.fac[1:4] = 0 #no penalty on the first 4 variables
   lambda_max <- 1/n.tmp
-  epsilon <- .0001
-  K <- 100
+  epsilon <- .000001
+  K <- 25
   lambdapath <- round(exp(seq(log(lambda_max), log(lambda_max*epsilon), 
                               length.out = K)), digits = 10)
   
