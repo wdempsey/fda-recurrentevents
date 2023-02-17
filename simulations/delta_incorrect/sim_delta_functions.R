@@ -99,7 +99,7 @@ construct_J <- function(times, eig_Sigma, dataset, window_length) {
   qtiles <- seq(0, local_times[length(local_times)], length = num + 2)[-c(1, num + 2)]
   knots <- quantile(local_times, qtiles)
   ## Basis = bs(t, kb)
-  Basis = cbind(1, local_times, local_times^2, sapply(knots, function(k) ((local_times - k > 0) * (local_times - k)) ^ 2))
+  Basis = cbind(1, local_times, sapply(knots, function(k) ((local_times - k > 0) * (local_times - k)) ^ 2))
   Psi = t(eig_Sigma$vectors[,1:K_x])
   Phi = Basis
   J = Psi%*%Phi
