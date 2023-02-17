@@ -116,7 +116,7 @@ runglmnet <- function(sampling_rate, dataset, w, Basis, epsilon = 0.0001) {
   p.fac = rep(1, ncol(w))
   p.fac[1:4] = 0 #no penalty on the first 4 variables
   lambda_max <- 1/n.tmp
-  epsilon <- .001
+  epsilon <- .0001
   K <- 100
   lambdapath <- round(exp(seq(log(lambda_max), log(lambda_max*epsilon), 
                               length.out = K)), digits = 10)
