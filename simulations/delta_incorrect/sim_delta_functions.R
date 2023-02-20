@@ -110,16 +110,16 @@ construct_J <- function(times, eig_Sigma, dataset, window_length) {
 }
 
 runglmnet <- function(sampling_rate, dataset, w, Basis, epsilon = 0.0001) {
-  n.tmp = length(dataset$Y)
+  n.tmp = length(dataset$Y) 
   p.tmp = ncol(w)
   subsample_offset = rep(log(sampling_rate),nrow(dataset))
   p.fac = rep(1, ncol(w))
-  p.fac[1:4] = 0 #no penalty on the first 4 variables
-  lambda_max <- 1/n.tmp
+  p.fac[1:3] = 0 #no penalty on the first 4 variables
+  lambda_max <- 1/n.tmp^2 
   epsilon <- .000001
   K <- 25
   lambdapath <- round(exp(seq(log(lambda_max), log(lambda_max*epsilon), 
-                              length.out = K)), digits = 10)
+                              length.out = K)), digits = 15)
   
   # set.seed("97139817")
   # Start the clock!
