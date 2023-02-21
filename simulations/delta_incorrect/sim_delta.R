@@ -22,26 +22,20 @@ C = chol(Cov_X) # Cholesky decomposition
 
 ## Generate corresponding event times
 ## Simulation assumes we want events near
-## (A) Want Up then Down pattern trends -> beta_1t
-## (B) Overall high mean in the window -> beta_2t
-# beta_1t = 30*c(rep(-1, 11), rep(1, 22), rep(-1, 11))
-# beta_1t = 50*sin(1:44/44*2*pi-pi/2)
-# beta_1t = 20*exp(0.1*1:44)/mean(exp(0.1*1:44))
+# beta_1t = 30*exp(0.2*1:44)/mean(exp(0.2*1:44))
 beta_1t = 100*sin(1:44/44*2*pi-pi/2)
-# beta_2t = 50*rep(1, 44)
-# plot(times[1:44],beta_1t+beta_2t)
 
 # test if there is at least one argument: if not, return an error
 print("Made it to window length")
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args)==0) {
   print("Using default value!")
-  window_length = length(beta_1t)
-} else if (length(args)==1) {
+  seq_window_length = length(beta_1t)
+} else if (length(args)>=1) {
   # default output file
-  window_length = as.numeric(args[1])
+  seq_window_lengths = as.numeric(args)
 }
-print(paste("Window length is", window_length))
+cat(paste0("Window lengths are ", seq_window_lengths, "\n"))
 
 ## Collect coefficients for first 35
 ## Take covariance in the 44 timeslots

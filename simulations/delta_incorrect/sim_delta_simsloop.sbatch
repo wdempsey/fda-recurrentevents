@@ -1,7 +1,6 @@
 #!/bin/bash
 
 #SBATCH --mail-user=wdem@umich.edu
-#SBATCH --mail-type=BEGIN,END
 #SBATCH --cpus-per-task=1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
@@ -24,8 +23,4 @@ source new-modules.sh
 module load R/3.6.1
 
 # Run program
-# Rscript sim_delta.R 52
-# Rscript sim_delta.R 48
-Rscript --vanilla sim_delta.R 44
-Rscript --vanilla sim_delta.R 40
-# Rscript sim_delta.R 36
+Rscript --vanilla sim_delta.R 36 40 44 48 52

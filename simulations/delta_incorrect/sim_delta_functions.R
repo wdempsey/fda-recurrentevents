@@ -115,9 +115,11 @@ runglmnet <- function(sampling_rate, dataset, w, Basis, epsilon = 0.0001) {
   subsample_offset = rep(log(sampling_rate),nrow(dataset))
   p.fac = rep(1, ncol(w))
   p.fac[1:3] = 0 #no penalty on the first 4 variables
-  lambda_max <- 1/n.tmp^2 
-  epsilon <- .000001
-  K <- 25
+  lambda_max <- 1/n.tmp^2 # THESE ARE FOR SIN SETTING 
+  epsilon <- .000001 # THESE ARE FOR SIN SETTING 
+  # lambda_max <- 1/n.tmp # THESE ARE FOR EXP SETTING 
+  # epsilon <- .0001 # THESE ARE FOR EXP SETTING 
+  K <- 50
   lambdapath <- round(exp(seq(log(lambda_max), log(lambda_max*epsilon), 
                               length.out = K)), digits = 15)
   
@@ -134,12 +136,15 @@ runglmnet <- function(sampling_rate, dataset, w, Basis, epsilon = 0.0001) {
   ridge.fit.lambda <- ridge.fit.cv$lambda.min
   # plot(ridge.fit.cv)
   
-  # Extract coefficient values for lambda.1se (without intercept)
+  # Extract coefficient values for lambda.min (without intercept)
   ridge.coef <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[-1]
   
   betaHat.net <- Basis %*% ridge.coef
   
-  return(list("runtime" = runtime[3], "betahat" = betaHat.net))
+  # Compute the deviance for lambda.min
+  bindeviance = deviance(ridge.fit.cv$glmnet.fit)[lambdapath == ridge.fit.lambda]
+  
+  return(list("runtime" = runtime[3], "betahat" = betaHat.net, "dev" = bindeviance))
 }
 
 makeplot <- function(local_times, betaHat.net, beta_1t) {
