@@ -22,20 +22,23 @@ C = chol(Cov_X) # Cholesky decomposition
 
 ## Generate corresponding event times
 ## Simulation assumes we want events near
-# beta_1t = 30*exp(0.2*1:44)/mean(exp(0.2*1:44))
-beta_1t = 100*sin(1:44/44*2*pi-pi/2)
+beta_1t = 30*exp(0.2*1:44)/mean(exp(0.2*1:44))
+# beta_1t = 100*sin(1:44/44*2*pi-pi/2)
 
 # test if there is at least one argument: if not, return an error
 print("Made it to window length")
 args <- commandArgs(trailingOnly = TRUE)
 if (length(args)==0) {
   print("Using default value!")
-  seq_window_length = length(beta_1t)
+  seq_window_lengths = seq(36,52, by =4)
 } else if (length(args)>=1) {
   # default output file
   seq_window_lengths = as.numeric(args)
 }
 cat(paste0("Window lengths are ", seq_window_lengths, "\n"))
+
+# for(window_length in seq_window_lengths)
+window_length = seq_window_lengths[1]
 
 ## Collect coefficients for first 35
 ## Take covariance in the 44 timeslots
@@ -45,7 +48,14 @@ eig_Sigma = eigen(Sigma)
 K_x = min(35, window_length)  # Pick first 35 eigen-vectors or window_length
 cumsum(eig_Sigma$values)[K_x]/sum(eig_Sigma$values) # Explains most of the variation
 
-# set.seed("131312")
+i=Sys.getenv("SLURM_ARRAY_TASK_ID")
+print(paste("Current ARRAY TASK ID", i))
+#your array of seeds in x
+allseeds = readRDS("sim_delta_seeds.RDS")
+# select the ith index from the seed array
+seed=allseeds[i]
+
+set.seed(seed)
 id = runif(1, min = 0, max = 100000)
 base_num_events = 5
 base_rate = logit(5/length(times))
