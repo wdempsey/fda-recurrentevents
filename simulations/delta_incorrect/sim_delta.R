@@ -38,7 +38,7 @@ if (length(args)==0) {
 cat(paste0("Window lengths are ", seq_window_lengths, "\n"))
 
 # for(window_length in seq_window_lengths)
-window_length = seq_window_lengths[2]
+window_length = seq_window_lengths[3]
 
 ## Collect coefficients for first 35
 ## Take covariance in the 44 timeslots
