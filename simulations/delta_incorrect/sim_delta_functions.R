@@ -63,17 +63,25 @@ generate_userday <- function(Cov_X, C, times, eig_Sigma, beta_1t, sampling_rate,
       data = rbind(data, row_data)
     }
   }
-  return(data)
+  return(list("data" = data, "event_times" = events, "nonevent_times" = nonevents))
 }
 
 generate_complete_data <- function(N = 500, Cov_X, C, times, eig_Sigma, beta_1t, sampling_rate, base_rate, window_length = NA) {
   full_data = rep(0,0)
+  full_events = rep(0,0)
+  full_nonevents = rep(0,0)
   for (i in 1:N) {
     # print(paste("On userday", i))
-    userday_data = cbind(i, generate_userday(Cov_X, C, times, eig_Sigma, beta_1t, sampling_rate, base_rate, window_length))
-    full_data = rbind(full_data, userday_data)
+    userday_data = generate_userday(Cov_X, C, times, eig_Sigma, beta_1t, sampling_rate, base_rate, window_length)
+    full_data = rbind(full_data, cbind(i,userday_data$data))
+    if(length(userday_data$event_times) > 0) {
+      full_events = rbind(full_events, cbind(i, userday_data$event_times))
+    }
+    if(length(userday_data$event_times) > 0) {
+      full_nonevents = rbind(full_nonevents, cbind(i, userday_data$nonevent_times))
+    }
   }
-  return(full_data)
+  return(list("data" = full_data, "events" = full_events, "nonevents" = full_nonevents))
 }
 
 expit <- function(x) {exp(x)/(1+exp(x))}

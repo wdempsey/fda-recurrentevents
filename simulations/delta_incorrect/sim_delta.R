@@ -38,7 +38,7 @@ if (length(args)==0) {
 cat(paste0("Window lengths are ", seq_window_lengths, "\n"))
 
 # for(window_length in seq_window_lengths)
-window_length = seq_window_lengths[1]
+window_length = seq_window_lengths[2]
 
 ## Collect coefficients for first 35
 ## Take covariance in the 44 timeslots
@@ -48,7 +48,8 @@ eig_Sigma = eigen(Sigma)
 K_x = min(35, window_length)  # Pick first 35 eigen-vectors or window_length
 cumsum(eig_Sigma$values)[K_x]/sum(eig_Sigma$values) # Explains most of the variation
 
-i=Sys.getenv("SLURM_ARRAY_TASK_ID")
+# i=Sys.getenv("SLURM_ARRAY_TASK_ID")
+i = 10
 print(paste("Current ARRAY TASK ID", i))
 #your array of seeds in x
 allseeds = readRDS("sim_delta_seeds.RDS")
