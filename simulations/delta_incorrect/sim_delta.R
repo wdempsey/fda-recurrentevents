@@ -1,4 +1,4 @@
-## Source the functions and necessary packages
+
 source("./sim_delta_functions.R")
 if(!require("glmnet")){install.packages('glmnet')} else{library('glmnet')}
 
@@ -47,13 +47,13 @@ for(window_length in seq_window_lengths) {
   K_x = min(35, window_length)  # Pick first 35 eigen-vectors or window_length
   cumsum(eig_Sigma$values)[K_x]/sum(eig_Sigma$values) # Explains most of the variation
   
-  # arrayid = Sys.getenv("SLURM_ARRAY_TASK_ID")
-  arrayid = 10
+  arrayid = Sys.getenv("SLURM_ARRAY_TASK_ID")
+  # arrayid = 10
   print(paste("Current ARRAY TASK ID", arrayid))
   #your array of seeds in x
   allseeds = readRDS("sim_delta_seeds.RDS")
   # select the ith index from the seed array
-  seed=allseeds[i]
+  seed=allseeds[as.numeric(arrayid)]
   
   set.seed(seed)
   id = runif(1, min = 0, max = 100000)
@@ -83,9 +83,9 @@ for(window_length in seq_window_lengths) {
     results = matrix(c(arrayid, output$runtime, output$dev, rates, agg_summary, output$beta), nrow = 1)
     colnames(results) = col_names
     if(!file.exists(paste("./output_csv/simdelta_results_",window_length,".csv", sep = ""))) {
-      write.table(results, file = paste("./output_csv/simdelta_results_",window_length,".csv", sep = ""), row.names = F, col.names = F, append = T, sep = ",")
-    } else {
       write.table(results, file = paste("./output_csv/simdelta_results_",window_length,".csv", sep = ""), row.names = F, col.names = T, append = T, sep = ",")
+    } else {
+      write.table(results, file = paste("./output_csv/simdelta_results_",window_length,".csv", sep = ""), row.names = F, col.names = F, append = T, sep = ",")
     }
   }
   
