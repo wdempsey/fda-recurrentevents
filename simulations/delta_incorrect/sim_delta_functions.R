@@ -81,7 +81,8 @@ generate_complete_data <- function(N = 500, Cov_X, C, times, eig_Sigma, beta_1t,
       full_nonevents = rbind(full_nonevents, cbind(i, userday_data$nonevent_times))
     }
   }
-  return(list("data" = full_data, "events" = full_events, "nonevents" = full_nonevents))
+  # return(list("data" = full_data, "events" = full_events, "nonevents" = full_nonevents))
+  return("data" = full_data)
 }
 
 expit <- function(x) {exp(x)/(1+exp(x))}

@@ -48,9 +48,9 @@ eig_Sigma = eigen(Sigma)
 K_x = min(35, window_length)  # Pick first 35 eigen-vectors or window_length
 cumsum(eig_Sigma$values)[K_x]/sum(eig_Sigma$values) # Explains most of the variation
 
-# i=Sys.getenv("SLURM_ARRAY_TASK_ID")
-i = 10
-print(paste("Current ARRAY TASK ID", i))
+# arrayid = Sys.getenv("SLURM_ARRAY_TASK_ID")
+arrayid = 10
+print(paste("Current ARRAY TASK ID", arrayid))
 #your array of seeds in x
 allseeds = readRDS("sim_delta_seeds.RDS")
 # select the ith index from the seed array
@@ -73,14 +73,14 @@ agg_summary = matrix(c(mean(agg_results[,2]),var(agg_results[,2])), nrow = 1, nc
 # write.table(agg_summary, file = "./output_csv/aggregate_summary.csv",  row.names = F, col.names = F, append = T, sep = ",")
 
 thinning_rates = c(1/1, 1/2, 1/4, 1/8)
-col_names = as.vector(c("ids", "runtime", "rates", "mean_count", "var_count", paste0(rep("beta",44), as.character(1:44))))
+col_names = as.vector(c("ids", "runtime", "deviance", "rates", "mean_count", "var_count", paste0(rep("beta",window_length), as.character(1:window_length))))
 
 for(rates in thinning_rates) {
   print(paste("On rate", rates*max_sampling_rate))
   subdataset = subsample_dataset(dataset, thinning_rate = rates)
   intermediate_step = construct_J(times, eig_Sigma, subdataset, window_length)
   output = runglmnet(max_sampling_rate*rates, subdataset, intermediate_step$w, intermediate_step$Basis, epsilon = 0.0001)
-  results = matrix(c(id, output$runtime, rates, agg_summary, output$beta), nrow = 1)
+  results = matrix(c(arrayid, output$runtime, output$dev, rates, agg_summary, output$beta), nrow = 1)
   colnames(results) = col_names
   if(!file.exists(paste("./output_csv/simdelta_results_",window_length,".csv", sep = ""))) {
     write.table(results, file = paste("./output_csv/simdelta_results_",window_length,".csv", sep = ""), row.names = F, col.names = T, append = T, sep = ",")
