@@ -90,7 +90,7 @@ construct_J <- function(times, eig_Sigma, dataset) {
   qtiles <- seq(0, 1, length = num + 2)[-c(1, num + 2)]
   knots <- quantile(local_times, qtiles)
   ## Basis = bs(t, kb)
-  Basis = cbind(1, local_times, local_times^2, sapply(knots, function(k) ((local_times - k > 0) * (local_times - k)) ^ 2))
+  Basis = cbind(1, local_times, sapply(knots, function(k) ((local_times - k > 0) * (local_times - k))))
   Psi = t(eig_Sigma$vectors[,1:K_x])
   Phi = Basis
   J = Psi%*%Phi
@@ -105,13 +105,15 @@ runglmnet <- function(sampling_rate, dataset, w, Basis, epsilon = exp(-100)) {
   p.tmp = ncol(w)
   subsample_offset = rep(log(sampling_rate),nrow(dataset))
   p.fac = rep(1, ncol(w))
-  p.fac[1:4] = 0 #no penalty on the first 4 variables
+  p.fac[1:3] = 0 #no penalty on the first 4 variables
   
-  var_p_adjustment = 5/1000 * (1-5/1000) ## 5 events per day on average
-  tolerance = min((t(w) %*% w)) * var_p_adjustment ## Scale of the lambda keeps hitting boundary
-  lambda_max <- 1/n.tmp * tolerance
-  K <- 30
-  lambdapath <- exp(seq(log(lambda_max), log(lambda_max*epsilon), length.out = K))
+  lambda_max <- 1/n.tmp^2 # THESE ARE FOR SIN SETTING 
+  epsilon <- .000001 # THESE ARE FOR SIN SETTING 
+  # lambda_max <- 1/n.tmp # THESE ARE FOR EXP SETTING 
+  # epsilon <- .0001 # THESE ARE FOR EXP SETTING 
+  K <- 50
+  lambdapath <- round(exp(seq(log(lambda_max), log(lambda_max*epsilon), 
+                              length.out = K)), digits = 15)
   
   # set.seed("97139817")
   # Start the clock!

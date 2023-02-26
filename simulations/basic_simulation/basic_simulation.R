@@ -25,7 +25,21 @@ C = chol(Cov_X) # Cholesky decomposition
 ## Simulation assumes we want events near
 ## (A) Want Up then Down pattern trends -> beta_1t
 beta_1t = 30*exp(0.2*1:44)/mean(exp(0.2*1:44))
+setting = "exponential"
 # beta_1t = 100*sin(1:44/44*2*pi-pi/2)
+# setting = "sine"
+
+# test if there is at least one argument: if not, return an error
+print("Made it to window length")
+args <- commandArgs(trailingOnly = TRUE)
+if (length(args)==0) {
+  print("Using default value!")
+  window_length = 44
+} else if (length(args)>=1) {
+  # default output file
+  window_length = as.numeric(args)
+}
+cat(paste0("Window length is ", window_length, "\n"))
 
 ## Collect coefficients for first 35
 ## Take covariance in the 44 timeslots
@@ -34,7 +48,15 @@ eig_Sigma = eigen(Sigma)
 K_x = 35  # Pick first 35 eigen-vectors
 cumsum(eig_Sigma$values)[K_x]/sum(eig_Sigma$values) # Explains most of the variation
 
-# set.seed("131312")
+# arrayid=Sys.getenv("SLURM_ARRAY_TASK_ID")
+arrayid = 10
+print(paste("Current ARRAY TASK ID", arrayid))
+#your array of seeds in x
+allseeds = readRDS("basic_simulation_seeds.RDS")
+# select the ith index from the seed array
+seed=allseeds[arrayid]
+
+set.seed(seed)
 id = runif(1, min = 0, max = 100000)
 base_num_events = 5
 base_rate = logit(5/length(times))
@@ -60,14 +82,10 @@ for(rates in thinning_rates) {
   output = runglmnet(max_sampling_rate*rates, subdataset, intermediate_step$w, intermediate_step$Basis, epsilon = 0.0001)
   results = matrix(c(id, output$runtime, rates, agg_summary, output$beta), nrow = 1)
   colnames(results) = col_names
-  # write.table(t(output$betahat), file = "./output_csv/betahat.csv", row.names = F, col.names = F, append = T, sep = ",")
-  # write.table(output$runtime, file = "./output_csv/runtime.csv", row.names = F, col.names = F, append = T, sep = ",")
-  # write.table(rates, file = "./output_csv/samplingrate.csv", row.names = F, col.names = F, append = T, sep = ",")
-  # write.table(id, file = "./output_csv/ids.csv", row.names = F, col.names = F, append = T, sep = ",")
   if(!file.exists("./output_csv/results.csv")) {
-    write.table(results, file = "./output_csv/results.csv", row.names = F, col.names = T, append = T, sep = ",")
+    write.table(results, file = "./output_csv/", setting, "_results.csv", row.names = F, col.names = T, append = T, sep = ",")
   } else {
-    write.table(results, file = "./output_csv/results.csv", row.names = F, col.names = F, append = T, sep = ",")
+    write.table(results, file = "./output_csv/", setting, "_results.csv", row.names = F, col.names = F, append = T, sep = ",")
   }
 }
 
