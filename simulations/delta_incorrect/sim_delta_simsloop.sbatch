@@ -9,7 +9,7 @@
 #SBATCH --array=1-500
 #SBATCH --account=wdem1
 #SBATCH --partition=standard
-#SBATCH --output=/home/wdem/fda-recurrentevents/simulations/delta_incorrect/attempt.log
+#SBATCH --output=/home/wdem/fda-recurrentevents/simulations/delta_incorrect/attempt2.log
 
 cd $SLURM_SUBMIT_DIR
 
@@ -24,4 +24,4 @@ source new-modules.sh
 module load R/4.2.0
 
 # Run program
-Rscript --verbose sim_delta.R 36 40 44 48 52 > ./outfiles/sim_delta_$SLURM_ARRAY_TASK_ID.Rout
+Rscript --verbose sim_delta.R 36 40 44 48 52 > ./outfiles/sim_delta_v2_$SLURM_ARRAY_TASK_ID.Rout
