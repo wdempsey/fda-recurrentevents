@@ -72,7 +72,7 @@ agg_results = aggregate(Y~userday,dataset, sum)
 agg_summary = matrix(c(mean(agg_results[,2]),var(agg_results[,2])), nrow = 1, ncol = 2) # Report the mean and variance of number of events per day
 # write.table(agg_summary, file = "./output_csv/aggregate_summary.csv",  row.names = F, col.names = F, append = T, sep = ",")
 
-thinning_rates = c(1/1, 1/2, 1/4, 1/8)
+thinning_rates = c(4, 2, 1/1, 1/2, 1/4, 1/8)
 col_names = as.vector(c("ids", "runtime", "rates", "mean_count", "var_count", paste0(rep("beta",44), as.character(1:44))))
 
 for(rates in thinning_rates) {
