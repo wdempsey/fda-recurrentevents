@@ -48,8 +48,8 @@ eig_Sigma = eigen(Sigma)
 K_x = 35  # Pick first 35 eigen-vectors
 cumsum(eig_Sigma$values)[K_x]/sum(eig_Sigma$values) # Explains most of the variation
 
-# arrayid=Sys.getenv("SLURM_ARRAY_TASK_ID")
-arrayid = 10
+arrayid=Sys.getenv("SLURM_ARRAY_TASK_ID")
+# arrayid = 10
 print(paste("Current ARRAY TASK ID", arrayid))
 #your array of seeds in x
 allseeds = readRDS("basic_simulation_seeds.RDS")
@@ -82,10 +82,10 @@ for(rates in thinning_rates) {
   output = runglmnet(max_sampling_rate*rates, subdataset, intermediate_step$w, intermediate_step$Basis, epsilon = 0.0001)
   results = matrix(c(id, output$runtime, rates, agg_summary, output$beta), nrow = 1)
   colnames(results) = col_names
-  if(!file.exists("./output_csv/results.csv")) {
-    write.table(results, file = "./output_csv/", setting, "_results.csv", row.names = F, col.names = T, append = T, sep = ",")
+  if(!file.exists(paste("./output_csv/", setting, "_results.csv", sep = ""))) {
+    write.table(results, file = paste("./output_csv/", setting, "_results.csv", sep = ""), row.names = F, col.names = T, append = T, sep = ",")
   } else {
-    write.table(results, file = "./output_csv/", setting, "_results.csv", row.names = F, col.names = F, append = T, sep = ",")
+    write.table(results, file = paste("./output_csv/", setting, "_results.csv", sep = ""), row.names = F, col.names = F, append = T, sep = ",")
   }
 }
 
