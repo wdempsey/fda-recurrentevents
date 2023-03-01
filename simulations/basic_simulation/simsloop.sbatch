@@ -6,7 +6,7 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=1000m
 #SBATCH --time=01:00:00
-#SBATCH --array=1-500
+#SBATCH --array=1-3
 #SBATCH --account=wdem1
 #SBATCH --partition=standard
 #SBATCH --output=/home/wdem/fda-recurrentevents/simulations/basic_simulation/attempt.log
@@ -24,5 +24,5 @@ source new-modules.sh
 module load R/4.2.0
 
 # Run program
-Rscript --verbose sim_delta.R > ./outfiles/basic_simulation_$SLURM_ARRAY_TASK_ID.Rout
+Rscript --verbose basic_simulation.R > ./outfiles/basic_simulation_$SLURM_ARRAY_TASK_ID.Rout
 
