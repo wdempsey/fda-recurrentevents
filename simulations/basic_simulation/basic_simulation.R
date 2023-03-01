@@ -54,7 +54,7 @@ print(paste("Current ARRAY TASK ID", arrayid))
 #your array of seeds in x
 allseeds = readRDS("basic_simulation_seeds.RDS")
 # select the ith index from the seed array
-seed=allseeds[arrayid]
+seed=allseeds[as.numeric(arrayid)]
 
 set.seed(seed)
 id = runif(1, min = 0, max = 100000)
