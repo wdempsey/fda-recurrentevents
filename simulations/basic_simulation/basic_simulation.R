@@ -60,7 +60,7 @@ set.seed(seed)
 id = runif(1, min = 0, max = 100000)
 base_num_events = 5
 base_rate = logit(5/length(times))
-max_sampling_rate = 12*4/1000 # Max sampling rate is 1 obs every 1/2 hour
+max_sampling_rate = 12*12/1000 # Max sampling rate is 1 obs every 5 minutes
 dataset = generate_complete_data(N = 500, Cov_X, C, times, eig_Sigma, beta_1t, max_sampling_rate, base_rate)
 rm(abs_diff, C, Cov_X, x)
 
@@ -72,7 +72,7 @@ agg_results = aggregate(Y~userday,dataset, sum)
 agg_summary = matrix(c(mean(agg_results[,2]),var(agg_results[,2])), nrow = 1, ncol = 2) # Report the mean and variance of number of events per day
 # write.table(agg_summary, file = "./output_csv/aggregate_summary.csv",  row.names = F, col.names = F, append = T, sep = ",")
 
-thinning_rates = c(4, 2, 1/1, 1/2, 1/4, 1/8)
+thinning_rates = c(1/1, 1/3, 1/3* c(1/2, 1/4, 1/8))
 col_names = as.vector(c("ids", "runtime", "rates", "mean_count", "var_count", paste0(rep("beta",44), as.character(1:44))))
 
 for(rates in thinning_rates) {
