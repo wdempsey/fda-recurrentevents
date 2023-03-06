@@ -24,10 +24,10 @@ C = chol(Cov_X) # Cholesky decomposition
 ## Generate corresponding event times
 ## Simulation assumes we want events near
 ## (A) Want Up then Down pattern trends -> beta_1t
-beta_1t = 30*exp(0.2*1:44)/mean(exp(0.2*1:44))
-setting = "exponential"
-# beta_1t = 100*sin(1:44/44*2*pi-pi/2)
-# setting = "sine"
+# beta_1t = 30*exp(0.2*1:44)/mean(exp(0.2*1:44))
+# setting = "exponential"
+beta_1t = 100*sin(1:44/44*2*pi-pi/2)
+setting = "sine"
 
 # test if there is at least one argument: if not, return an error
 print("Made it to window length")
