@@ -84,10 +84,10 @@ for(window_length in seq_window_lengths) {
     output = runglmnet(max_sampling_rate*rates, subdataset, intermediate_step$w, intermediate_step$Basis, epsilon = 0.0001)
     results = matrix(c(arrayid, output$runtime, output$dev, rates, agg_summary, output$beta), nrow = 1)
     colnames(results) = col_names
-    if(!file.exists(paste("./output_csv/", setting, "simdelta_results_",window_length,".csv", sep = ""))) {
-      write.table(results, file = paste("./output_csv/",setting, "simdelta_results_",window_length,".csv", sep = ""), row.names = F, col.names = T, append = T, sep = ",")
+    if(!file.exists(paste("./output_csv/", setting, "_simdelta_results_wl_",window_length,"_arrayid_", arrayid, ".csv", sep = ""))) {
+      write.table(results, file = paste("./output_csv/", setting, "_simdelta_results_wl_",window_length,"_arrayid_", arrayid, ".csv", sep = ""), row.names = F, col.names = T, append = T, sep = ",")
     } else {
-      write.table(results, file = paste("./output_csv/",setting, "simdelta_results_",window_length,".csv", sep = ""), row.names = F, col.names = F, append = T, sep = ",")
+      write.table(results, file = paste("./output_csv/", setting, "_simdelta_results_wl_",window_length,"_arrayid_", arrayid, ".csv", sep = ""), row.names = F, col.names = F, append = T, sep = ",")
     }
   }
   

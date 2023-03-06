@@ -82,10 +82,10 @@ for(rates in thinning_rates) {
   output = runglmnet(max_sampling_rate*rates, subdataset, intermediate_step$w, intermediate_step$Basis, epsilon = 0.0001)
   results = matrix(c(id, output$runtime, rates, agg_summary, output$beta), nrow = 1)
   colnames(results) = col_names
-  if(!file.exists(paste("./output_csv/", setting, "_results.csv", sep = ""))) {
-    write.table(results, file = paste("./output_csv/", setting, "_results.csv", sep = ""), row.names = F, col.names = T, append = T, sep = ",")
+  if(!file.exists(paste("./output_csv/", setting, "_simdelta_results_wl_",window_length,"_arrayid_", arrayid, ".csv", sep = ""))) {
+    write.table(results, file = paste("./output_csv/", setting, "_simdelta_results_wl_",window_length,"_arrayid_", arrayid, ".csv", sep = ""), row.names = F, col.names = T, append = T, sep = ",")
   } else {
-    write.table(results, file = paste("./output_csv/", setting, "_results.csv", sep = ""), row.names = F, col.names = F, append = T, sep = ",")
+    write.table(results, file = paste("./output_csv/", setting, "_simdelta_results_wl_",window_length,"_arrayid_", arrayid, ".csv", sep = ""), row.names = F, col.names = F, append = T, sep = ",")
   }
 }
 

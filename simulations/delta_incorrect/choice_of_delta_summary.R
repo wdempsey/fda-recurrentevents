@@ -1,11 +1,9 @@
-setwd("GitHub/fda-recurrentevents/simulations/delta_incorrect/output_csv/")
-
-test36 = read.csv("sine_simdelta_results_36.csv")
-test40 = read.csv("sine_simdelta_results_40.csv")
-test44 = read.csv("sine_simdelta_results_44.csv")
-test48 = read.csv("sine_simdelta_results_48.csv")
-test52 = read.csv("sine_simdelta_results_52.csv")
-
+setting = "exponential"
+test36 = read.csv(paste("./output_csv/", setting, "_simdelta_results_36.csv", sep = ""))
+test40 = read.csv(paste("./output_csv/", setting, "_simdelta_results_40.csv", sep = ""))
+test44 = read.csv(paste("./output_csv/", setting, "_simdelta_results_44.csv", sep = ""))
+test48 = read.csv(paste("./output_csv/", setting, "_simdelta_results_48.csv", sep = ""))
+test52 = read.csv(paste("./output_csv/", setting, "_simdelta_results_52.csv", sep = ""))
 
 overlapping_ids = Reduce(intersect, list(test36$ids, test40$ids, test44$ids, test48$ids, test52$ids))
 overlapping_ids = overlapping_ids[order(overlapping_ids)]
