@@ -1,4 +1,3 @@
-
 source("./sim_delta_functions.R")
 if(!require("glmnet")){install.packages('glmnet')} else{library('glmnet')}
 
@@ -49,8 +48,8 @@ for(window_length in seq_window_lengths) {
   K_x = min(35, window_length)  # Pick first 35 eigen-vectors or window_length
   cumsum(eig_Sigma$values)[K_x]/sum(eig_Sigma$values) # Explains most of the variation
   
-  arrayid = Sys.getenv("SLURM_ARRAY_TASK_ID")
-  # arrayid = 10
+  # arrayid = Sys.getenv("SLURM_ARRAY_TASK_ID")
+  arrayid = 1
   print(paste("Current ARRAY TASK ID", arrayid))
   #your array of seeds in x
   allseeds = readRDS("sim_delta_seeds.RDS")
@@ -82,7 +81,7 @@ for(window_length in seq_window_lengths) {
     subdataset = subsample_dataset(dataset, thinning_rate = rates)
     intermediate_step = construct_J(times, eig_Sigma, subdataset, window_length)
     output = runglmnet(max_sampling_rate*rates, subdataset, intermediate_step$w, intermediate_step$Basis, epsilon = 0.0001)
-    results = matrix(c(arrayid, output$runtime, output$dev, rates, agg_summary, output$beta), nrow = 1)
+    results = matrix(c(arrayid, output$runtime, min(output$dev), rates, agg_summary, output$beta), nrow = 1)
     colnames(results) = col_names
     if(!file.exists(paste("./output_csv/", setting, "_simdelta_results_wl_",window_length,"_arrayid_", arrayid, ".csv", sep = ""))) {
       write.table(results, file = paste("./output_csv/", setting, "_simdelta_results_wl_",window_length,"_arrayid_", arrayid, ".csv", sep = ""), row.names = F, col.names = T, append = T, sep = ",")
