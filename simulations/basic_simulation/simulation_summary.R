@@ -1,11 +1,18 @@
 source("./basic_simulation_functions.R")
-setting = "sine"
+setting = "exponential"
+num_simulations = 500
+
+## BUILD THE DATASET
+df = rep(0,0)
+for (iter in 1:num_simulations) {
+  temp_df = data.frame(read.table(paste("./output_csv/",setting,"_simdelta_results_wl_44_arrayid_",iter,".csv", sep = ""), sep = ",", header = T))
+  if( nrow(temp_df)!= 5) {print(paste("Iteration", iter, "has wrong number of rows"))}
+  df = rbind(df, temp_df)
+}  
 
 if(setting == "sine") {
-  df = data.frame(read.table("./output_csv/sine_results.csv", sep = ",", header = T))
   beta_truth = 100*sin(1:44/44*2*pi-pi/2)
 } else if (setting == "exponential") {
-  df = data.frame(read.table("./output_csv/exponential_results.csv", sep = ",", header = T))
   beta_truth = 30*exp(0.2*1:44)/mean(exp(0.2*1:44))
 }
 
@@ -71,10 +78,7 @@ for (id in unique_ids) {
   }
 }
 
-table = rbind(subsample_variance/true_variance, variance/true_variance, sqbias/true_variance, mise/true_variance, avg_runtime)
+table = rbind(unique_rates, subsample_variance/true_variance, variance/true_variance, sqbias/true_variance, mise/true_variance, avg_runtime)
 
 round(table, 5)
-
-variance/variance[1]
-sqbias/sqbias[1]
 mise/mise[1]
