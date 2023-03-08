@@ -1,4 +1,4 @@
-setting = "sine"
+setting = "exponential"
 test36 = read.csv(paste("./output_csv/", setting, "_simdelta_results_36.csv", sep = ""))
 test40 = read.csv(paste("./output_csv/", setting, "_simdelta_results_40.csv", sep = ""))
 test44 = read.csv(paste("./output_csv/", setting, "_simdelta_results_44.csv", sep = ""))

@@ -24,10 +24,10 @@ C = chol(Cov_X) # Cholesky decomposition
 ## Generate corresponding event times
 ## Simulation assumes we want events near
 ## (A) Want Up then Down pattern trends -> beta_1t
-beta_1t = 30*exp(0.2*1:44)/mean(exp(0.2*1:44))
-setting = "exponential"
-# beta_1t = 100*sin(1:44/44*2*pi-pi/2)
-# setting = "sine"
+# beta_1t = 30*exp(0.2*1:44)/mean(exp(0.2*1:44))
+# setting = "exponential"
+beta_1t = 100*sin(1:44/44*2*pi-pi/2)
+setting = "sine"
 
 # test if there is at least one argument: if not, return an error
 print("Made it to window length")
@@ -82,10 +82,10 @@ for(rates in thinning_rates) {
   output = runglmnet(max_sampling_rate*rates, subdataset, intermediate_step$w, intermediate_step$Basis, epsilon = 0.0001)
   results = matrix(c(id, output$runtime, rates, agg_summary, output$beta), nrow = 1)
   colnames(results) = col_names
-  if(!file.exists(paste("./output_csv/", setting, "_results.csv", sep = ""))) {
-    write.table(results, file = paste("./output_csv/", setting, "_results.csv", sep = ""), row.names = F, col.names = T, append = T, sep = ",")
+  if(!file.exists(paste("./output_csv/", setting, "_simdelta_results_wl_",window_length,"_arrayid_", arrayid, ".csv", sep = ""))) {
+    write.table(results, file = paste("./output_csv/", setting, "_simdelta_results_wl_",window_length,"_arrayid_", arrayid, ".csv", sep = ""), row.names = F, col.names = T, append = T, sep = ",")
   } else {
-    write.table(results, file = paste("./output_csv/", setting, "_results.csv", sep = ""), row.names = F, col.names = F, append = T, sep = ",")
+    write.table(results, file = paste("./output_csv/", setting, "_simdelta_results_wl_",window_length,"_arrayid_", arrayid, ".csv", sep = ""), row.names = F, col.names = F, append = T, sep = ",")
   }
 }
 
