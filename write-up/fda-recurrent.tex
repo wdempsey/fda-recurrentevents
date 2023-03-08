@@ -495,21 +495,23 @@ Since we are primarily interested in accuracy, we report the mean integrated squ
 Table~\ref{tab:mise} demonstrates that the variance does increase as the sampling rate decreases.  However, the rate of increase in the MISE is relatively quite low.  In the second case study, for example, the MISE increases by 6\% while the run time is 3 times faster.  In the first case study, the MISE remains roughly constant but the run time is 4.7 times faster.  This highlights the efficiency-computation trade-off.  Extrapolating to a complete data analysis, we can see that the run time will continue to increase significantly with minimal improvement in the mean integrated squared error.
 
 \begin{table}[!th]
-\begin{tabular}{c | p{2cm} p{2cm} p{2cm} p{2cm}}
-& \multicolumn{4}{c}{Sampling rate} \\ \cline{2-5}
- & 0.5 & 1 & 2 & 4 \\ \hline
-Subsampling variance & - & $9.0 \times 10^{-7}$ & $2.9 \times 10^{-6}$ & $5.8 \times 10^{-6}$  \\
-Variance & $7.9 \times 10^{-3}$ & $9.2 \times 10^{-3}$ & $1.0 \times 10^{-2}$ & $1.3 \times 10^{-2}$ \\
-Squared Bias & $9.8 \times 10^{-2}$ & $9.5 \times 10^{-2}$ & $9.3 \times 10^{-2}$ & $9.2 \times 10^{-2}$   \\
-MISE & $1.1 \times 10^{-1}$ & $1.0 \times 10^{-1}$ & $1.0 \times 10^{-1}$ & $1.0 \times 10^{-1}$ \\ \hline
-Avg. runtime (secs) & 317 & 177 & 104 & 68 \\ \hline
-Subsampling variance & - & $2.9 \times 10^{-6}$ & $8.9 \times 10^{-6}$ & $2.0 \times 10^{-5}$  \\
-Variance & $1.0 \times 10^{-2}$ & $1.3 \times 10^{-2}$ & $2.0 \times 10^{-2}$ & $3.1 \times 10^{-2}$ \\
-Squared Bias & $6.9 \times 10^{-2}$ & $6.5 \times 10^{-2}$ & $6.0 \times 10^{-2}$ & $5.4 \times 10^{-2}$   \\
-MISE & $7.9 \times 10^{-2}$ & $7.9 \times 10^{-2}$ & $8.0 \times 10^{-2}$ & $8.4 \times 10^{-2}$ \\ \hline
-Avg. runtime (secs) & 36 & 23 & 15 & 12 \\ \hline
+\begin{tabular}{c | p{2cm} p{2cm} p{2cm} p{2cm} p{2cm}}
+& \multicolumn{4}{c}{Sampling rate (per)} \\ \cline{2-6}
+ & X1 & X2 & X3 & X4 & X5 \\ \hline
+SubS. Variance & - & $1.2 \times 10^{-5}$ & $2.0 \times 10^{-5}$ & $3.5 \times 10^{-5}$ & $8.6 \times 10^{-5}$  \\
+Variance & $1.3 \times 10^{-2}$ & $1.5 \times 10^{-2}$ & $2.1 \times 10^{-2}$ & $2.7 \times 10^{-2}$ & $3.8 \times 10^{-2}$\\
+Squared Bias & $6.3 \times 10^{-2}$ & $6.0 \times 10^{-2}$ & $6.1 \times 10^{-2}$ & $6.1 \times 10^{-2}$ & $6.7 \times 10^{-2}$   \\
+MISE & $7.6 \times 10^{-2}$  & $7.5 \times 10^{-2}$  & $8.2 \times 10^{-2}$ & $8.8 \times 10^{-2}$ & $1.1 \times 10^{-1}$ \\
+RMISE & -  & 0.99  & 1.08 & 1.16 & 1.39 \\ \hline
+Avg. runtime (secs) & 356 & 108 & 51 & 24 & 17 \\ \hline
+SubS. variance & - & $2.7 \times 10^{-5}$ & $5.1 \times 10^{-5}$ & $5.7 \times 10^{-5}$ & $7.5 \times 10^{-5}$  \\
+Variance & $3.7 \times 10^{-2}$ & $2.7 \times 10^{-2}$ & $2.8 \times 10^{-2}$ & $3.3 \times 10^{-2}$ &  $3.8 \times 10^{-2}$\\
+Squared Bias & $3.5 \times 10^{-2}$ & $3.6 \times 10^{-2}$ & $3.4 \times 10^{-2}$ & $3.3 \times 10^{-2}$ & $3.1 \times 10^{-2}$ \\
+MISE & $7.2 \times 10^{-2}$ & $6.3 \times 10^{-2}$ & $6.2 \times 10^{-2}$ & $6.6 \times 10^{-2}$ & $6.9 \times 10^{-2}$ \\
+RMISE & -  & 0.87  & 0.86 & 0.92 & 0.96 \\ \hline
+Avg. runtime (secs) & 1084 & 208 & 93 & 47 & 30 \\ \hline
 \end{tabular}
-\caption{Mean-integrated squared error, varaince, squared bias, and subsampling variance for $\beta(s)$ given by (1) and (2) respectively.}
+\caption{Mean-integrated squared error, variance, squared bias, and subsampling (SubS) variance for $\beta(s)$ given by (1) and (2) respectively.}
 \label{tab:mise}
 \end{table}
 

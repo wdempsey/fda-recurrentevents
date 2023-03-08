@@ -1,5 +1,5 @@
 source("./basic_simulation_functions.R")
-setting = "exponential"
+setting = "sine"
 num_simulations = 500
 
 ## BUILD THE DATASET
@@ -78,7 +78,7 @@ for (id in unique_ids) {
   }
 }
 
-table = rbind(unique_rates, subsample_variance/true_variance, variance/true_variance, sqbias/true_variance, mise/true_variance, avg_runtime)
+table = rbind(unique_rates, subsample_variance/true_variance, variance/true_variance, sqbias/true_variance, mise/true_variance, mise/mise[1], round(avg_runtime,0))
 
 round(table, 5)
 mise/mise[1]
