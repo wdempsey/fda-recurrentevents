@@ -90,9 +90,21 @@ expit <- function(x) {exp(x)/(1+exp(x))}
 logit <- function(p) {log(p/(1-p))}
 
 mise_calc <- function(beta_1t, betaHat.net) {
-  temp_Xb = (beta_1t - betaHat.net)^2
+  diff_delta = length(beta_1t) - length(betaHat.net)
+  new_beta_1t = c(rep(0,max(-diff_delta,0)), beta_1t)
+  new_betaHat.net = c(rep(0,max(diff_delta,0)), as.numeric(betaHat.net))
+  temp_Xb = (new_beta_1t - new_betaHat.net)^2
   term2 = (temp_Xb[1] + temp_Xb[length(temp_Xb)])/2 * gap + sum(temp_Xb[2:(length(temp_Xb)-1)]*gap) 
   return(term2)
+}
+
+partialmise_calc <- function(beta_1t, betaHat.net) {
+  diff_delta = length(beta_1t) - length(betaHat.net)
+  new_beta_1t = beta_1t[max(diff_delta+1,1):length(beta_1t)]
+  new_betaHat.net = as.numeric(betaHat.net[max(-diff_delta+1,1):length(betaHat.net)])
+  temp_Xb = (new_beta_1t - new_betaHat.net)^2
+  term2 = (temp_Xb[1] + temp_Xb[length(temp_Xb)])/2 * gap + sum(temp_Xb[2:(length(temp_Xb)-1)]*gap) 
+  return(term2 * length(beta_1t)/min(length(beta_1t), length(betaHat.net)))
 }
 
 subsample_dataset <- function(dataset, thinning_rate) {
