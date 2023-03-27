@@ -488,25 +488,27 @@ When the window length is too large, i.e., $\Delta > \Delta^\star$, then asympto
 
 \begin{table}[!th]
 \begin{tabular}{c | c c c c c}
-& & \multicolumn{4}{c}{Sampling rate} \\ \cline{3-6}
-$\Delta=$ & & 0.5 & 1 & 2 & 4 \\ \hline
-\multirow{3}{*}{26} & MISE & $5.9 \times 10^{-2}$ & $6.1 \times 10^{-2}$ & $6.6 \times 10^{-2}$ & $7.4 \times 10^{-2}$ \\
- & Variance & $1.3 \times 10^{-2}$ & $1.6 \times 10^{-2}$ & $12.4 \times 10^{-2}$ & $3.6 \times 10^{-2}$ \\
-  & P-MISE & $7.1 \times 10^{-2}$ & $7.3 \times 10^{-2}$ & $7.8 \times 10^{-2}$ & $8.8 \times 10^{-2}$ \\ \hline
-\multirow{3}{*}{29} & MISE & $6.9 \times 10^{-2}$ & $7.0 \times 10^{-2}$ & $7.1 \times 10^{-2}$ & $7.8 \times 10^{-2}$ \\
- & Variance & $1.1 \times 10^{-2}$ & $1.5 \times 10^{-2}$ & $2.0 \times 10^{-2}$ & $3.4 \times 10^{-2}$ \\
-  & P-MISE & $7.5 \times 10^{-2}$ & $7.5 \times 10^{-2}$ & $7.7 \times 10^{-2}$ & $8.4 \times 10^{-2}$ \\ \hline
-\multirow{3}{*}{32} & MISE & $8.1 \times 10^{-2}$ & $8.0 \times 10^{-2}$ & $8.1 \times 10^{-2}$ & $8.7 \times 10^{-2}$ \\
- & Variance & $1.1 \times 10^{-2}$ & $1.4 \times 10^{-2}$ & $1.9 \times 10^{-2}$ & $3.3 \times 10^{-2}$ \\
-  & P-MISE & $8.1 \times 10^{-2}$ & $8.0 \times 10^{-2}$ & $8.1 \times 10^{-2}$ & $8.7 \times 10^{-2}$ \\ \hline
-\multirow{3}{*}{35} & MISE & $9.0 \times 10^{-2}$ & $8.8 \times 10^{-2}$ & $8.8 \times 10^{-2}$ & $9.2 \times 10^{-2}$ \\
- & Variance & $1.1 \times 10^{-2}$ & $1.5 \times 10^{-2}$ & $2.2 \times 10^{-2}$ & $3.0 \times 10^{-2}$ \\
-  & P-MISE & $8.5 \times 10^{-2}$ & $8.2 \times 10^{-2}$ & $8.1 \times 10^{-2}$ & $8.4 \times 10^{-2}$ \\ \hline
-\multirow{3}{*}{37} & MISE & $10.3 \times 10^{-2}$ & $10.1 \times 10^{-2}$ & $9.9 \times 10^{-2}$ & $10.1 \times 10^{-2}$ \\
- & Variance & $1.1 \times 10^{-2}$ & $1.4 \times 10^{-2}$ & $2.0 \times 10^{-2}$ & $3.0 \times 10^{-2}$ \\
-  & P-MISE & $9.4 \times 10^{-2}$ & $9.2 \times 10^{-2}$ & $9.0 \times 10^{-2}$ & $9.0 \times 10^{-2}$ \\ \hline
+& & \multicolumn{4}{c}{Sampling rate (per hour)} \\ \cline{3-6}
+$\Delta=$ & & 4.0 & 2.0 & 1.0 & 0.5 \\ \hline
+\multirow{3}{*}{26} & MISE & 0.070 & 0.075 & 0.095 & 0.0117 \\
+ & Variance & $2.1 \times 10^{-2}$ & $2.7 \times 10^{-2}$ & $3.9 \times 10^{-2}$ & $5.8 \times 10^{-2}$ \\
+  & P-MISE & 0.085 & 0.091 & 0.115 & 0.141 \\ \hline
+\multirow{3}{*}{29} & MISE & 0.072 & 0.076 & 0.093 & 0.111 \\
+ & Variance & $1.8 \times 10^{-2}$ & $2.3 \times 10^{-2}$ & $3.4 \times 10^{-2}$ & $5.0 \times 10^{-2}$ \\
+  & P-MISE & 0.079 & 0.083 & 0.101 & 0.121 \\ \hline
+\multirow{3}{*}{32} & MISE & 0.076 & 0.079 & 0.095 & 0.109 \\
+ & Variance & $1.5 \times 10^{-2}$ & $2.0 \times 10^{-2}$ & $3.2 \times 10^{-2}$ & $4.6 \times 10^{-2}$ \\
+  & P-MISE & 0.076 & 0.079 & 0.095 & 0.109 \\\hline
+\multirow{3}{*}{35} & MISE & 0.083 & 0.085 & 0.099 & 0.114 \\
+ & Variance & $1.4 \times 10^{-2}$ & $2.0 \times 10^{-2}$ & $3.2 \times 10^{-2}$ & $4.7 \times 10^{-2}$ \\
+  & P-MISE & 0.081 & 0.083 & 0.096, & 0.110 \\\hline
+\multirow{3}{*}{37} & MISE & 0.091 & 0.092 & 0.106 & 0.117 \\
+ & Variance & $1.5 \times 10^{-2}$ & $2.4 \times 10^{-2}$ & $3.4 \times 10^{-2}$ & $5.0 \times 10^{-2}$ \\
+  & P-MISE & 0.088 & 0.089 & 0.102 & 0.112 \\\hline
 \end{tabular}
-\caption{Mean-integrated squared error (MISE), variance, and partial MISE as a function of $\Delta^\star$ and sampling rate when true $\Delta = 32$ minutes.}
+\caption{Mean-integrated squared error (MISE), variance, and partial MISE as a function of $\Delta^\star$ and sampling rate when true $\Delta = 32$ minutes.
+% exponential EXAMPLE
+}
 \label{tab:appmise}
 \end{table}
 

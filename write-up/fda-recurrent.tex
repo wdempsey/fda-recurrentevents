@@ -496,8 +496,8 @@ Table~\ref{tab:mise} demonstrates that the variance does increase as the samplin
 
 \begin{table}[!th]
 \begin{tabular}{c | p{2cm} p{2cm} p{2cm} p{2cm} p{2cm}}
-& \multicolumn{4}{c}{Sampling rate (per)} \\ \cline{2-6}
- & X1 & X2 & X3 & X4 & X5 \\ \hline
+& \multicolumn{4}{c}{Sampling rate (per hour)} \\ \cline{2-6}
+ & 12 & 4.0 & 2.0 & 1.0 & 0.5 \\ \hline
 SubS. Variance & - & $1.2 \times 10^{-5}$ & $2.0 \times 10^{-5}$ & $3.5 \times 10^{-5}$ & $8.6 \times 10^{-5}$  \\
 Variance & $1.3 \times 10^{-2}$ & $1.5 \times 10^{-2}$ & $2.1 \times 10^{-2}$ & $2.7 \times 10^{-2}$ & $3.8 \times 10^{-2}$\\
 Squared Bias & $6.3 \times 10^{-2}$ & $6.0 \times 10^{-2}$ & $6.1 \times 10^{-2}$ & $6.1 \times 10^{-2}$ & $6.7 \times 10^{-2}$   \\
@@ -523,27 +523,33 @@ When the window length is too large, i.e., $\Delta > \Delta^\star$, then asympto
 
 \begin{table}[!th]
 \begin{tabular}{c | c c c c c}
-& & \multicolumn{4}{c}{Sampling rate} \\ \cline{3-6}
-$\Delta=$ & & 0.5 & 1 & 2 & 4 \\ \hline
-\multirow{3}{*}{26} & MISE & 0.400 & 0.404 & 0.409 & 0.413 \\
- & Variance & $1.1 \times 10^{-2}$ & $1.3 \times 10^{-2}$ & $1.5 \times 10^{-2}$ & $1.9 \times 10^{-2}$ \\
-  & P-MISE & 0.225 & 0.229 & 0.233 & 0.239 \\ \hline
-\multirow{3}{*}{29} & MISE & 0.240 & 0.243 & 0.244 & 0.251 \\
- & Variance & $9.2 \times 10^{-3}$ & $1.1 \times 10^{-2}$ & $1.2 \times 10^{-2}$ & $1.8 \times 10^{-2}$ \\
-  & P-MISE & 0.107 & 0.109 & 0.111 & 0.117 \\ \hline
-\multirow{3}{*}{32} & MISE & 0.105 & 0.103 & 0.103 & 0.105 \\
- & Variance & $8.0 \times 10^{-3}$ & $8.8 \times 10^{-3}$ & $1.0 \times 10^{-2}$ & $1.4 \times 10^{-2}$ \\
-  & P-MISE & 0.105 & 0.103 & 0.103 & 0.105 \\\hline
-\multirow{3}{*}{35} & MISE & 0.384 & 0.383 & 0.384 & 0.386 \\
- & Variance & $7.0 \times 10^{-3}$ & $7.7 \times 10^{-3}$ & $9.3 \times 10^{-3}$ & $1.1 \times 10^{-2}$ \\
-  & P-MISE & 0.273 & 0.270 & 0.269, & 0.269 \\\hline
-\multirow{3}{*}{37} & MISE & 0.589 & 0.588 & 0.589 & 0.591 \\
- & Variance & $6.0 \times 10^{-3}$ & $6.5 \times 10^{-3}$ & $7.9 \times 10^{-3}$ & $1.0 \times 10^{-2}$ \\
-  & P-MISE & 0.473 & 0.470 & 0.469 & 0.470 \\\hline
+& & \multicolumn{4}{c}{Sampling rate (per hour)} \\ \cline{3-6}
+$\Delta=$ & & 4.0 & 2.0 & 1.0 & 0.5 \\ \hline
+\multirow{3}{*}{26} & MISE & 0.390 & 0.395 & 0.397 & 0.413 \\
+ & Variance & $5.0 \times 10^{-2}$ & $5.3 \times 10^{-2}$ & $5.5 \times 10^{-2}$ & $6.8 \times 10^{-2}$ \\
+  & P-MISE & 0.210 & 0.216 & 0.217 & 0.235 \\ \hline
+\multirow{3}{*}{29} & MISE & 0.220 & 0.225 & 0.224 & 0.238 \\
+ & Variance & $3.7 \times 10^{-2}$ & $4.4 \times 10^{-2}$ & $4.3 \times 10^{-2}$ & $5.5 \times 10^{-2}$ \\
+  & P-MISE & 0.084 & 0.090 & 0.088 & 0.103 \\ \hline
+\multirow{3}{*}{32} & MISE & 0.061 & 0.062 & 0.061 & 0.072 \\
+ & Variance & $2.7 \times 10^{-2}$ & $2.9 \times 10^{-2}$ & $3.0 \times 10^{-2}$ & $4.2 \times 10^{-2}$ \\
+  & P-MISE & 0.061 & 0.062 & 0.061 & 0.072 \\\hline
+\multirow{3}{*}{35} & MISE & 0.246 & 0.247 & 0.249 & 0.255 \\
+ & Variance & $1.9 \times 10^{-2}$ & $2.1 \times 10^{-2}$ & $2.3 \times 10^{-2}$ & $2.9 \times 10^{-2}$ \\
+  & P-MISE & 0.154 & 0.154 & 0.154, & 0.160 \\\hline
+\multirow{3}{*}{37} & MISE & 0.360 & 0.359 & 0.353 & 0.361 \\
+ & Variance & $2.6 \times 10^{-2}$ & $3.3 \times 10^{-2}$ & $3.7 \times 10^{-2}$ & $4.4 \times 10^{-2}$ \\
+  & P-MISE & 0.256 & 0.255 & 0.252 & 0.259 \\\hline
 \end{tabular}
-\caption{Mean-integrated squared error (MISE), variance, and partial MISE as a function of $\Delta^\star$ and sampling rate when true $\Delta = 32$ minutes.}
+\caption{Mean-integrated squared error (MISE), variance, and partial MISE as a function of $\Delta^\star$ and sampling rate when true $\Delta = 32$ minutes.
+% SINE EXAMPLE
+}
 \label{tab:mise_delta}
 \end{table}
+
+
+\subsection{Selection of bandwidth} \label{section:bandwidth}
+
 
 \subsection{Computational comparison to alternative methods} \label{section:simcomparisons}
 
