@@ -1,6 +1,7 @@
 \documentclass[12pt]{amsart}
 \usepackage{amsmath}
 \usepackage{tikz}
+\usepackage{diagbox}
 \usetikzlibrary{matrix,arrows}
 \usepackage{amsfonts,amssymb,amsthm, txfonts, pxfonts,amscd}
 \usepackage[stretch=10]{microtype}
@@ -184,7 +185,7 @@ Since the linear assumption may be too restrictive,~\cite{doi:10.1080/10618600.2
 
 In our setting, the high frequency sensor process is an outcome and must therefore be jointly modeled with the recurrent event process.  Recently, \cite{Li2022} proposed a functional approach to joint modeling of multivariate longitudinal biomarkers and a time-to-event outcome~\citep{Tsiatis2004,Rizopoulos2010}.  Here, as in traditional joint models, the longitudinal biomarker is observed at only a few observation times (typically on the order of tens of observations) and is modelled via a functional principal components analysis.  The eigenscores are the shared parameters across the longitudinal and survival submodels.  A similar joint model was proposed in~\cite{Dong2021}.  Inference proceeds by Monte Carlo EM which can require very large Monte Carlo sample size to ensure good performance, and na{\"i}ve implementation may not recover EM's ascent property~\citep{Caffo2005}.
 
-In this paper, we also consider joint modeling of recurrent events and a high frequency sensor process. In contrast to traditional longitudinal biomarkers, sensor processes are observed multiple times per second leading to thousand and/or millions of observations per individual.  To address this increase in scale, a design-based perspective is taken in which we subsample non-event times to avoid some of the computationally demanding aspects of joint models.  Subsampling in the context of functional data analysis for massive data has recently been investigated~\citep{https://doi.org/10.48550/arxiv.2104.03446} in which a functional L-optimality criterion is derived. Subsampling is different in our current context, as our goal is to subsample from the individual sensor processes to produce a design-unbiased estimate of the cumulative hazard function.  Finally, traditional joint modeling often consider the hazard function to depend on the current or cumulative value of the health process~\citep{Li2022,Rizopoulos2010}. For high frequency sensor processes, we expect the hazard function to only depend on the recent sensor history and use recent history functional linear models~\cite{KIM20111554} to to account for this local dependence.  We combine these models with advances in longitudinal functional data analysis~\citep{Staicu2010} and penalized functional regression~\citep{Goldsmith2015} to perform scalable inference using off-the-shelf software.
+In this paper, we also consider joint modeling of recurrent events and a high frequency sensor process. In contrast to traditional longitudinal biomarkers, sensor processes are observed multiple times per second leading to thousand and/or millions of observations per individual.  To address this increase in scale, a design-based perspective is taken in which we subsample non-event times to avoid some of the computationally demanding aspects of joint models.  Subsampling in the context of functional data analysis for massive data has recently been investigated~\citep{https://doi.org/10.48550/arxiv.2104.03446} in which a functional L-optimality criterion is derived. Subsampling is different in our current context, as our goal is to subsample from the individual sensor processes to produce a design-unbiased estimate of the cumulative hazard function.  Finally, traditional joint modeling often consider the hazard function to depend on the current or cumulative value of the health process~\citep{Li2022,Rizopoulos2010}. For high frequency sensor processes, we expect the hazard function to only depend on the recent sensor history and use recent history functional linear models~\cite{KIM20111554} to account for this local dependence.  We combine these models with advances in longitudinal functional data analysis~\citep{Staicu2010} and penalized functional regression~\citep{Goldsmith2015} to perform scalable inference using off-the-shelf software.
 
 
 \section{Main contributions and outline}
@@ -549,6 +550,26 @@ $\Delta=$ & & 4.0 & 2.0 & 1.0 & 0.5 \\ \hline
 
 
 \subsection{Selection of bandwidth} \label{section:bandwidth}
+
+A critical consideration for recent history functional linear models~\cite{KIM20111554} is the size of the bandwidth, $\Delta$.  While above we explore the bias-variance trade-off under misspecification of $\Delta$, here we develop a data-adaptive method for bandwidth selection.  Specifically, given the model complexity does not change as a function of $\Delta$, our proposal is to simple compare AIC across a range of bandwidths and choose that which maximizes the criterion.
+
+Table~\ref{tab:aic_selection} presents AIC-based selection across the 500 simulated datasets analyzed in the prior section. We see markedly distinct behavior of the selection criterion in the two settings.  The AIC-based selection works well for the sinusoidal effect across subsampling rates, but performs poorly in the exponential setting. Recall that the sinusoidal effect (choice 2) is significantly different from 0 at $\Delta^\star$ and then 0 for all $s > \Delta^\star$ while the exponential effect (choice 1) decays slowly towards 0 as $s \to^{-} \Delta$. Therefore, the selection problem under the sinusoidal effect is much easier than under the exponential effect.  Moreover, bias, variance, and mean-integrated squared error are not substantially harmed by misspecification of the bandwidth in the exponential setting.  Thus, we conclude that the AIC-based selection method works well in settings where inference requires estimating the bandwidth accurately, as desired.
+
+\begin{table}[!th]
+\begin{tabular}{c | c c c c | c c c c}
+& \multicolumn{4}{c}{Exponential} & \multicolumn{4}{c}{Sinusoidal} \\ \hline
+\diagbox{$\Delta=$}{Rate} & 4.0 & 2.0 & 1.0 & 0.5 & 4.0 & 2.0 & 1.0 & 0.5 \\ \hline
+26 & {\bf 0.38} & {\bf 0.35} & {\bf 0.30} & 0.26 & 0.00 & 0.00 & 0.00 & 0.00 \\
+29 & 0.22 & 0.20 & 0.17 & 0.12 & 0.09 & 0.14 & 0.15 & 0.18 \\
+32 & 0.11 & 0.12 & 0.13 & 0.18 & {\bf 0.85} & {\bf 0.79} & {\bf 0.76} & {\bf 0.70} \\
+35 & 0.13 & 0.13 & 0.14 & 0.15 & 0.05 & 0.06 & 0.06 & 0.09 \\
+37 & 0.14 & 0.20 & 0.26 & {\bf 0.28} & 0.01 & 0.01 & 0.02 & 0.03 \\ \hline
+\end{tabular}
+\caption{Selection of bandwidth when true $\Delta = 32$ minutes.
+% SINE EXAMPLE
+}
+\label{tab:aic_selection}
+\end{table}
 
 
 \subsection{Computational comparison to alternative methods} \label{section:simcomparisons}
