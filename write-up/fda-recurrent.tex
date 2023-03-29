@@ -1,4 +1,4 @@
-\documentclass[12pt]{amsart}
+\documentclass[11pt]{amsart}
 \usepackage{amsmath}
 \usepackage{tikz}
 \usepackage{diagbox}
@@ -574,6 +574,7 @@ Table~\ref{tab:aic_selection} presents AIC-based selection across the 500 simula
 
 \subsection{Computational comparison to alternative methods} \label{section:simcomparisons}
 
+Here we address the time-complexity of solving the approximate score equations relative to maximizing the log-likelihood using Lemma~\ref{lemma:logistic}.  The complexity of logistic regression with $n$ observations and covariates of dimension $d$ is $O(nd)$; so maximizing the log-likelihood is well approximated by subsampling with a very high rate so that the design-unbiased score functions have minimal approximation error in comparison to directly maximizing the likelihood function.  Under this assumption, at the final stage we have the relative complexity of $(4 \times 60 \times \tau_i) \cdot n \cdot d$ compared to the expected time-complexity under subsampling with rate $c$ per minute of $(c \times \tau_i) \cdot n \cdot d$.  In practice, this can lead to large differences in run time; specifically, this means sampling every minute rather than every half hour will be approximately $2^5$ times as long (from 5 minutes to 2.8 hours), while sampling every second will take $2^11$ times as long (from 5 minutes to 180 hours).  In our first example, the run time was 356 seconds (approximately 5.9 minutes) when sampling every five minutes.  Thus, if sampling increased to every minute or every second, then run time would increase to approximately 30 minutes and 30 hours respectively.  In our second example, the run time of 18 minutes would increase to 1.5 hours and 90 hours respectively.  In both instances, the relative efficiency gain would be negligible suggesting a huge computational increase for minimal relative information gain.
 
 \section{Extensions}
 \label{section:extensions}
