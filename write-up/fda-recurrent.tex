@@ -172,7 +172,9 @@ Digital monitoring studies collect real-time high frequency data via mobile sens
 
 Advancement in mobile technology has led to the rapid integration of mobile and wearable sensors into behavioral health~\citep{Freeetal2013}. Take HeartSteps, for example, a mobile health (mHealth) study designed to increase physical activity in sedentary adults \citep{KlasnjaHS2019}. Here, a Jawbone sensor is used to monitor step count every minute of the participant's study day. Of interest in many mHealth studies is the relation of such real-time high frequency sensor data to an adverse, recurrent event process. In a smoking cessation mHealth study~\citep{Sense2Stop}, for example, the relation between a time-varying sensor-based measure of physiological stress and smoking lapse is of scientific interest. In a suicidal ideation mHealth study~\citep{Kleiman2018}, the relation of electrodermal activity (EDA) and accelerometer with self-identified moments of suicidal ideation is of scientific interest.
 
-The goal of this paper is two-fold: (1) to discuss the appropriate choice of statistical model for joint high-frequency sensor data and the recurrent event data, and (2) to construct a simple, easy-to-implement method for parameter estimation and inference. For (1), we discuss an important issue regarding measurement-error models when paired with recurrent event outcomes. For (2), we introduce a random subsampling procedure that has several benefits.  First, the resulting inference is unbiased; however, there is a computation-efficiency trade-off. In particular, a higher sampling rate can decrease estimator variance at the cost of increased computation.  We show via simulations that the benefits of very high sampling rates is often negligible, as the contribution to the variation is small relative to the variation in the underlying stochastic processes. Second, derived estimating equations are optimal, implying loss of statistical efficiency is only due to subsampling procedure and not the derived methodology.  Finally, implementation can leverage existing, standard software for functional data analysis and logistic regression, leading to fast adoption by domain scientists.
+The goal of this paper is to construct a simple, easy-to-implement method for parameter estimation and inference.
+% For (1), we discuss an important issue regarding measurement-error models when paired with recurrent event outcomes.
+To do so, we introduce a random subsampling procedure that has several benefits.  First, the resulting inference is unbiased; however, there is a computation-efficiency trade-off. In particular, a higher sampling rate can decrease estimator variance at the cost of increased computation.  We show via simulations that the benefits of very high sampling rates is often negligible, as the contribution to the variation is small relative to the variation in the underlying stochastic processes. Second, derived estimating equations are optimal, implying loss of statistical efficiency is only due to subsampling procedure and not the derived methodology.  Finally, implementation can leverage existing, standard software for functional data analysis and logistic regression, leading to fast adoption by domain scientists.
 
 \subsection{Related work}
 
@@ -240,9 +242,9 @@ In classical joint models~\citep{Henderson2000, Tsiatis2004}, time-varying covar
 The approximate score equations given by~\eqref{eq:approxscore} arise in design-based inference of point processes.  Design-based inference is common for spatial point processes~\citep{Waagepetersen2008} where the spatial varying covariate is observed at a random sample of locations. It is common in mobile health where ecological momentary assessments~\citep{Rathbun2012,Rathbun2016} are used to randomly sample individuals at various time-points to assess their emotional state.  In the current setting, we leverage these ideas to form a subsampling protocol that can substantially reduce computationally complexity.  Therefore, the purpose is quite different. Moreover, the dependence of the intensity function on the recent history of sensor values leads to additional complications that must be addressed.
 \end{rmk}
 
-\begin{rmk}[Assessment of computational benefit]
-Cool we have speed ups.
-\end{rmk}
+% \begin{rmk}[Assessment of computational benefit]
+% Cool we have speed ups.
+% \end{rmk}
 
 \subsection{Probabilistic subsampling framework}
 
@@ -556,7 +558,7 @@ $\Delta=$ & & 4.0 & 2.0 & 1.0 & 0.5 \\ \hline
 \label{tab:mise_delta}
 \end{table}
 
-
+\begin{newmaterial}
 \subsection{Selection of bandwidth} \label{section:bandwidth}
 
 While above we explore the bias-variance trade-off under bandwidth misspecification, here we explore a data-adaptive method for bandwidth selection, a critical consideration for recent history functional linear models~\citep{KIM20111554}.  Specifically, given the model complexity does not change as a function of $\Delta$, our modest proposal is to compare AIC across a range of bandwidths and choose that which maximizes the criterion. Table~\ref{tab:aic_selection} presents AIC-based selection across the 500 simulated datasets analyzed in the prior section. We see markedly distinct behavior of the selection criterion in the two settings.  The AIC-based selection works well for the sinusoidal effect across subsampling rates, but performs poorly in the exponential setting. Recall that the sinusoidal effect is significantly different from 0 at $\Delta^\star$ and then 0 for all $s > \Delta^\star$ while the exponential effect decays slowly towards 0 as $s \to^{-} \Delta$. Therefore, the selection problem under the sinusoidal effect is much easier than under the exponential effect.  Moreover, bias, variance, and MISE do not vary substantially under bandwidth misspecification in the exponential setting.  Thus, we conclude that the AIC-based selection method works well in settings where inference depends heavily on estimating the bandwidth accurately.
@@ -577,6 +579,7 @@ While above we explore the bias-variance trade-off under bandwidth misspecificat
 \label{tab:aic_selection}
 \end{table}
 
+\end{newmaterial}
 
 \subsection{Computational comparison to alternative methods} \label{section:simcomparisons}
 
