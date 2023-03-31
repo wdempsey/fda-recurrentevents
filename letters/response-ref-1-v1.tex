@@ -114,8 +114,7 @@ To accommodate the second referee's request without making the discussion too lo
 \item {\it Both reviewers suggest additional simulation studies. I agree that it would be good to have a numerical benchmark of the magnitude of the computational issue that you allude to in lines 16-28 on page 5, especially for JCGS readership. I don’t think you need references for this, as the reviewer asks, as a numerical example would be more helpful and convincing in this case. However, I think you need another method for comparison, as the simulations are only done for your approach with different sampling rates. Perhaps some suggestions from the first referee could be useful. If some of these alternatives are computationally prohibitive, then doing a computational numerical comparison on even 1 rep will provide a convincing argument for why those methods are not tried.}
 
 \vspace{5mm}
-There does not exist a model that can do all so measures of bias and estimation accuracy may be inappropriate.  To handle this, we simply look at the average or the exponentially weighted where we can conceptualize it as a pre-processing step.  Then we can apply traditional joint models.  The issue is that the traditional jiont model cannot scale to this problem.  Instead, we
-In Section XX, we perform the comparison in a simulation when compared to an unpenalized $K_x = 10$ linear spline model.  WE see that both are unbiased and our glmnet takes XX minutes while joint modeling took over XX hours.  To further this comparison, we perform a back-of-the-envelope calculation.
+As far as the author is aware, there does not exist a joint modeling package that can estimate the proposed model directly; one way would be assume you know the functional form of the parameter but not the scale.  Comparison of measures of bias, estimation accuracy, and numerical speed under this approach to our methodology which learns the functional form are likely inappropriate. To address the reviewers concern, we now highlight the extent of the numerical issues in Remark 5.1.  Specifically, running a traditional joint model will take a similar time to running our approach under very high subsampling frequencies, i.e., at the sensor measurement rate.  We now subsample at a rate of every five minutes, fifteen minutes, thirty minutes, one hour, and two hours in our simulation section.  Using a time-complexity analysis (supported by the simulations), we can extrapolate run times when sampling at 4Hz to a standard joint model needing approximately 2 and 6.2 hours to run in our two settings respectively; at 32Hz this would be 16 and 50.1 hours respectively. These are extremely high run times when we compare to a run-time of 1.8 and 3.5 minutes when subsampling at rate of every fifteen minutes.  Moreover, the benefits in terms of variance, squared bias, and MISE appear almost negligible.
 \vspace{5mm}
 
 \item {\it I also have additional comments that were not raised. A major one is the absence of code. A user-friendly software with the method’s implementation and documentation is a must for accepted JCGS papers. Please provide the code so that the results are reproducible.}
@@ -149,7 +148,7 @@ I am very grateful to the referee for the incredibly detailed review.  The detai
 \item {\it The introduction it quite lacking. Please add more background literature review of prevailing/latest approaches (particularly in the area of joint modeling of longitudinal and time to event data) to the introduction.}
 
 \vspace{5mm}
-We have added a detailed discussion of related work in Section 1.1, which includes the specific suggestions on relevant works provided by the second referee; specifically, we discuss recent modeling of time-to-event data with functional covariates as well as joint modelling from a functional regression perspective.  We contrast these approaches with our design-based approach which becomes necessary when considering high-frequency sensor processes rather than traditional longitudinal studies as the number of measurement occasions increase from tens to thousands/millions of times per individual.  We connect and contrast our use of subsampling with the general use of subsampling in handling massive data and its recent use in massive data with functional predictors.  As stated by the second referee, our proposed joint model includes a recent history functional linear model which we now link with the previous work by Damla Senturk and others.  This motivates Section XX which provides additional empirical study and discussion of the tuning parameter~$\Delta$.
+We have added a detailed discussion of related work in Section 1.1, which includes the specific suggestions on relevant works provided by the second referee; specifically, we discuss recent modeling of time-to-event data with functional covariates as well as joint modelling from a functional regression perspective.  We contrast these approaches with our design-based approach which becomes necessary when considering high-frequency sensor processes rather than traditional longitudinal studies as the number of measurement occasions increase from tens to thousands/millions of times per individual.  We connect and contrast our use of subsampling with the general use of subsampling in handling massive data and its recent use in massive data with functional predictors.  As stated by the second referee, our proposed joint model includes a recent history functional linear model which we now link with the previous work by Damla Senturk and others.  This motivates Section 5.2 which provides an empirical study of choosing the tuning parameter~$\Delta$ using an AIC-based selection criteria.
 \vspace{5mm}
 
 \item {\it The measurement error part can be added to the end with other exten-
@@ -174,13 +173,13 @@ Both of these were defined in Section 3 but we agree that the definitions were o
 \item {\it How did you get the equation in line 24, page 4.}
 
 \vspace{5mm}
-We believe the referee is referring to the log-likelihood related to the event process.   Conditional on the sensor process over the observation window $[0,\tau_i]$, i.e.,~$\{ x_i (t) \}_{t=0}^{\tau_i}$, we define the conditional intensity according to equation (2).  Then the probability of the observed event times per person follows from $\exp \left( - H_i (\tau_i ; \theta) \right) \prod_{j=1}^{k_i} h \left(T_{i,j};\theta \right)$.  Thus the log-likelihood of the even process is given by $L_n (\theta)$.
+We believe the referee is referring to the log-likelihood related to the event process.   Conditional on the sensor process over the observation window $[0,\tau_i]$, i.e.,~$\{ x_i (t) \}_{t=0}^{\tau_i}$, we define the conditional intensity according to equation (2).  Then the probability of the observed event times per person follows from $\exp \left( - H_i (\tau_i ; \theta) \right) \prod_{j=1}^{k_i} h \left(T_{i,j};\theta \right)$.  Thus the log-likelihood of the event process is given by $L_n (\theta)$.
 \vspace{5mm}
 
 \item {\it In line 39, page 4, by assuming $\epsilon(t) = 0$, you assume there is no measurement error? Why is section 2.1 called measurement error if the error is 0? Should this be named missing data section instead?}
 
 \vspace{5mm}
-The key point raised on page 4 (now in Appendix XX), is that if $\epsilon(t)$ is not equivalently zero, your model assumes risk of an event at time $t$ depends on both the current and future measurements of the process ${\bf x}_i$. We argue this is not sensible since current risk should not depend on future risk and thus set $\epsilon(t) = 0$.
+The key point raised on page 4 of the original submission is that if $\epsilon(t)$ is not equivalently zero, your model assumes risk of an event at time $t$ depends on both the current and future measurements of the process ${\bf x}_i$. We argue this is not sensible since current risk should not depend on future risk and thus set $\epsilon(t) = 0$.
 \vspace{5mm}
 
 \item  {\it Is $\theta$ defined anywhere prior to section 2.2?}
@@ -296,12 +295,12 @@ We have now included the statement of how we define optimality in the main paper
 We have moved the discussion of confidence bands to follow Lemma 3.5 (now 4.5) given that it is directly a consequence of the asymptotic result.  We then  discuss penalization in a subsequent section which is employed due to the potential complexity induced by choosing $K_b$ large enough for the assumption $\beta (t) =\phi (t) b^\star$ to hold.
 \vspace{5mm}
 
-\item The ``original'' score equation Page 5, line 9 involves
+\item {\it The ``original'' score equation Page 5, line 9 involves
 $$
 H_i (\tau_i ;\theta) = \int_{t=0}^{\tau_i} h_i (t; \theta)dt = \int_0^{\tau_i} \left[ h_0 (t;\gamma) \exp \left( g_t (H_{i,t}^N)^\top \alpha + \int_{s=t-\Delta}^t x_i (s) \beta(t) ds \right) \right] dt
 $$
 In the subsampled version you suggest in equation 6, page 6, you essentially replace $H_i (\tau_i; \theta)$ computation with $h_i (u; \theta)$, $u \in D_i$. How much time would it take to solve the full likelihood equation that will involve the above equation (1) directly? With the basis expansion strategy, you
-would will be estimating the same number of parameters. This type of approach should be added to simulations and evaluated for accuracy and time complexity.
+would will be estimating the same number of parameters. This type of approach should be added to simulations and evaluated for accuracy and time complexity.}
 
 \vspace{5mm}
 We really appreciate this question which has helped clarify an important element of the paper.  To address this question, we have added Section XX to evaluate the accuracy and time complexity.  We recap some of our discussion here for convenience.
