@@ -192,10 +192,8 @@ It was used in equation (1) to refer to all the parameters underlying the model 
 the extent of the problem.}
 
 \vspace{5mm}
-We have added Remark XX and Section XX in the simulation study to give additional details and empirical evidence. First, there are two areas where we have computational improvements.  First, in the inner integral, we have
-
-Second, even if we have computed $\int_{t-\Delta} x(t-s)\beta(s) ds$
-We explain that if we were to compute it would have to be as a function of $\beta(s)$.  We implement a naive and demonstrate numerically the computational cost.  Specifically, each computation in simulation takes XXseconds, and we must compute this XX times to compute the likel
+We have added Remark 5.1 and improved our simulation study to give additional details and empirical evidence. There are two areas where we have computational improvements.  First, in the inner integral, we have to compute $\int_{t-\Delta} X(t,s)\beta(s) ds$ without knowing the functional form of $\beta(s)$; we leverage traditional functional data analysis approaches to convert this into a parametric problem given the Karhunen-Lo{\`e}ve decomposition of $X(t,s)$ and a flexible spline decomposition of~$\beta(s)$.
+Second, even if we have computed $\int_{t-\Delta} x(t-s)\beta(s) ds$, we would still need to integrate over $t$, which is highly non-trivial.  Performing this integration directly, would then lead to a gradient-based method for maximizing the log-likelihood. We now highlight the extent of the numerical issues in Remark 5.1.  Specifically, running a traditional joint model with such a gradient-based method will take a similar time to running our approach under very high subsampling frequencies, i.e., at the sensor measurement rate.  We now subsample at a rate of every five minutes, fifteen minutes, thirty minutes, one hour, and two hours in our simulation section.  Using a time-complexity analysis (supported by the simulations), we can extrapolate run times when sampling at 4Hz to a standard joint model needing approximately 2 and 6.2 hours to run in our two settings respectively; at 32Hz this would be 16 and 50.1 hours respectively. These are extremely high run times when we compare to a run-time of 1.8 and 3.5 minutes when subsampling at rate of every fifteen minutes.  Moreover, the benefits in terms of variance, squared bias, and MISE appear almost negligible.
 \vspace{5mm}
 
 \item {\it Page 5, line 51, what is $t_i$?}
