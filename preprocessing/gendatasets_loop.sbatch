@@ -1,15 +1,14 @@
 #!/bin/bash
 
+#SBATCH --mail-user=wdem@umich.edu
+#SBATCH --cpus-per-task=1
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=30
-#SBATCH -p murphy
-#SBATCH --mem-per-cpu=4000
-#SBATCH -t 1-00:00              # Runtime in D-HH:MM
-
-# --ntasks-per-node will be used in doParallel.R to specify the number of 
-# cores to use on the machine. 
-# The murphy lab partition has 32 cores per node.
-# The general partition has 64 cores per node.
+#SBATCH --ntasks-per-node=1
+#SBATCH --mem-per-cpu=1000m
+#SBATCH --time=01:00:00
+#SBATCH --account=wdem1
+#SBATCH --partition=standard
+#SBATCH --output=/home/wdem/fda-recurrentevents/preprocessing/gendatasset.log
 
 cd $SLURM_SUBMIT_DIR
 
@@ -21,8 +20,8 @@ source new-modules.sh
 # Load required software modules
 
 # Simple R setup
-module load R/3.5.1-fasrc01
+module load R/4.2.0
 
 # Run program
-Rscript generate_dataset.R
+Rscript generate_dataset.R 5 15 30 > ./gendatasets.Rout
 

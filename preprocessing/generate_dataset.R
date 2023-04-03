@@ -7,6 +7,7 @@
 ## Outputs: event_complete.RDS and nonevent_complete.RDS
 source('./gendata_functions.R')
 sampling_rate = 2 ## Every 30 minutes
+Delta = 30 ## Window-length.  Will Tune to 5,15, and 30
 require(lubridate)
 
 ## Windows
@@ -48,13 +49,13 @@ for (id in 1001:1091) {
     sampled_times = generate_noneventtimes(eda$timestamp, sampling_rate, max.iters = 20000)
     
     print("And now onto EDA calculations")
-    eda_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_eda_apply(iter, sequence_eda, id_bp, eda)
-    eda_output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind) %dopar% nonevent_approximate_eda_apply(iter, sequence_eda, sampled_times, eda)
+    eda_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_eda_apply(iter, sequence_eda, id_bp, Delta, eda)
+    eda_output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind) %dopar% nonevent_approximate_eda_apply(iter, sequence_eda, sampled_times, Delta, eda)
     
     print("And now onto ACC calculations")
     acc = readRDS(acc_file_name)
-    acc_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_acc_apply(iter, sequence_acc, id_bp, acc)
-    acc_output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind) %dopar% nonevent_approximate_acc_apply(iter, sequence_acc, sampled_times, acc)
+    acc_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_acc_apply(iter, sequence_acc, id_bp, Delta, acc)
+    acc_output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind) %dopar% nonevent_approximate_acc_apply(iter, sequence_acc, sampled_times, Delta, acc)
     
     ## Define time as since minimum time in EDA or ID_BP
     id_bp$timestamp = as_datetime(id_bp$ts)
@@ -106,8 +107,8 @@ for (id in 1001:1091) {
     print(paste("Current number of rows for sampled times:", nrow(acc_nonevent_complete)))
   }
 }  
-saveRDS(object = eda_event_complete, file = paste("eda_event_complete_HLP_", today(), ".RDS", sep = ""))
-saveRDS(object = eda_nonevent_complete, file = paste("eda_nonevent_complete_HLP_", today(), ".RDS", sep = ""))
+saveRDS(object = eda_event_complete, file = paste("eda_event_complete_Delta_",Delta, "_HLP_", today(), ".RDS", sep = ""))
+saveRDS(object = eda_nonevent_complete, file = paste("eda_nonevent_complete_Delta_",Delta, "_HLP_", today(), ".RDS", sep = ""))
 
-saveRDS(object = acc_event_complete, file = paste("acc_event_complete_HLP_", today(), ".RDS", sep = ""))
-saveRDS(object = acc_nonevent_complete, file = paste("acc_nonevent_complete_HLP_", today(), ".RDS", sep = ""))
+saveRDS(object = acc_event_complete, file = paste("acc_event_complete_Delta_",Delta, "_HLP_", today(), ".RDS", sep = ""))
+saveRDS(object = acc_nonevent_complete, file = paste("acc_nonevent_complete_Delta_",Delta, "_HLP_", today(), ".RDS", sep = ""))
