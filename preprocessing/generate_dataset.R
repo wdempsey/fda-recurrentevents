@@ -7,7 +7,20 @@
 ## Outputs: event_complete.RDS and nonevent_complete.RDS
 source('./gendata_functions.R')
 sampling_rate = 2 ## Every 30 minutes
-Delta = 30 ## Window-length.  Will Tune to 5,15, and 30
+
+# test if there is at least one argument: if not, return an error
+print("Made it to window length")
+args <- commandArgs(trailingOnly = TRUE)
+if (length(args)==0) {
+  print("Using default value!")
+  Delta = 30
+} else if (length(args)>=1) {
+  # default output file
+  Delta = as.numeric(args)
+}
+cat(paste0("Window length is ", Delta, "\n"))
+
+
 require(lubridate)
 
 ## Windows
