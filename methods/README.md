@@ -13,8 +13,9 @@ Steps to run code are as follows:
 
 The order of operations is then
 - Run `mean_cov_estimation.R` 
-- Run `likelihood_computation.R` to get fixed effect model
-- Use the output as initialization and run `pagq_likelihood_computation.R` to fit the mixed-effects model.  This completes the complete-case analysis.
-- Then run [bootstrap](bootstrap.R) $200$ times.
+- Run `likelihood_computation.R` to get fixed effect model. 
+- Run this for each choice of Delta and choose that which maximizes AIC. This completes the complete-case analysis.
+- For optimal Delta, then run [bootstrap](bootstrap.R) $200$ times.
 - For each boostrapped sample, impute missing rows using  `imputation.R`.
 - Then re-run main analysis to get fixed effects estimates per dataset.
+

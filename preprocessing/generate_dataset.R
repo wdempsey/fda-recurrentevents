@@ -26,9 +26,9 @@ require(lubridate)
 ## Windows
 setwd("Z:/SI_data/")
 ## Linux
-setwd("/mnt/turbo/SI_data/")
+# setwd("/mnt/turbo/SI_data/")
 ## GREAT LAKES
-setwd("/nsf/turbo/sph-wdem/SI_data")
+# setwd("/nsf/turbo/sph-wdem/SI_data")
 
 buttonpress = readRDS("./R21_Study - tags/button_presses.RDS")
 
@@ -62,13 +62,13 @@ for (id in 1001:1091) {
     sampled_times = generate_noneventtimes(eda$timestamp, sampling_rate, max.iters = 20000)
     
     print("And now onto EDA calculations")
-    eda_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_eda_apply(iter, sequence_eda, id_bp, Delta, eda)
-    eda_output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind) %dopar% nonevent_approximate_eda_apply(iter, sequence_eda, sampled_times, Delta, eda)
+    eda_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind, .packages = 'lubridate') %dopar% approximate_eda_apply(iter, sequence_eda, id_bp, Delta, eda)
+    eda_output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind, .packages = 'lubridate') %dopar% nonevent_approximate_eda_apply(iter, sequence_eda, sampled_times, Delta, eda)
     
     print("And now onto ACC calculations")
     acc = readRDS(acc_file_name)
-    acc_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind) %dopar% approximate_acc_apply(iter, sequence_acc, id_bp, Delta, acc)
-    acc_output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind) %dopar% nonevent_approximate_acc_apply(iter, sequence_acc, sampled_times, Delta, acc)
+    acc_output_event = foreach(iter=1:nrow(id_bp), .combine=rbind, .packages = 'lubridate') %dopar% approximate_acc_apply(iter, sequence_acc, id_bp, Delta, acc)
+    acc_output_nonevent = foreach(iter=1:length(sampled_times), .combine=rbind, .packages = 'lubridate') %dopar% nonevent_approximate_acc_apply(iter, sequence_acc, sampled_times, Delta, acc)
     
     ## Define time as since minimum time in EDA or ID_BP
     id_bp$timestamp = as_datetime(id_bp$ts)
