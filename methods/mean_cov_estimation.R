@@ -15,9 +15,10 @@
   
 setwd("Z:/SI_data/")
 set_of_types = c("eda", "acc")
+Delta = 30
 for (type in set_of_types){
   event_complete = readRDS(paste(type, "_event_complete_HLP_2021-11-20.RDS", sep = ""))
-  sequence = seq(0,-30, length.out = ncol(event_complete) - 3); sensor_obs = 4:ncol(event_complete)
+  sequence = seq(0,-Delta, length.out = ncol(event_complete) - 3); sensor_obs = 4:ncol(event_complete)
   # plot(sequence, event_complete[3,sensor_obs], type = "l")
 
   library(refund); library(lubridate)
@@ -41,7 +42,7 @@ for (type in set_of_types){
   }
   Sigma_est <- fbps(Sigma)
   final_Sigma = (Sigma_est$Yhat + t(Sigma_est$Yhat))/2
-  saveRDS(object = final_Sigma, file = paste(type, "_event_Sigma_",today(),".RDS", sep=""))
+  saveRDS(object = final_Sigma, file = paste(type, "_event_Sigma_Delta_",Delta,"_",today(),".RDS", sep=""))
   eig_Sigma_est = eigen(final_Sigma)
 
   eig_vectors = eig_Sigma_est$vectors
@@ -60,7 +61,7 @@ for (type in set_of_types){
   if(type == "eda") {legend_name = "EDA"} else{legend_name = "ACC"}
   par(mar = c(4,3,2,1)+ 0.1)
   png(filename = paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/",
-                       type, "_fda_fitplot.png", sep = ""),
+                       type, "_fda_Delta_",Delta,"_fitplot.png", sep = ""),
       width = 600, height = 480, units = "px", pointsize = 12)
   plot(sequence, phi_vectors%*%coef[obs,]/inflation + est$Yhat[obs,], type = "l", axes = FALSE, xlab = "Time until button press", 
        ylab = "", col = "red", lwd = 2, ylim = c(min(Y[obs,]), max(Y[obs,]))) # , ylim = c(0.02,0.08))
@@ -73,49 +74,14 @@ for (type in set_of_types){
   ## Timestamps
   timestamp = event_complete[full_obs,2]
   ## SAVE THE MEAN, COEFFICIENT MATRIX, AND FIRST K EIGEN VECTORS
-  saveRDS(object = est$Yhat, file = paste(type, "_lin_event_means_",today(),".RDS", sep=""))
-  saveRDS(object = coef/inflation, file = paste(type, "_lin_event_coef_matrix_",today(),".RDS", sep=""))
-  saveRDS(object = phi_vectors, file = paste(type, "_lin_event_eigen_vectors_",today(),".RDS", sep=""))
-  saveRDS(object = x, file = paste(type, "_lin_event_complete_case_timesincebaseline_",today(),".RDS", sep=""))
-  saveRDS(object = timestamp, file = paste(type, "_lin_event_complete_case_timestamp_",today(),".RDS", sep=""))
+  saveRDS(object = est$Yhat, file = paste(type, "_lin_event_means_Delta_",Delta,"_",today(),".RDS", sep=""))
+  saveRDS(object = coef/inflation, file = paste(type, "_lin_event_coef_matrix_Delta_",Delta,"_",today(),".RDS", sep=""))
+  saveRDS(object = phi_vectors, file = paste(type, "_lin_event_eigen_vectors_Delta_",Delta,"_",today(),".RDS", sep=""))
+  saveRDS(object = x, file = paste(type, "_lin_event_complete_case_timesincebaseline_Delta_",Delta,"_",today(),".RDS", sep=""))
+  saveRDS(object = timestamp, file = paste(type, "_lin_event_complete_case_timestamp_Delta_",Delta,"_",today(),".RDS", sep=""))
   saveRDS(object = as.numeric(event_complete[full_obs,1]), 
-          file = paste(type, "_lin_event_complete_case_ids_",today(),".RDS", sep=""))
+          file = paste(type, "_lin_event_complete_case_ids_Delta_",Delta,"_",today(),".RDS", sep=""))
   
-
-  ## NOW DO QUADRATIC TERMS
-  mu = rowMeans(Y)
-  quad_Y = sweep(Y,1,mu)^2
-  est <- fbps(quad_Y,list(x=x,z=z))
-
-  ## COMPUTE ESTIMATED MARGINAL COVARIANCE
-  inflation = 100
-  residual = inflation*(Y-est$Yhat)
-  ## TAKE PAIRS OF ROWS and CALCULATE THE MSE
-  print(paste("Made it to event, qudratic Sigma calc for", type))
-  Sigma = matrix(nrow = ncol(residual), ncol = ncol(residual))
-  for (i in 1:ncol(residual)) {
-    for (j in 1:ncol(residual)) {
-      Sigma[i,j] = sum(residual[,i]*residual[,j])/nrow(residual)
-    }
-  }
-  Sigma_est <- fbps(Sigma)
-  final_Sigma = (Sigma_est$Yhat + t(Sigma_est$Yhat))/2
-  eig_Sigma_est = eigen(final_Sigma)
-
-  eig_vectors = eig_Sigma_est$vectors
-  eig_values = eig_Sigma_est$values
-
-  eig_values[eig_values<0] = 0
-
-  print(paste("Variance explained: ", (cumsum(eig_values)/sum(eig_values))[K]))
-  K = 35
-  phi_vectors = eig_vectors[,1:K]
-  coef = residual%*%phi_vectors
-
-  ## SAVE THE MEAN, COEFFICIENT MATRIX, AND FIRST K EIGEN VECTORS
-  saveRDS(object = est$Yhat, file = paste(type, "_quad_event_means_",today(),".RDS", sep=""))
-  saveRDS(object = coef/inflation, file = paste(type, "_quad_event_coef_matrix_",today(),".RDS", sep=""))
-  saveRDS(object = phi_vectors, file = paste(type, "_quad_event_eigen_vectors_",today(),".RDS", sep=""))
 }
 
 ## CLEAR WORKSPACE
