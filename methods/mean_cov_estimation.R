@@ -12,12 +12,16 @@
 ## Note: one can check if reconstruction is good by taking
 ## hatX(t,s) = coefficients%*%eigenvectors + mu(t,s) 
 ## And seeing how close hatX(t,s) is to X(t,s).
-  
-setwd("Z:/SI_data/")
+
+## WINDOWS
+# setwd("Z:/SI_data/")
+## LINUX
+setwd("/mnt/turbo/SI_data/")
+
 set_of_types = c("eda", "acc")
-Delta = 30
+Delta = 15
 for (type in set_of_types){
-  event_complete = readRDS(paste(type, "_event_complete_HLP_2021-11-20.RDS", sep = ""))
+  event_complete = readRDS(paste(type, "_event_complete_Delta_",Delta,"_HLP_2023-04-06.RDS", sep = ""))
   sequence = seq(0,-Delta, length.out = ncol(event_complete) - 3); sensor_obs = 4:ncol(event_complete)
   # plot(sequence, event_complete[3,sensor_obs], type = "l")
 
@@ -60,7 +64,7 @@ for (type in set_of_types){
   optcoef = residual%*%optphi_vectors
   if(type == "eda") {legend_name = "EDA"} else{legend_name = "ACC"}
   par(mar = c(4,3,2,1)+ 0.1)
-  png(filename = paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/",
+  png(filename = paste("~/Documents/github/fda-recurrentevents/figures/",
                        type, "_fda_Delta_",Delta,"_fitplot.png", sep = ""),
       width = 600, height = 480, units = "px", pointsize = 12)
   plot(sequence, phi_vectors%*%coef[obs,]/inflation + est$Yhat[obs,], type = "l", axes = FALSE, xlab = "Time until button press", 
@@ -87,12 +91,13 @@ for (type in set_of_types){
 ## CLEAR WORKSPACE
 rm(list=ls()) 
 ## WINDOWS
-setwd("Z:/SI_data/")
+# setwd("Z:/SI_data/")
 ## Linux
+setwd("/mnt/turbo/SI_data/")
 set_of_types = c("eda", "acc")
-Delta = 30
+Delta = 15
 for (type in set_of_types){
-  nonevent_complete = readRDS(paste(type, "_nonevent_complete_HLP_2021-11-20.RDS", sep=""))
+  nonevent_complete = readRDS(paste(type, "_nonevent_complete_Delta_",Delta,"_HLP_2023-04-06.RDS", sep = ""))
   sequence = seq(0,-Delta,length.out = ncol(nonevent_complete) - 3); sensor_obs = 4:ncol(nonevent_complete)
   # plot(sequence, nonevent_complete[4,sensor_obs])
   
