@@ -14,9 +14,9 @@
 ## And seeing how close hatX(t,s) is to X(t,s).
 
 ## WINDOWS
-# setwd("Z:/SI_data/")
+setwd("Z:/SI_data/")
 ## LINUX
-setwd("/mnt/turbo/SI_data/")
+# setwd("/mnt/turbo/SI_data/")
 
 set_of_types = c("eda", "acc")
 Delta = 15
@@ -64,7 +64,8 @@ for (type in set_of_types){
   optcoef = residual%*%optphi_vectors
   if(type == "eda") {legend_name = "EDA"} else{legend_name = "ACC"}
   par(mar = c(4,3,2,1)+ 0.1)
-  png(filename = paste("~/Documents/github/fda-recurrentevents/figures/",
+  png(filename = paste("~/GitHub/fda-recurrentevents/figures/",
+  # png(filename = paste("~/Documents/github/fda-recurrentevents/figures/",
                        type, "_fda_Delta_",Delta,"_fitplot.png", sep = ""),
       width = 600, height = 480, units = "px", pointsize = 12)
   plot(sequence, phi_vectors%*%coef[obs,]/inflation + est$Yhat[obs,], type = "l", axes = FALSE, xlab = "Time until button press", 
