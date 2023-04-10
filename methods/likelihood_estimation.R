@@ -1,7 +1,7 @@
 ## WINDOWS
-setwd("Z:/SI_data/")
+# setwd("Z:/SI_data/")
 ## LINUX 
-# setwd('/mnt/turbo/SI_data/')
+setwd('/mnt/turbo/SI_data/')
 
 ## LIBRARIES
 library(ggplot2)
@@ -18,7 +18,7 @@ eda_nonevent_model.matrix = readRDS(paste("eda_nonevent_complete_Delta_",Delta,"
 
 ## GENERATE SPLINES
 K_b = 35
-num=K_b-3
+num=K_b-2
 qtiles <- seq(0, 1, length = num + 2)[-c(1, num + 2)]
 ## EDA
 eda_sequence <- seq(-30,0, by = 1/60)
@@ -28,7 +28,7 @@ print("Generated EDA Splines")
 ## ACC 
 acc_sequence <- seq(-30,0, by = 1/6)
 acc_knots <- quantile(acc_sequence, qtiles)
-acc_bb = cbind(1, acc_sequence, acc_sequence^2, sapply(acc_knots, function(k) ((acc_sequence - k > 0) * (acc_sequence - k)) ^ 2))
+acc_bb = cbind(1, acc_sequence, sapply(acc_knots, function(k) ((acc_sequence - k > 0) * (acc_sequence - k))))
 print("Generated ACC Splines")
 ## PULL IN PI_IDS
 log_sampling_rate = log(0.5)
