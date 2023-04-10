@@ -19,9 +19,11 @@ setwd("Z:/SI_data/")
 # setwd("/mnt/turbo/SI_data/")
 
 set_of_types = c("eda", "acc")
-Delta = 15
+Delta = 30
 for (type in set_of_types){
   event_complete = readRDS(paste(type, "_event_complete_Delta_",Delta,"_HLP_2023-04-06.RDS", sep = ""))
+  keep_column = apply(X = event_complete, MARGIN = 2, function(x) (!all(is.na(x))))
+  event_complete = event_complete[,keep_column]
   sequence = seq(0,-Delta, length.out = ncol(event_complete) - 3); sensor_obs = 4:ncol(event_complete)
   # plot(sequence, event_complete[3,sensor_obs], type = "l")
 
@@ -53,7 +55,7 @@ for (type in set_of_types){
   eig_values = eig_Sigma_est$values
 
   eig_values[eig_values<0] = 0
-  K = 35
+  K = min(35, length(eig_values))
   print(paste("Variance explained: ", (cumsum(eig_values)/sum(eig_values))[K]))
   phi_vectors = eig_vectors[,1:K]
   coef = residual%*%phi_vectors
@@ -92,13 +94,15 @@ for (type in set_of_types){
 ## CLEAR WORKSPACE
 rm(list=ls()) 
 ## WINDOWS
-# setwd("Z:/SI_data/")
+setwd("Z:/SI_data/")
 ## Linux
-setwd("/mnt/turbo/SI_data/")
+# setwd("/mnt/turbo/SI_data/")
 set_of_types = c("eda", "acc")
-Delta = 15
+Delta = 30
 for (type in set_of_types){
   nonevent_complete = readRDS(paste(type, "_nonevent_complete_Delta_",Delta,"_HLP_2023-04-06.RDS", sep = ""))
+  keep_column = apply(X = nonevent_complete, MARGIN = 2, function(x) (!all(is.na(x))))
+  nonevent_complete = nonevent_complete[,keep_column]
   sequence = seq(0,-Delta,length.out = ncol(nonevent_complete) - 3); sensor_obs = 4:ncol(nonevent_complete)
   # plot(sequence, nonevent_complete[4,sensor_obs])
   
@@ -139,7 +143,7 @@ for (type in set_of_types){
   
   eig_values[eig_values<0] = 0
   
-  K = 35
+  K = min(35, length(eig_values))
   print(paste("Variance explained: ", (cumsum(eig_values)/sum(eig_values))[K]))
   phi_vectors = eig_vectors[,1:K]
   coef = residual%*%phi_vectors

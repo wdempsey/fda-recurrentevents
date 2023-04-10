@@ -1,7 +1,7 @@
 ## WINDOWS
 setwd("Z:/SI_data/")
 ## LINUX 
-setwd('/mnt/turbo/SI_data/')
+# setwd('/mnt/turbo/SI_data/')
 
 ## LIBRARIES
 library(ggplot2)
@@ -9,11 +9,12 @@ library('dplyr')
 
 ## Read in acc and eda model.matrix
 ## ACC
-acc_event_model.matrix = readRDS("acc_event_modelmatrix_2021-12-21.RDS")
-acc_nonevent_model.matrix = readRDS("acc_nonevent_modelmatrix_2021-12-21.RDS")
+Delta = 30
+acc_event_model.matrix = readRDS(paste("acc_event_complete_Delta_",Delta,"_HLP_2023-04-06.RDS", sep = ""))
+acc_nonevent_model.matrix = readRDS(paste("acc_nonevent_complete_Delta_",Delta,"_HLP_2023-04-06.RDS", sep = ""))
 ## EDA
-eda_event_model.matrix = readRDS("eda_event_modelmatrix_2021-12-21.RDS")
-eda_nonevent_model.matrix = readRDS("eda_nonevent_modelmatrix_2021-12-21.RDS")
+eda_event_model.matrix = readRDS(paste("eda_event_complete_Delta_",Delta,"_HLP_2023-04-06.RDS", sep = ""))
+eda_nonevent_model.matrix = readRDS(paste("eda_nonevent_complete_Delta_",Delta,"_HLP_2023-04-06.RDS", sep = ""))
 
 ## GENERATE SPLINES
 K_b = 35
@@ -22,7 +23,7 @@ qtiles <- seq(0, 1, length = num + 2)[-c(1, num + 2)]
 ## EDA
 eda_sequence <- seq(-30,0, by = 1/60)
 eda_knots <- quantile(eda_sequence, qtiles)
-eda_bb = cbind(1, eda_sequence, eda_sequence^2, sapply(eda_knots, function(k) ((eda_sequence - k > 0) * (eda_sequence - k)) ^ 2))
+eda_bb = cbind(1, eda_sequence, sapply(eda_knots, function(k) ((eda_sequence - k > 0) * (eda_sequence - k))))
 print("Generated EDA Splines")
 ## ACC 
 acc_sequence <- seq(-30,0, by = 1/6)
@@ -48,7 +49,7 @@ n.tmp = length(acc_Y)
 p.tmp = ncol(acc_model.matrix)
 subsample_offset = rep(log_sampling_rate,nrow(acc_model.matrix))
 p.fac = rep(1, ncol(acc_model.matrix))
-p.fac[1:3] = 0 #no penalty on the first 3 variables ## HOW IS INTERCEPT HANDLED?
+p.fac[1:2] = 0 #no penalty on the first 2 variables ## HOW IS INTERCEPT HANDLED?
 # set.seed("97139817")
 # Start the clock!
 acc_model.matrix = as.matrix(acc_model.matrix)
@@ -73,8 +74,8 @@ fisher_info = t(X)%*%W%*%X
 ridge_penalty = diag(ridge.fit.lambda*c(1,p.fac))
 Sigma = solve(fisher_info+ridge_penalty)
 updated_Sigma = Sigma[-1,-1]
-stderr = sqrt(diag(acc_bb%*%updated_Sigma%*%t(acc_bb)))
-betaHat.net <- acc_bb %*% ridge.coef
+acc_stderr = sqrt(diag(acc_bb%*%updated_Sigma%*%t(acc_bb)))
+acc_betaHat.net <- acc_bb %*% ridge.coef
 
 df_acc_summary <- data.frame(sequence = acc_sequence+30, estimate = acc_betaHat.net,
                              lowerCI = acc_betaHat.net - 1.96 * acc_stderr,
@@ -90,7 +91,7 @@ ggplot(df_acc_summary, aes(x=sequence, y=estimate)) +
   geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
   annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
   xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
-dev.off()
+ dev.off()
 
 ### EDA
 eda_Y = c(rep(1,nrow(eda_event_model.matrix)), rep(0, nrow(eda_nonevent_model.matrix)))
@@ -102,7 +103,7 @@ n.tmp = length(eda_Y)
 p.tmp = ncol(eda_model.matrix)
 subsample_offset = rep(log_sampling_rate,nrow(eda_model.matrix))
 p.fac = rep(1, ncol(eda_model.matrix))
-p.fac[1:3] = 0 #no penalty on the first 3 variables
+p.fac[1:2] = 0 #no penalty on the first 3 variables
 
 # set.seed("97139817")
 # Start the clock!
