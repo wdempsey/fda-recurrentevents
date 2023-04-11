@@ -1,7 +1,7 @@
 ## WINDOWS
-# setwd("Z:/SI_data/")
+setwd("Z:/SI_data/")
 ## LINUX 
-setwd('/mnt/turbo/SI_data/')
+# setwd('/mnt/turbo/SI_data/')
 
 ## LIBRARIES
 library(ggplot2)
@@ -9,24 +9,24 @@ library('dplyr')
 
 ## Read in acc and eda model.matrix
 ## ACC
-Delta = 30
-acc_event_model.matrix = readRDS(paste("acc_event_complete_Delta_",Delta,"_HLP_2023-04-06.RDS", sep = ""))
-acc_nonevent_model.matrix = readRDS(paste("acc_nonevent_complete_Delta_",Delta,"_HLP_2023-04-06.RDS", sep = ""))
+Delta = 5
+acc_event_model.matrix = readRDS(paste("acc_event_modelmatrix_Delta_",Delta,"_2023-04-08.RDS", sep = ""))
+acc_nonevent_model.matrix = readRDS(paste("acc_nonevent_modelmatrix_Delta_",Delta,"_2023-04-08.RDS", sep = ""))
 ## EDA
-eda_event_model.matrix = readRDS(paste("eda_event_complete_Delta_",Delta,"_HLP_2023-04-06.RDS", sep = ""))
-eda_nonevent_model.matrix = readRDS(paste("eda_nonevent_complete_Delta_",Delta,"_HLP_2023-04-06.RDS", sep = ""))
+eda_event_model.matrix = readRDS(paste("eda_event_modelmatrix_Delta_",Delta,"_2023-04-08.RDS", sep = ""))
+eda_nonevent_model.matrix = readRDS(paste("eda_nonevent_modelmatrix_Delta_",Delta,"_2023-04-08.RDS", sep = ""))
 
 ## GENERATE SPLINES
 K_b = 35
 num=K_b-2
 qtiles <- seq(0, 1, length = num + 2)[-c(1, num + 2)]
 ## EDA
-eda_sequence <- seq(-30,0, by = 1/60)
+eda_sequence <- seq(-Delta,0, by = 1/60)
 eda_knots <- quantile(eda_sequence, qtiles)
 eda_bb = cbind(1, eda_sequence, sapply(eda_knots, function(k) ((eda_sequence - k > 0) * (eda_sequence - k))))
 print("Generated EDA Splines")
 ## ACC 
-acc_sequence <- seq(-30,0, by = 1/6)
+acc_sequence <- seq(-Delta,0, by = 1/6)
 acc_knots <- quantile(acc_sequence, qtiles)
 acc_bb = cbind(1, acc_sequence, sapply(acc_knots, function(k) ((acc_sequence - k > 0) * (acc_sequence - k))))
 print("Generated ACC Splines")
@@ -77,21 +77,21 @@ updated_Sigma = Sigma[-1,-1]
 acc_stderr = sqrt(diag(acc_bb%*%updated_Sigma%*%t(acc_bb)))
 acc_betaHat.net <- acc_bb %*% ridge.coef
 
-df_acc_summary <- data.frame(sequence = acc_sequence+30, estimate = acc_betaHat.net,
+df_acc_summary <- data.frame(sequence = acc_sequence+Delta, estimate = acc_betaHat.net,
                              lowerCI = acc_betaHat.net - 1.96 * acc_stderr,
                              upperCI = acc_betaHat.net + 1.96 * acc_stderr)
 
 acc_xmax = max(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
 acc_xmin = min(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
 
-png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/acc_coef.png",
+png(paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/acc_coef_Delta_",Delta,".png", sep = ""),
     width = 480, height = 480, units = "px", pointsize = 16)
 ggplot(df_acc_summary, aes(x=sequence, y=estimate)) +
   geom_line(size=1, alpha=0.8) +
   geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
   annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
   xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
- dev.off()
+dev.off()
 
 ### EDA
 eda_Y = c(rep(1,nrow(eda_event_model.matrix)), rep(0, nrow(eda_nonevent_model.matrix)))
@@ -133,17 +133,17 @@ fisher_info = t(X)%*%W%*%X
 ridge_penalty = diag(ridge.fit.lambda*c(1,p.fac))
 Sigma = solve(fisher_info+ridge_penalty)
 updated_Sigma = Sigma[-1,-1]
-stderr = sqrt(diag(eda_bb%*%updated_Sigma%*%t(eda_bb)))
-betaHat.net <- eda_bb %*% ridge.coef
+eda_stderr = sqrt(diag(eda_bb%*%updated_Sigma%*%t(eda_bb)))
+eda_betaHat.net <- eda_bb %*% ridge.coef
 
-df_eda_summary <- data.frame(sequence = eda_sequence+30, estimate = eda_betaHat.net,
+df_eda_summary <- data.frame(sequence = eda_sequence+Delta, estimate = eda_betaHat.net,
                              lowerCI = eda_betaHat.net - 1.96 * eda_stderr,
                              upperCI = eda_betaHat.net + 1.96 * eda_stderr)
 
 # eda_xmax = max(df_eda_summary$sequence[which(df_eda_summary$lowerCI > 0)])
 # eda_xmin = min(df_eda_summary$sequence[which(df_eda_summary$lowerCI > 0)])
 
-png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_coef.png",
+png(paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_coef_Delta_",Delta,".png", sep = ""),
     width = 480, height = 480, units = "px", pointsize = 16)
 ggplot(df_eda_summary, aes(x=sequence, y=estimate)) +
   geom_line(size=1, alpha=0.8) +
@@ -174,8 +174,8 @@ n.tmp = length(all_Y)
 p.tmp = ncol(all_model.matrix)
 subsample_offset = rep(log_sampling_rate,nrow(all_model.matrix))
 p.fac = rep(1, ncol(all_model.matrix))
-p.fac[c(1:3)] = 0 #no penalty on the first 3 acc variables
-p.fac[c(36:38)] = 0 # no penalty on the first 3 eda as well
+p.fac[c(1:2)] = 0 #no penalty on the first 3 acc variables
+p.fac[c(36:37)] = 0 # no penalty on the first 3 eda as well
 
 # set.seed("97139817")
 # Start the clock!
@@ -218,14 +218,14 @@ acc_stderr = sqrt(diag(acc_bb%*%acc_updated_Sigma%*%t(acc_bb)))
 eda_stderr = sqrt(diag(eda_bb%*%eda_updated_Sigma%*%t(eda_bb)))
 
 ## JOINT FIGURES
-df_acc_summary <- data.frame(sequence = acc_sequence+30, estimate = acc_betaHat.net,
+df_acc_summary <- data.frame(sequence = acc_sequence+Delta, estimate = acc_betaHat.net,
                  lowerCI = acc_betaHat.net - 1.96 * acc_stderr,
                  upperCI = acc_betaHat.net + 1.96 * acc_stderr)
 
 acc_xmax = max(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
 acc_xmin = min(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
 
-png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/acc_coef_joint.png",
+png(paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/acc_coef_joint_Delta_",Delta,".png", sep = ""),
     width = 480, height = 480, units = "px", pointsize = 16)
 ggplot(df_acc_summary, aes(x=sequence, y=estimate)) +
   geom_line(size=1, alpha=0.8) +
@@ -235,14 +235,14 @@ ggplot(df_acc_summary, aes(x=sequence, y=estimate)) +
 dev.off()
   # geom_line(data=df_tidy, aes(x=Time, y=Ratio, group=Cell), color="grey") +
 
-df_eda_summary <- data.frame(sequence = eda_sequence+30, estimate = eda_betaHat.net,
+df_eda_summary <- data.frame(sequence = eda_sequence+Delta, estimate = eda_betaHat.net,
                          lowerCI = eda_betaHat.net - 1.96 * eda_stderr,
                          upperCI = eda_betaHat.net + 1.96 * eda_stderr)
 
 # eda_xmax = max(df_eda_summary$sequence[which(df_eda_summary$lowerCI > 0)])
 # eda_xmin = min(df_eda_summary$sequence[which(df_eda_summary$lowerCI > 0)])
 
-png("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_coef_joint.png",
+png(paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_coef_joint_Delta_",Delta,".png", sep = ""),
     width = 480, height = 480, units = "px", pointsize = 16)
 ggplot(df_eda_summary, aes(x=sequence, y=estimate)) +
   geom_line(size=1, alpha=0.8) +
