@@ -1,7 +1,7 @@
 ## WINDOWS
-setwd("Z:/SI_data/")
+# setwd("Z:/SI_data/")
 ## LINUX 
-# setwd('/mnt/turbo/SI_data/')
+setwd('/mnt/turbo/SI_data/')
 
 ## LIBRARIES
 library(ggplot2)
@@ -54,19 +54,19 @@ p.fac[1:2] = 0 #no penalty on the first 2 variables ## HOW IS INTERCEPT HANDLED?
 # Start the clock!
 acc_model.matrix = as.matrix(acc_model.matrix)
 
-# n.tmp = length(acc_Y[daytime_obs])
-# lambda_max <- 200000 # THESE ARE FOR EXP SETTING 
-# epsilon <- .001 # THESE ARE FOR EXP SETTING 
-# K <- 50
-# lambdapath <- round(exp(seq(log(lambda_max), log(lambda_max*epsilon), 
-#                             length.out = K)), digits = 15)
+n.tmp = length(acc_Y[daytime_obs])
+lambda_max <- 100 * (Delta == 5) + 100000 * (Delta == 15)
+epsilon <- 0.0001 * (Delta == 5) + 0.001 * (Delta == 15) 
+K <- 50
+lambdapath <- round(exp(seq(log(lambda_max), log(lambda_max*epsilon), 
+                            length.out = K)), digits = 15)
 
-
+set.seed(198471)
 ptm <- proc.time()
 ridge.fit.cv <- cv.glmnet(acc_model.matrix[daytime_obs,], acc_Y[daytime_obs], alpha = 0, 
                           intercept = TRUE, penalty.factor = p.fac, standardize = F,
                           offset = rep(log_sampling_rate,length(acc_Y[daytime_obs])),
-                          nfolds = 20, 
+                          nfolds = 20, lambda = lambdapath,
                           family = "binomial")
 # Stop the clock
 runtime = proc.time() - ptm
@@ -118,11 +118,12 @@ p.fac[1:2] = 0 #no penalty on the first 3 variables
 # set.seed("97139817")
 # Start the clock!
 eda_model.matrix = as.matrix(eda_model.matrix)
+set.seed(147914)
 ptm <- proc.time()
 ridge.fit.cv <- cv.glmnet(eda_model.matrix[daytime_obs,], eda_Y[daytime_obs], 
                           alpha = 0, intercept = TRUE, 
                           penalty.factor = p.fac, standardize = FALSE,
-                          # lambda = lambdapath, nfolds = 20,
+                          nfolds = 20, lambda = lambdapath,
                           family = "binomial", 
                           offset = rep(log_sampling_rate,length(eda_Y[daytime_obs])))
 
