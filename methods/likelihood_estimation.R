@@ -17,7 +17,7 @@ eda_event_model.matrix = readRDS(paste("eda_event_modelmatrix_Delta_",Delta,"_20
 eda_nonevent_model.matrix = readRDS(paste("eda_nonevent_modelmatrix_Delta_",Delta,"_2023-04-08.RDS", sep = ""))
 
 ## GENERATE SPLINES
-K_b = 35
+if(Delta == 5) { K_b = 31} else { K_b = 35}
 num=K_b-2
 qtiles <- seq(0, 1, length = num + 2)[-c(1, num + 2)]
 ## EDA
@@ -53,10 +53,20 @@ p.fac[1:2] = 0 #no penalty on the first 2 variables ## HOW IS INTERCEPT HANDLED?
 # set.seed("97139817")
 # Start the clock!
 acc_model.matrix = as.matrix(acc_model.matrix)
+
+# n.tmp = length(acc_Y[daytime_obs])
+# lambda_max <- 200000 # THESE ARE FOR EXP SETTING 
+# epsilon <- .001 # THESE ARE FOR EXP SETTING 
+# K <- 50
+# lambdapath <- round(exp(seq(log(lambda_max), log(lambda_max*epsilon), 
+#                             length.out = K)), digits = 15)
+
+
 ptm <- proc.time()
 ridge.fit.cv <- cv.glmnet(acc_model.matrix[daytime_obs,], acc_Y[daytime_obs], alpha = 0, 
                           intercept = TRUE, penalty.factor = p.fac, standardize = F,
                           offset = rep(log_sampling_rate,length(acc_Y[daytime_obs])),
+                          nfolds = 20, 
                           family = "binomial")
 # Stop the clock
 runtime = proc.time() - ptm
