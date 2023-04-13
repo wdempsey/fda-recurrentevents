@@ -1,7 +1,10 @@
 ## WINDOWS
-setwd("Z:/SI_data/")
+# setwd("Z:/SI_data/")
 ## LINUX 
-# setwd('/mnt/turbo/SI_data/')
+setwd('/mnt/turbo/SI_data/')
+
+## SET DEVIANCE
+bindeviance = lengthY = rep(0,3)
 
 ## LIBRARIES
 library(ggplot2)
@@ -38,9 +41,30 @@ print("RDS Files Reading correctly")
 if(!require("glmnet")){install.packages('glmnet')}
 library('glmnet')
 
+## APPENDING WHETHER EVENT IN LAST 12 HOURS
+acc_priorbp_results = rep(0,0)
+for(row in 1:nrow(acc_event_model.matrix)) {
+  current_time = acc_event_model.matrix$timesincebaseline[row]
+  current_id = acc_event_model.matrix$id[row]
+  event_times = subset(acc_event_model.matrix, id == current_id)$timesincebaseline
+  diff_times = current_time - event_times
+  if(length(diff_times) > 0) {temp = any(0 < diff_times & diff_times < 60*12)} else{temp = FALSE}
+  acc_priorbp_results = c(acc_priorbp_results, temp)
+}
+
+for(row in 1:nrow(acc_nonevent_model.matrix)) {
+  current_time = acc_nonevent_model.matrix$timesincebaseline[row]
+  current_id = acc_nonevent_model.matrix$id[row]
+  event_times = subset(acc_event_model.matrix, id == current_id)$timesincebaseline
+  diff_times = current_time - event_times
+  if(length(diff_times) > 0) {temp = any(0 < diff_times & diff_times < 60*12)} else{temp = FALSE}
+  acc_priorbp_results = c(acc_priorbp_results, temp)
+}
+
 ## Model per type
 acc_Y = c(rep(1,nrow(acc_event_model.matrix)), rep(0, nrow(acc_nonevent_model.matrix)))
 acc_model.matrix = rbind(acc_event_model.matrix[,-c(1:3)], acc_nonevent_model.matrix[,-c(1:3)])
+acc_model.matrix = cbind(acc_model.matrix, acc_priorbp_results)
 ## HOUR WAS IN UTC BUT NEED TO BE TRANSLATED TO ETS
 ## THIS IS DONE BY -5 HOURS FUNCTION
 hour.info = (c(acc_event_model.matrix[,3], acc_nonevent_model.matrix[,3]) - 5)%%24
@@ -55,8 +79,8 @@ p.fac[1:2] = 0 #no penalty on the first 2 variables ## HOW IS INTERCEPT HANDLED?
 acc_model.matrix = as.matrix(acc_model.matrix)
 
 n.tmp = length(acc_Y[daytime_obs])
-lambda_max <- 100 * (Delta == 5) + 100000 * (Delta == 15)
-epsilon <- 0.0001 * (Delta == 5) + 0.001 * (Delta == 15) 
+lambda_max <- 100 * (Delta == 5) + 100000 * (Delta == 15) + 1200000 * (Delta == 30)
+epsilon <- 0.0001 * (Delta == 5) + 0.001 * (Delta == 15) + 0.001 * (Delta == 30)
 K <- 50
 lambdapath <- round(exp(seq(log(lambda_max), log(lambda_max*epsilon), 
                             length.out = K)), digits = 15)
@@ -73,7 +97,7 @@ runtime = proc.time() - ptm
 
 ridge.fit.lambda <- ridge.fit.cv$lambda.min
 # Extract coefficient values for lambda.1se (without intercept)
-ridge.coef <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[-1]
+ridge.coef <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[2:K_b]
 intercepts <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[1]
 
 X = cbind(1,acc_model.matrix[daytime_obs,])
@@ -83,7 +107,7 @@ W = diag(as.vector(probs * (1-probs)))
 fisher_info = t(X)%*%W%*%X
 ridge_penalty = diag(ridge.fit.lambda*c(1,p.fac))
 Sigma = solve(fisher_info+ridge_penalty)
-updated_Sigma = Sigma[-1,-1]
+updated_Sigma = Sigma[2:K_b,2:K_b]
 acc_stderr = sqrt(diag(acc_bb%*%updated_Sigma%*%t(acc_bb)))
 acc_betaHat.net <- acc_bb %*% ridge.coef
 
@@ -99,7 +123,7 @@ png(paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/acc_c
 ggplot(df_acc_summary, aes(x=sequence, y=estimate)) +
   geom_line(size=1, alpha=0.8) +
   geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
-  annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
+  # annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
   xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
 dev.off()
 
@@ -117,6 +141,13 @@ p.fac[1:2] = 0 #no penalty on the first 3 variables
 
 # set.seed("97139817")
 # Start the clock!
+n.tmp = length(acc_Y[daytime_obs])
+lambda_max <- 100 * (Delta == 5) + 100000 * (Delta == 15) + 100000 * (Delta == 30)
+epsilon <- 0.0001 * (Delta == 5) + 0.001 * (Delta == 15) + 0.01 * (Delta == 30)
+K <- 50
+lambdapath <- round(exp(seq(log(lambda_max), log(lambda_max*epsilon), 
+                            length.out = K)), digits = 15)
+
 eda_model.matrix = as.matrix(eda_model.matrix)
 set.seed(147914)
 ptm <- proc.time()
@@ -165,8 +196,8 @@ dev.off()
 
 
 ### MERGE DATASETS
-names(eda_event_model.matrix)[4:length(eda_event_model.matrix)] = paste("eda_X", 1:35, sep ="")
-names(eda_nonevent_model.matrix)[4:length(eda_nonevent_model.matrix)] = paste("eda_X", 1:35, sep ="")
+names(eda_event_model.matrix)[4:length(eda_event_model.matrix)] = paste("eda_X", 1:K_b, sep ="")
+names(eda_nonevent_model.matrix)[4:length(eda_nonevent_model.matrix)] = paste("eda_X", 1:K_b, sep ="")
 
 all_event_model.matrix = left_join(acc_event_model.matrix, eda_event_model.matrix)
 all_nonevent_model.matrix = left_join(acc_nonevent_model.matrix, eda_nonevent_model.matrix)
@@ -186,30 +217,37 @@ p.tmp = ncol(all_model.matrix)
 subsample_offset = rep(log_sampling_rate,nrow(all_model.matrix))
 p.fac = rep(1, ncol(all_model.matrix))
 p.fac[c(1:2)] = 0 #no penalty on the first 3 acc variables
-p.fac[c(36:37)] = 0 # no penalty on the first 3 eda as well
+p.fac[c(K_b + 1:2)] = 0 # no penalty on the first 3 eda as well
 
-# set.seed("97139817")
-# Start the clock!
+n.tmp = length(acc_Y[daytime_obs])
+lambda_max <- 60000 * (Delta == 5) + 100000 * (Delta == 15) + 100000 * (Delta == 30)
+epsilon <- 0.0001 * (Delta == 5) + 0.001 * (Delta == 15) + 0.001 * (Delta == 30)
+K <- 50
+lambdapath <- round(exp(seq(log(lambda_max), log(lambda_max*epsilon), 
+                            length.out = K)), digits = 15)
+
 all_model.matrix = as.matrix(all_model.matrix)
+set.seed(187141)
 ptm <- proc.time()
 ridge.fit.cv <- cv.glmnet(all_model.matrix[daytime_obs,], all_Y[daytime_obs], 
                           alpha = 0, intercept = TRUE, 
                           penalty.factor = p.fac, standardize = FALSE,
-                          # lambda = lambdapath, nfolds = 20,
+                          nfolds = 20, lambda = lambdapath,
                           offset = rep(log_sampling_rate,length(all_Y[daytime_obs])),
                           family = "binomial")
 # Stop the clock
 runtime = proc.time() - ptm
 
 ridge.fit.lambda <- ridge.fit.cv$lambda.min
-# plot(ridge.fit.cv)
+bindeviance[which(c(5,15,30) == Delta)] = deviance(ridge.fit.cv$glmnet.fit)[lambdapath == ridge.fit.lambda]
+lengthY[which(c(5,15,30) == Delta)] = length(all_Y[daytime_obs])
 
 # Extract coefficient values for lambda.1se (without intercept)
 ridge.coef <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[-1]
 intercept <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[1]
 
-acc_betaHat.net <- acc_bb %*% ridge.coef[1:35]
-eda_betaHat.net <- eda_bb %*% ridge.coef[36:70]
+acc_betaHat.net <- acc_bb %*% ridge.coef[1:K_b]
+eda_betaHat.net <- eda_bb %*% ridge.coef[K_b + 1:K_b]
 
 plot(acc_sequence, acc_betaHat.net)
 plot(eda_sequence, eda_betaHat.net)
@@ -233,15 +271,15 @@ df_acc_summary <- data.frame(sequence = acc_sequence+Delta, estimate = acc_betaH
                  lowerCI = acc_betaHat.net - 1.96 * acc_stderr,
                  upperCI = acc_betaHat.net + 1.96 * acc_stderr)
 
-acc_xmax = max(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
-acc_xmin = min(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
+# acc_xmax = max(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
+# acc_xmin = min(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
 
 png(paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/acc_coef_joint_Delta_",Delta,".png", sep = ""),
     width = 480, height = 480, units = "px", pointsize = 16)
 ggplot(df_acc_summary, aes(x=sequence, y=estimate)) +
   geom_line(size=1, alpha=0.8) +
   geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
-  annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
+  # annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
   xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
 dev.off()
   # geom_line(data=df_tidy, aes(x=Time, y=Ratio, group=Cell), color="grey") +
