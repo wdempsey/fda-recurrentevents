@@ -97,8 +97,9 @@ runtime = proc.time() - ptm
 
 ridge.fit.lambda <- ridge.fit.cv$lambda.min
 # Extract coefficient values for lambda.1se (without intercept)
-ridge.coef <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[2:K_b]
+ridge.coef <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[1 + 1:K_b]
 intercepts <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[1]
+pastbp_coef <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[2+K_b]
 
 X = cbind(1,acc_model.matrix[daytime_obs,])
 totals = X%*%coef(ridge.fit.cv, s = ridge.fit.lambda) + log_sampling_rate
@@ -107,7 +108,7 @@ W = diag(as.vector(probs * (1-probs)))
 fisher_info = t(X)%*%W%*%X
 ridge_penalty = diag(ridge.fit.lambda*c(1,p.fac))
 Sigma = solve(fisher_info+ridge_penalty)
-updated_Sigma = Sigma[2:K_b,2:K_b]
+updated_Sigma = Sigma[1+1:K_b,1+1:K_b]
 acc_stderr = sqrt(diag(acc_bb%*%updated_Sigma%*%t(acc_bb)))
 acc_betaHat.net <- acc_bb %*% ridge.coef
 
