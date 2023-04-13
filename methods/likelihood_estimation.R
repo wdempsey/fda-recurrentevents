@@ -1,7 +1,7 @@
 ## WINDOWS
-# setwd("Z:/SI_data/")
+setwd("Z:/SI_data/")
 ## LINUX 
-setwd('/mnt/turbo/SI_data/')
+# setwd('/mnt/turbo/SI_data/')
 
 ## LIBRARIES
 library(ggplot2)
