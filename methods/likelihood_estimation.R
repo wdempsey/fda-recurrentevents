@@ -1,7 +1,7 @@
 ## WINDOWS
-# setwd("Z:/SI_data/")
+setwd("Z:/SI_data/")
 ## LINUX 
-setwd('/mnt/turbo/SI_data/')
+# setwd('/mnt/turbo/SI_data/')
 
 ## SET DEVIANCE
 bindeviance = lengthY = rep(0,3)
@@ -122,8 +122,8 @@ for(Delta in all_Deltas) {
   acc_xmax = max(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
   acc_xmin = min(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
   
-  # png(paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/acc_coef_Delta_",Delta,".png", sep = ""),
-  png(paste("~/Documents/github/fda-recurrentevents/figures/acc_coef_Delta_",Delta,".png", sep = ""),
+  png(paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/acc_coef_Delta_",Delta,".png", sep = ""),
+  # png(paste("~/Documents/github/fda-recurrentevents/figures/acc_coef_Delta_",Delta,".png", sep = ""),
       width = 480, height = 480, units = "px", pointsize = 16)
   ggplot(df_acc_summary, aes(x=sequence, y=estimate)) +
     geom_line(size=1, alpha=0.8) +
@@ -190,7 +190,7 @@ for(Delta in all_Deltas) {
   
   ridge.fit.lambda <- ridge.fit.cv$lambda.min
   # Extract coefficient values for lambda.1se (without intercept)
-  ridge.coef <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[-1]
+  ridge.coef <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[1 + 1:K_b]
   intercept <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[1]
   
   ## STDERR
@@ -201,7 +201,7 @@ for(Delta in all_Deltas) {
   fisher_info = t(X)%*%W%*%X
   ridge_penalty = diag(ridge.fit.lambda*c(1,p.fac))
   Sigma = solve(fisher_info+ridge_penalty)
-  updated_Sigma = Sigma[-1,-1]
+  updated_Sigma = Sigma[1+1:K_b,1+1:K_b]
   eda_stderr = sqrt(diag(eda_bb%*%updated_Sigma%*%t(eda_bb)))
   eda_betaHat.net <- eda_bb %*% ridge.coef
   
@@ -212,8 +212,8 @@ for(Delta in all_Deltas) {
   # eda_xmax = max(df_eda_summary$sequence[which(df_eda_summary$lowerCI > 0)])
   # eda_xmin = min(df_eda_summary$sequence[which(df_eda_summary$lowerCI > 0)])
   
-  # png(paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_coef_Delta_",Delta,".png", sep = ""),
-  png(paste("~/Documents/github/fda-recurrentevents/figures/eda_coef_Delta_",Delta,".png", sep = ""),
+  png(paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_coef_Delta_",Delta,".png", sep = ""),
+  # png(paste("~/Documents/github/fda-recurrentevents/figures/eda_coef_Delta_",Delta,".png", sep = ""),
       width = 480, height = 480, units = "px", pointsize = 16)
   ggplot(df_eda_summary, aes(x=sequence, y=estimate)) +
     geom_line(size=1, alpha=0.8) +
@@ -235,8 +235,29 @@ for(Delta in all_Deltas) {
   all_event_model.matrix = all_event_model.matrix[!isna_event,]
   all_nonevent_model.matrix = all_nonevent_model.matrix[!isna_nonevent,]
   
+  ## APPENDING WHETHER EVENT IN LAST 12 HOURS
+  joint_priorbp_results = rep(0,0)
+  for(row in 1:nrow(all_event_model.matrix)) {
+    current_time = all_event_model.matrix$timesincebaseline[row]
+    current_id = all_event_model.matrix$id[row]
+    event_times = subset(all_event_model.matrix, id == current_id)$timesincebaseline
+    diff_times = current_time - event_times
+    if(length(diff_times) > 0) {temp = any(0 < diff_times & diff_times < 60*12)} else{temp = FALSE}
+    joint_priorbp_results = c(joint_priorbp_results, temp)
+  }
+  
+  for(row in 1:nrow(all_nonevent_model.matrix)) {
+    current_time = all_nonevent_model.matrix$timesincebaseline[row]
+    current_id = all_nonevent_model.matrix$id[row]
+    event_times = subset(all_event_model.matrix, id == current_id)$timesincebaseline
+    diff_times = current_time - event_times
+    if(length(diff_times) > 0) {temp = any(0 < diff_times & diff_times < 60*12)} else{temp = FALSE}
+    joint_priorbp_results = c(joint_priorbp_results, temp)
+  }
+  
   all_Y = c(rep(1,nrow(all_event_model.matrix)), rep(0, nrow(all_nonevent_model.matrix)))
   all_model.matrix = rbind(all_event_model.matrix[,-c(1:3)], all_nonevent_model.matrix[,-c(1:3)])
+  all_model.matrix = cbind(all_model.matrix, joint_priorbp_results)
   hour.info = c(all_event_model.matrix[,3], all_nonevent_model.matrix[,3])
   daytime_obs = (hour.info > 9) & (hour.info < 20)
   
@@ -302,8 +323,8 @@ for(Delta in all_Deltas) {
   # acc_xmax = max(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
   # acc_xmin = min(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
   
-  # png(paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/acc_coef_joint_Delta_",Delta,".png", sep = ""),
-  png(paste("~/Documents/github/fda-recurrentevents/figures/acc_coef_joint_Delta_",Delta,".png", sep = ""),
+  png(paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/acc_coef_joint_Delta_",Delta,".png", sep = ""),
+  # png(paste("~/Documents/github/fda-recurrentevents/figures/acc_coef_joint_Delta_",Delta,".png", sep = ""),
       width = 480, height = 480, units = "px", pointsize = 16)
   ggplot(df_acc_summary, aes(x=sequence, y=estimate)) +
     geom_line(size=1, alpha=0.8) +
@@ -320,8 +341,8 @@ for(Delta in all_Deltas) {
   # eda_xmax = max(df_eda_summary$sequence[which(df_eda_summary$lowerCI > 0)])
   # eda_xmin = min(df_eda_summary$sequence[which(df_eda_summary$lowerCI > 0)])
   
-  # png(paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_coef_joint_Delta_",Delta,".png", sep = ""),
-  png(paste("~/Documents/github/fda-recurrentevents/figures/eda_coef_joint_Delta_",Delta,".png", sep = ""),
+  png(paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_coef_joint_Delta_",Delta,".png", sep = ""),
+  # png(paste("~/Documents/github/fda-recurrentevents/figures/eda_coef_joint_Delta_",Delta,".png", sep = ""),
       width = 480, height = 480, units = "px", pointsize = 16)
   ggplot(df_eda_summary, aes(x=sequence, y=estimate)) +
     geom_line(size=1, alpha=0.8) +
@@ -331,3 +352,8 @@ for(Delta in all_Deltas) {
   dev.off()
   
 }
+
+saveRDS(object = bindeviance, file = "C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/methods/deviance.RDS")
+saveRDS(object = lengthY, file = "C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/methods/numobs.RDS")
+
+(bindeviance + c(31,35,35)*log(lengthY))/lengthY
