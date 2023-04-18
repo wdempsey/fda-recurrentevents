@@ -35,14 +35,12 @@ num_imputes = 2
 library(refund); library(lubridate); library(dynr); library(Matrix)
 # set.seed(1391307)
   
-## WINDOWS
-setwd("Z:/SI_data/")
-## LINUX
-# setwd('/mnt/turbo/SI_data/')
+## GL
+setwd("/nfs/turbo/sph-wdem/SI_data/")
 
 # set.seed(123193871)
 set_of_types = c("eda", "acc")
-set_of_Deltas = c(5,15,30)
+set_of_Deltas = c(5) # 5,15,30)
 for (Delta in set_of_Deltas) {
   for (type in set_of_types){
     event_complete = readRDS(paste(type, "_event_complete_Delta_",Delta,"_HLP_2023-04-06.RDS", sep = ""))
@@ -212,9 +210,11 @@ num_imputes = 2
 library(refund); library(lubridate)
 
 ## WINDOWS
-setwd("Z:/SI_data/")
+# setwd("Z:/SI_data/")
 ## Linux
 # setwd('/mnt/turbo/SI_data/')
+## GL
+setwd("/nfs/turbo/sph-wdem/SI_data/")
 
 set_of_types = c("eda", "acc")
 for (type in set_of_types){
