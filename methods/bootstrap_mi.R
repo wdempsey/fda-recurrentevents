@@ -35,6 +35,8 @@ num_imputes = 2
 library(refund); library(lubridate); library(dynr); library(Matrix)
 # set.seed(1391307)
 
+## WINDOWS
+# setwd("Z:/SI_data/")
 ## GL
 setwd("/nfs/turbo/sph-wdem/SI_data/")
 
