@@ -42,7 +42,7 @@ setwd("/nfs/turbo/sph-wdem/SI_data/")
 
 # set.seed(123193871)
 set_of_types = c("eda", "acc")
-set_of_Deltas = c(30) #,15,30)
+set_of_Deltas = c(15) #,15,30)
 for (Delta in set_of_Deltas) {
   for (type in set_of_types){
     print(paste("At type = ",type))
@@ -190,8 +190,9 @@ for (Delta in set_of_Deltas) {
       event_timesincebaseline = x
       event_timestamp = timestamp
       event_id = as.numeric(event_complete[full_obs,1])
-      event_J_coef = event_coef%*%t(event_eigen_vectors)%*%bb
-      event_J_means = event_means%*%bb
+      temp = event_coef%*%t(event_eigen_vectors)
+      event_J_coef = temp%*%bb[1:ncol(temp),]
+      event_J_means = event_means%*%bb[1:ncol(temp),]
       event_model.matrix = cbind(event_id, event_timesincebaseline, hour(event_timestamp), event_J_coef + event_J_means)
       event_model.matrix = data.frame(event_model.matrix)
       names(event_model.matrix) = c("id", "timesincebaseline", "hour", paste("acc_X", 1:ncol(event_J_coef), sep = ""))
@@ -204,7 +205,7 @@ for (Delta in set_of_Deltas) {
 }
 
 ## CLEAR WORKSPACE
-rm(list=c("eig_Sigma", "eig_Sigma_est", "eig_vectors", "eigen_Sigma", "est", 
+rm(list=c("eig_Sigma", "eig_Sigma_est", "eig_vectors", "eigen_Sigma", "est", "temp", 
           "event_coef", "event_complete", "event_eigen_vectors", "event_J_coef",
           "event_means", "event_J_means", "event_model.matrix", "event_Sigma", "impute_Sigma",
           "pseudo_inverse", "residual", "Sigma_11", "Sigma_12", "Sigma_22", "Y"))
@@ -374,8 +375,9 @@ for (Delta in set_of_Deltas) {
       nonevent_coef = coef/inflation
       nonevent_timesincebaseline = x
       nonevent_timestamp = timestamp
-      nonevent_J_coef = nonevent_coef%*%t(nonevent_eigen_vectors)%*%bb
-      nonevent_J_means = nonevent_means%*%bb
+      temp = nonevent_coef%*%t(nonevent_eigen_vectors)
+      nonevent_J_coef = temp%*%bb[1:ncol(temp),]
+      nonevent_J_means = nonevent_means%*%bb[1:ncol(temp),]
       nonevent_model.matrix = cbind(nonevent_id, nonevent_timesincebaseline, hour(nonevent_timestamp), nonevent_J_coef + nonevent_J_means)
       nonevent_model.matrix = data.frame(nonevent_model.matrix)
       names(nonevent_model.matrix) = c("id", "timesincebaseline", "hour", paste("acc_X", 1:ncol(nonevent_J_coef), sep = ""))
@@ -384,7 +386,7 @@ for (Delta in set_of_Deltas) {
       saveRDS(nonevent_model.matrix, file = paste("./bootstrap_files_Delta/nonevent_RDS/",type,"_nonevent_modelmatrix_Delta_",Delta,"_bootstrap_",current_bootstrap,"_mi_",current_mi,"_",today(),".RDS", sep = ""))
       
       ## CLEAR WORKSPACE
-      rm(list=c("eig_Sigma", "eig_Sigma_est", "eig_vectors", "eigen_Sigma", "est", 
+      rm(list=c("eig_Sigma", "eig_Sigma_est", "eig_vectors", "eigen_Sigma", "est", "temp",
                 "nonevent_coef", "nonevent_eigen_vectors", "nonevent_J_coef",
                 "nonevent_means", "nonevent_J_means", "nonevent_model.matrix", 
                 "nonevent_Sigma", "impute_Sigma", "pseudo_inverse", "residual", 
