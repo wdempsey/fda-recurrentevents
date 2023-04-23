@@ -45,3 +45,7 @@ rsconnect/
 *.synctex.gz
 *.bbl
 *.blg
+
+# Images
+*.png
+*.rar
