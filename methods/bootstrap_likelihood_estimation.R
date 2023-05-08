@@ -24,10 +24,11 @@ print(paste("Current mi:", current_mi))
 print(paste("Current Delta:", current_Delta))
 
 ## WINDOWS
-setwd("Z:/SI_data/bootstrap_files_Delta/")
+# setwd("Z:/SI_data/bootstrap_files_Delta/")
 # ## LINUX 
-# setwd('/mnt/turbo/SI_data/bootstrap_files')
+# setwd('/mnt/turbo/SI_data/bootstrap_files_Delta')
 ## Turbo
+setwd('/nfs/turbo/sph-wdem/SI_data/bootstrap_files_Delta/')
 
 ## LIBRARIES
 library(ggplot2)
