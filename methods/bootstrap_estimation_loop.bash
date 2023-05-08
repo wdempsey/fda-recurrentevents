@@ -6,7 +6,7 @@ do
   do
     for DELTA in 15
     do
-      sbatch --export=BS=$BS, MI=$MI, DELTA=$DELTA bootstrap_estimation_loop.sbatch
+      sbatch --export=BS=$BS,MI=$MI,DELTA=$DELTA bootstrap_estimation_loop.sbatch
     done
   done
 done
