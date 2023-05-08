@@ -7,8 +7,8 @@ do
     for DELTA in 15
     do
       echo 'This is BS number $BS with MI $MI and Delta equals $DELTA'
-      export $BS, $MI, $DELTA
-      sbatch --export=BS=$BS,MI=$MI,DELTA=$DELTA bootstrap_estimation_loop.sbatch
+      export BS=$BS,MI=$MI,DELTA=$DELTA
+      #sbatch --export=BS=$BS,MI=$MI,DELTA=$DELTA bootstrap_estimation_loop.sbatch
     done
   done
 done
