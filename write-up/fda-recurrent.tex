@@ -278,13 +278,14 @@ Probabilistic subsampling converts the single sensor stream~$\bfx_i$ into a sequ
 
 \subsection{Estimation of the windowed covariate history}
 \label{sec:margcov}
-We start by defining~$X(t,s) = x(t-s)$ to be the sensor measurement~$0 \leq s \leq \Delta$ time units prior to time~$t \in \bfT_i \cup \bfD_i$. The sandwich smoother~\citep{Xiao2013} is used to estimate the mean~$\mu_y(t,s) = \E_y [ X(t,s)]$ where the expectation is indexed by whether $t$ is an event ($y=1$) or subsampled ($y=0$) time respectively. Alternative bivariate smoothers exist, such as the kernel-based local linear smoother~\citep{Hastie2009}, bivariate tensor product splines~\citep{Wood2006}, and the bivariate penalized spline smoother~\citep{MarxEilers2005}. The sandwich smoother was chosen for its computational efficiency and estimation accuracy. We then define~$\tilde X(t,s) = X(t,s) - \hat \mu_y(t,s)$ to be the mean-zero process at each time~$t \in \bfT_i \cup \bfD_i$.
+\textcolor{blue}{
+We start by defining~$X(t,s) = x(t-s)$ to be the sensor measurement~$0 \leq s \leq \Delta$ time units prior to time~$t \in \bfT_i \cup \bfD_i$.} The sandwich smoother~\citep{Xiao2013} is used to estimate the mean~$\mu_y(t,s) = \E_y [ X(t,s)]$ where the expectation is indexed by whether $t$ is an event ($y=1$) or subsampled ($y=0$) time respectively. Alternative bivariate smoothers exist, such as the kernel-based local linear smoother~\citep{Hastie2009}, bivariate tensor product splines~\citep{Wood2006}, and the bivariate penalized spline smoother~\citep{MarxEilers2005}. The sandwich smoother was chosen for its computational efficiency and estimation accuracy. We then define~$\tilde X(t,s) = X(t,s) - \hat \mu_y(t,s)$ to be the mean-zero process at each time~$t \in \bfT_i \cup \bfD_i$.
 
 As in~\cite{Park2018}, define the \emph{marginal covariance} by
 \[
 \Sigma_y (s, s^\prime) = \int_{0}^\tau c_y( (T,s), (T,s^\prime) ) f_y(T) dT.
 \]
-for~$0 \leq s,s^\prime \leq \Delta$, where~$c_y((t,s), (t,s^\prime))$ is the covariance function of the windowed covariate history~$X(t,\cdot)$ and $f_y(T)$ is the intensity function for event ($y=1$) and subsampled ($y=0$) times respectively. Estimation of~$\Sigma_y$ occurs in two steps. For simplicity, we present the steps for subsampled times (i.e., $y=0$) but the steps are the same for event times as well. First, the pooled sample covariance is calculated at a set of grid points:
+for~$0 \leq s,s^\prime \leq \Delta$, where~$c_y((t,s), (t,s^\prime))$ is the covariance function of the windowed covariate history~$X(t,\cdot)$, $\tau$ is the observation window length of the process, and $f_y(T)$ is the intensity function for event ($y=1$) and subsampled ($y=0$) times respectively. Estimation of~$\Sigma_y$ occurs in two steps. For simplicity, we present the steps for subsampled times (i.e., $y=0$) but the steps are the same for event times as well. First, the pooled sample covariance is calculated at a set of grid points:
 \[
 \tilde \Sigma_0 (s_r , s_{r^\prime}) = \left( \sum_{i=1}^n \left | \bfD_i \right |\right)^{-1} \left( \sum_{i=1}^n \sum_{t \in \bfD_i} \tilde X (t,s_r) \tilde X (t,s_{r^\prime}) \right).
 \]
@@ -393,7 +394,13 @@ The following assumptions are standard in prior work on longitudinal functional 
 \item\label{A4} $\E[\|X(t,\cdot)\|^4] < \infty$ for each~$0< t < \tau$.
 \end{enumerate}
 \end{assumption}
-Finally, for simplicity, we assume that there exists~$b^\star$ such that~$\beta(t) = \mathbold{\phi} (t) b^\star$; that is, the true function~$\beta(t)$ sits in the span of the spline basis expansion. With the necessary assumptions stated, we can now state Lemma~\ref{lemma:simpleasym}, which provides asymptotic theory.
+Finally, for simplicity, we assume that there exists~$b^\star$ such that~$\beta(t) = \mathbold{\phi} (t) b^\star$; that is, the true function~$\beta(t)$ sits in the span of the spline basis expansion.
+\begin{rmk}[Practical consequences of Assumptions~\ref{assumption:events} and~\ref{assumption:truncation}]
+Bounded and iid.
+\end{rmk}
+
+
+With the necessary assumptions stated, we can now state Lemma~\ref{lemma:simpleasym}, which provides asymptotic theory.
 
 \begin{lemma} \normalfont
 \label{lemma:simpleasym}
@@ -646,7 +653,7 @@ and~$t \in \mathbb{R}_+$.
 \subsubsection{Multiple imputation under uncongeniality}
 \label{section:miuncong}
 
-Multiple imputation yields valid frequentist inferences when the imputation and analysis procedure are congenial~\citep{Meng1994};  the above procedure is derived for function-on-scalar multiple imputation for binary outcomes, which ignored the joint nature of recurrent event analysis in the presence of high frequency sensor data. The main advantage of the above imputation framework is its simplicity and approximate congeniality when events are rare and the sampling rate is low.  The main disadvantage is that the above framework is uncongenial under many events and/or high sampling rates. Again, congeniality ensures good frequentist coverage properties.  A key question is whether we can use the above imputation methods within a general procedure to handle uncongeniality.
+Multiple imputation yields valid frequentist inferences when the imputation and analysis procedure are congenial~\citep{Meng1994};  the above procedure is derived for function-on-scalar multiple imputation for binary outcomes, which ignored the joint nature of recurrent event analysis in the presence of high frequency sensor data. The main advantage of the above imputation framework is its simplicity and approximate congeniality when events are rare and the sampling rate is low.  The main disadvantage is that the above framework is uncongenial under many events and/or high sampling rates. \textcolor{blue}{\cite{Meng1994} defines congeniality between an imputation procedure and an analyst’s complete (and incomplete) analysis procedure if there exists a unifying Bayesian model which embeds the imputer’s imputation model and the analyst’s complete data procedure.  A recent discussion of congeniality can be found Bartlett and Hughes (2020). Congeniality ensures good frequentist coverage properties. In some uncongenial settings, standard multiple imputation can be biased downwards leading to under-coverage of confidence intervals.}    A key question is whether we can use the above imputation methods within a general procedure to handle uncongeniality.
 
 To address this, we use the recommendation from~\cite{Bartlett2020} and consider a method that first bootstraps a sample from the dataset and then apply multiple imputation to each bootstrap sample.  This general approach was originally proposed by~\cite{Shao1994} and~\cite{Little2002}. We suppose $B$ bootstraps and $M$ imputations per bootstrap; let $\hat \theta_{b,m}$ denote the estimator for the $m$th imputation of the $b$th bootstrap.  The point estimator is given by $(B)^{-1} \sum_{b=1}^B \hat \theta_{b}$ where $\hat \theta_b = M^{-1} \sum_{m=1}^M \hat \theta_{b,m}$. To construct the confidence interval, we require mean sum of squares with and between boostraps, i.e., $MSW = \frac{1}{B(M-1)} \sum_{b=1}^B \sum_{m=1}^M (\hat \theta_{b,m} - \hat \theta_b ) (\hat \theta_{b,m} - \hat \theta_b )^\top$ and $MSB = \frac{1}{B-1} \sum_{b=1}^B (\hat \theta_b - \hat \theta)(\hat \theta_b - \hat \theta)^\top$ respectively. Then the estimator of the variance-covariance matrix of $\hat \theta$ is given by $\hat \Sigma_{B,M} = \left( \frac{B+1}{BM} \right) MSB - MSW/M$.  We obtain the varaiance for~$\beta(t)$ by $\phi (t) \hat \Sigma_{B,M} \phi(t)^\top$.  We follow~\cite{Bartlett2020} and construct confidence intervals based on Satterthwaite’s degrees of freedom, which here is given by
 $$

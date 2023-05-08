@@ -76,12 +76,14 @@ We appreciate all of the very helpful comments from the editor, associate editor
 
 \vspace{5mm}
 We thank the associate editor.  We have addressed the two reviewers' specific comments.  Responses to their concerns are detailed below and have significantly improved the clarify of this manuscript.   All major edits are highlighted in blue in order to help the referees know what has changed as part of the major revision.
+% CHECK
 \vspace{5mm}
 
 \item {\it Expanded literature review on existing modeling approaches. Both referees raise this point, and I agree that the contrast with existing works could be more explicit. The second referee provides some specific suggestions on relevant works.}
 
 \vspace{5mm}
 We have added a detailed discussion of related work in Section 1.1, which includes the specific suggestions on relevant works provided by the second referee; specifically, we discuss recent modeling of time-to-event data with functional covariates as well as joint modelling from a functional regression perspective.  We contrast these approaches with our design-based approach which becomes necessary when considering high-frequency sensor processes rather than traditional longitudinal studies as the number of measurement occasions increase from tens to thousands/millions of times per individual.  We connect and contrast our use of subsampling with the general use of subsampling in handling massive data and its recent use in massive data with functional predictors.  As stated by the second referee, our proposed joint model includes a recent history functional linear model which we now link with the previous work by Damla Senturk and others.  This motivates Section 5.2 which provides additional empirical study and discussion of the tuning parameter~$\Delta$.
+% CHECK
 \vspace{5mm}
 
 \item {\it There appear to be some missing definitions of notation, and some transitions/equations need more details to justify them. The latter could potentially be put in the supplement to save space. The former should be added to the main manuscript to improve clarity.}
@@ -99,7 +101,8 @@ We have decided that the point we were trying to raise is non-essential to the c
 \item {\it Practical considerations, such as window size and smoothing parameter selection, need clarification.}
 
 \vspace{5mm}
-We added Section 5.2 to discuss choice of window size; specifically, we consider selection based on Akaike information criteria as part of the simulation study rather than simply the impact of incorrect choice of $\Delta$. Table 4 shows that when inference is sensitive to bandwidth selection, the adaptive tuning of $\Delta$ based on AIC does perform well empirically.  We now use this approach in selecting~$\Delta$ in the case study, and provide a plot of AIC across several choices of $\Delta$ in Figure XX in Appendix XX.
+\textcolor{red}{
+We added Section 5.2 to discuss choice of window size; specifically, we consider selection based on Akaike information criteria as part of the simulation study rather than simply the impact of incorrect choice of $\Delta$. Table 4 shows that when inference is sensitive to bandwidth selection, the adaptive tuning of $\Delta$ based on AIC does perform well empirically.  We now use this approach in selecting~$\Delta$ in the case study, and provide a plot of AIC across several choices of $\Delta$ in Figure XX in Appendix XX.}
 \vspace{5mm}
 
 The smoothing parameter selection is also discussed in Section 4.6; given our connection to off-the-shelf penalized logistic regression, the smoothing parameter selection occurs as part of this implementation.  In the R package we are using, `glmnet', the smoothness parameter is chosen via cross-validation.
@@ -108,7 +111,7 @@ The smoothing parameter selection is also discussed in Section 4.6; given our co
 \item {\it Reviewer 2 suggests adding additional details on proof steps and lemma clarifications. I can't entirely agree that the proofs should go in the main manuscript as the paper is already on the longer side. When making adjustments to this section (theoretical analysis), please keep at most its current length, and move things to supplement as needed.}
 
 \vspace{5mm}
-To accommodate the second referee's request without making the discussion too long, we have added Remark XX and XX that provide some intuition.  We have re-written the technical proofs to first provide a sketch proof (with intuition) and then a detailed proof.  We hope this helps the reader develop intuition on the first read while giving them some helpful guidance in order to facilitate understanding of the detailed theoretical analysis.
+\textcolor{red}{To accommodate the second referee's request without making the discussion too long, we have added Remark XX and XX that provide some intuition.  We have re-written the technical proofs to first provide a sketch proof (with intuition) and then a detailed proof.  We hope this helps the reader develop intuition on the first read while giving them some helpful guidance in order to facilitate understanding of the detailed theoretical analysis.}
 \vspace{5mm}
 
 \item {\it Both reviewers suggest additional simulation studies. I agree that it would be good to have a numerical benchmark of the magnitude of the computational issue that you allude to in lines 16-28 on page 5, especially for JCGS readership. I don’t think you need references for this, as the reviewer asks, as a numerical example would be more helpful and convincing in this case. However, I think you need another method for comparison, as the simulations are only done for your approach with different sampling rates. Perhaps some suggestions from the first referee could be useful. If some of these alternatives are computationally prohibitive, then doing a computational numerical comparison on even 1 rep will provide a convincing argument for why those methods are not tried.}
@@ -133,7 +136,7 @@ We apologize for this omission. We have reread everything and addressed any miss
 \item {\it Another minor one is your choice of smoothing the entire covariance, including the diagonals (page 8, lines 13-18). It’s unclear to me what the rationale is for changing this step compared to Park and Staicu, 2015, and how much it matters for the final performance.}
 
 \vspace{5mm}
-We have removed the discussion of \emph{independent evolution}.  While the author still thinks it an important point that he wishes was more well appreciated in the joint modeling literature, the current paper has enough content for this discussion to be omitted.  Therefore, we revert to the step from Park and Staicu (2018) and report the smoothing of the covariance matrix as it comes from their prior work.
+We have removed the discussion of \emph{independent evolution}.  While the author still thinks it an important point that he wishes was more well appreciated in the joint modeling literature, the current paper has enough content for this discussion to be omitted.  We compare our approach to Park and Staicu (2018) and report the smoothing of the covariance matrix as it comes from their prior work.
 \vspace{5mm}
 
 \end{enumerate}
@@ -167,7 +170,7 @@ We have now omitted this part from the current manuscript. The key issue we were
 \item {\it Several notations in section 2.1 such as ${\bf x}_i, {\bf H}_{i,\tau_i}^X$ are not defined.}
 
 \vspace{5mm}
-Both of these were defined in Section 3 but we agree that the definitions were obscured in the writing, which led to confusion.  To address this, we have added a notation glossary as Appendix XX.
+\textcolor{red}{Both of these were defined in Section 3 but we agree that the definitions were obscured in the writing, which led to confusion.  To address this, we have added a notation glossary as Appendix XX.}
 \vspace{5mm}
 
 \item {\it How did you get the equation in line 24, page 4.}
@@ -225,23 +228,23 @@ That is correct.  We have fixed the definition as suggested.
 \item {\it Page 7, line 48, in the definition of the marginal covariance, what is $\tau$?}
 
 \vspace{5mm}
-The term $\tau$ refers to the censoring time of the observation process. We make this clear in Section XXX, page XX in the revision.
+The term $\tau$ refers to the censoring time of the observation process. We make this clear in page 4 in Section 3 and pages 8--9 in Section 4.1 of the revision.
 \vspace{5mm}
 
 
 \item {\it Is there a difference between the mean and covariance functions for $y = 0$ and $y = 1$ especially if points in $D_i$ and $T_i$ are spread roughly evenly on a grid even if the sets are disjoint? For example, pick a grid of equidistant points and number them from $1-10$. If all odd points are events in $T_i$ and even ones are sampled in $D_i$, won't the pooled sample covariance for both be the same}
 
 \vspace{5mm}
-The event times~$T_i$ depend heavily on the event intensity function~$h_i (t;\theta)$ and will not be guaranteed to be uniformly spread across points in $[0,\tau]$.  The subsampling times~$D_i$ depend on the subsampling intensity function~$\pi_i(t)$; under the assumption that $\pi_i (t) = \lambda$, we can view this as first drawing the number of non-event times from a Poisson distribution, i.e., $| D_i | \sim Poisson(\lambda)$, and then independently selecting $|D_i|$ non-event times uniformly at random over the observation window~$[0, \tau_i]$.  Given the potential difference between the distributions, we choose to model the mean and covariance functions separately to ensure good approximation when applying th espectral decomposition of the estimated covariance function.
+The event times~$T_i$ depend heavily on the event intensity function~$h_i (t;\theta)$ and will not be guaranteed to be uniformly spread across points in $[0,\tau]$.  The subsampling times~$D_i$ depend on the subsampling intensity function~$\pi_i(t)$; under the assumption that $\pi_i (t) = \lambda$, we can view this as first drawing the number of non-event times from a Poisson distribution, i.e., $| D_i | \sim Poisson(\lambda)$, and then independently selecting $|D_i|$ non-event times uniformly at random over the observation window~$[0, \tau_i]$.  Given the potential difference between the distributions, we choose to model the mean and covariance functions separately to ensure good approximation when applying the spectral decomposition of the estimated covariance function.
 \vspace{5mm}
 
-Another reason for treating these two distinctly is that the missing data imputation from XXXX requires distinct covariance functions.  We do think one could marginalize across the two if the mean and covariance functions are not expected to differ greatly and state as such in Section XX (in blue) where we discuss the new Figure XX of the mean and covariance functions for $y=0$ and $y=1$.
+\textcolor{red}{Another reason for treating these two distinctly is that the missing data imputation from XXXX requires distinct covariance functions.  We do think one could marginalize across the two if the mean and covariance functions are not expected to differ greatly and state as such in Section XX (in blue) where we discuss the new Figure XX of the mean and covariance functions for $y=0$ and $y=1$.}
 \vspace{5mm}
 
 \item {\it Add a plot of the mean, covariance functions for $y=0$ and $y=1$.}
 
 \vspace{5mm}
-We have added mean and covariance functions to the supplementary materials as suggested.  The plots demonstrate distinct behavior in the means for $y=0$ and $y=1$; while the covariance functions are XXXX.
+\textcolor{red}{We have added mean and covariance functions to the supplementary materials as suggested.  The plots demonstrate distinct behavior in the means for $y=0$ and $y=1$; while the covariance functions are XXXX.}
 \vspace{5mm}
 
 \item {\it Page 9, line 6, isn’t the integral in (2) $\int_{t-\Delta}^t X(s) \beta(s)ds$? The whole development assumes the integral to be $\int_{t-\Delta}^t X(t-s) \beta(s)ds$. The interpretation of the coefficient function $\beta()$ would be different for two cases. Please clarify.}
@@ -266,7 +269,7 @@ That is correct, we have fixed this issue.
 situation where the functional and event process assumptions are easily satisfied will be useful.}
 
 \vspace{5mm}
-We have added Remark XX to provide a simple example where these assumptions are satisfied.  Specifically, if the functional process is bounded, i.e., $|X(t,s)| < M$ and the other component is also bounded then we are guaranteed to have these assumptions hold.  This is likely to be true in most practical settings and thus demonstrates the reasonableness of our assumptions for applied settings.
+We have added Remark 4.5 to provide a simple example where these assumptions are satisfied.  Specifically, if individuals are assumed independent and identically distributed, the functional process is bounded (i.e., $|X(t,s)| < M$), and the subsampling rate is both lower and upper bounded at all risk times then we are guaranteed to have Assumptions 4.3 and 4.4. Boundedness is likely to be true in most practical settings and thus demonstrates the reasonableness of our assumptions for applied settings.
 \vspace{5mm}
 
 \item {\it All the modes of convergences in Lemma 3.5 and its proofs should be made clear.}
@@ -307,7 +310,7 @@ We really appreciate this question which has helped clarify an important element
 We observe each high frequency sensor process at a specific Hertz (Hz, number of observations per second) and so the time complexity will depend on this unit of measurement.  Take EDA, for example, which is measured at 4Hz.  Then a time complexity analysis of the entire statistical procedure must capture three elements: (1) computing the marginal covariance, (2) computing $\int_{0}^\Delta x_i (t-s) \beta(s) ds$, and (3) computing the cumulative hazard.  Step (1) requires computing a sum $O(n E\left[|D_i| \right])$ computations under subsampling; a complete-case analysis sets $|D_i|$ equal to the maximum number of observation times.  For a 4Hz sensor, if $\tau_i$ is measured in minutes then the total number of observations is $4 \times 60 \times \tau_i$.  Step (2) requires computation of $\hat c_{i,k}^{(y)} (t)$ which has time-complexity $O(n E \left[ |D_i| + |T_i| \right] K_x)$.  For a 4Hz sensor, a complete case again has approximatley $4 \times 60 \times \tau_i$ non-event times.  Step (3) is then well approximated by the trapezoidal rule on the uniform grid of non-event times.  This has time-complexity $O(4 \times 60 \times \tau_i)$ compared to the subsampling time-complexity of $O(E \left[ |D_i|  + |T_i| \right]$.  Thus each step in this procedure is magnified, and this only reflects computations for a single evaluation of the log-likelihood.
 \vspace{5mm}
 
-To address the time-complexity of maximizing the log-likelihood, we use Lemma 3.1 (now 4.1).  The complexity of logistic regression with $n$ observations and covariates of dimension $d$ is $O(nd)$; so we can view maximizing the true likelihood as subsampling with a very high rate so that the design-unbiased score functions have minimal approximation error in comparison to to directly maximizing the likelihood function.  Under this assumption, at the final stage we have the relative complexity of $(4 \times 60 \times \tau_i) \cdot n \cdot d$ compared to the expected time-complexity under subsampling with rate $c$ per minute of $(c \times \tau_i) \cdot n \cdot d$.  In practice, this can lead to large differences in run time; specifically, this means sampling every minute rather than every half hour will be approximately $2^5$ times as long (from 5 minutes to 2.8 hours), while sampling every second will take $2^11$ times as long (from 5 minutes to 180 hours).  In our first example, the run time was 317 seconds (approximately 5 minutes). Sampling every minute or every second would increase run time to approximately 2.8 hours and 180 hours respectively.  In our second example, the run time of 36 seconds would increase to 19 minutes and 20 hours respectively.  In both instances, the relative efficiency gain would be negligible suggesting a huge computational increase for minimal relative information gain.  We now make this point abundantly clear by amending Section XX to include time complexity discussion and Section XX to include the exact calculations above.
+To address the time-complexity of maximizing the log-likelihood, we use Lemma 3.1 (now 4.1).  The complexity of logistic regression with $n$ observations and covariates of dimension $d$ is $O(nd)$; so we can view maximizing the true likelihood as subsampling with a very high rate so that the design-unbiased score functions have minimal approximation error in comparison to to directly maximizing the likelihood function.  Under this assumption, at the final stage we have the relative complexity of $(4 \times 60 \times \tau_i) \cdot n \cdot d$ compared to the expected time-complexity under subsampling with rate $c$ per minute of $(c \times \tau_i) \cdot n \cdot d$.  In practice, this can lead to large differences in run time; specifically, under a 4Hz sensor the time-complexity of the maximum likelihood estimate at its observation frequency will take approximately $2^{13}$ times as long as subsampling at a rate of once every half-hour.  In our first example, using the average run times at each sampling rate to project run time at four times per second yields an approximately 2.0 hour run time. In our second example, we project a run time at four times per second of 6.2 hours. In both instances, the relative efficiency gain would be negligible suggesting a huge computational increase for minimal relative information gain. We now make this point abundantly clear by amending Section 5 with Remark 5.1 to include time complexity discussion.
 
 
 \vspace{5mm}
@@ -322,21 +325,21 @@ The above calculations hold for even the concurrent model, so that approach is s
 meaning?}
 
 \vspace{5mm}
-uncongenial comes from Meng. We cite and provide a short formal definition with some intuition.
+Rubin defined conditions for an imputation procedure to be so-called ‘proper’ for a given complete data analysis. If in addition the complete data analysis gives frequentist valid inferences, MI using Rubin’s rules yields valid frequentist inferences. Meng defined the concept of congeniality between an imputation procedure and an analyst’s complete (and incomplete) analysis procedure. The imputation model and the analyst’s complete data procedure are said to be congenial if there exists a unifying Bayesian model which embeds the imputer’s imputation model and the analyst’s complete data procedure.  A formal definition of congeniality can be found Bartlett and Hughes (2020).  If an imputation and analysis procedure are congenial, this implies the imputation is proper for the analysis procedure. Meng showed that for certain types of uncongeniality, Rubin’s variance estimator is conservative, ensuring the intervals have at least the advertised coverage level. In other settings, however, it can be biased downwards, leading to under-coverage of confidence intervals.  We provide these details as part of our discussion in Section 6.2.1.
 \vspace{5mm}
 
 \item Page 23, Figure 2. EDA seems to spike at the end. Even AI seems to be
 turning up. Add longer history to both the Figures.
 \vspace{5mm}
 
-We have investigated this issue and there is a slight uptick in EDA but not in ACC; however, we are concerned that showing a longer history may not be helpful given our focus on a potentially shorter $\Delta$ based on the data analysis.  Therefore, we keep the plot as is, and note that there is a spike at 30-minutes for EDA while emphasizing that most of the signal appears in the 15-minute range.  This helps motivate our data adaptive choice of $\Delta$ in Section 7.1 which confirms that $\Delta = 15$ is a more appropriate choice.
+We have investigated this issue and there is a slight uptick in EDA but not in ACC; however, we are concerned that showing a longer history may not be helpful given our focus on a potentially shorter $\Delta$ based on the data analysis.  Therefore, we keep the plot as is, and note that there is a spike at 30-minutes for EDA while emphasizing that most of the signal appears in the 15-minute range.  This helps motivate our data adaptive choice of $\Delta$ in Section 7.1 which confirms that $\Delta = 5$ is the most appropriate choice although results are consistent across a range of $\Delta$ choices.
 \vspace{5mm}
 
 
 \item {\it Doesn’t Figure 3 suggest smaller $\Delta$?}
 
 \vspace{5mm}
-We agree.  We have re-run the analysis with a window length of 15 minutes.  A comparison of AIC provides empirical evidence that the smaller $\Delta$ was an appropriate choice.  We now present $\Delta = 15$ in the main paper and move the current analysis to be a sensitivity analysis presented in the supplementary materials.
+We agree.  We have re-run the analysis with a window length of 15 minutes.  A comparison of AIC provides empirical evidence that the smaller $\Delta$ was an appropriate choice.  We now present $\Delta = 5$ in the main paper and move the current analysis to be a sensitivity analysis presented in the supplementary materials.
 \vspace{5mm}
 
 \item {\it What features were constructed for the real data analysis?}

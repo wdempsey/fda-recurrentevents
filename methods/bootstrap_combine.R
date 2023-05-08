@@ -1,5 +1,5 @@
 ## SETWD
-setwd("Z:/SI_data/bootstrap_files")
+setwd("Z:/SI_data/bootstrap_files_Delta/")
 
 number_bootstraps = 200
 number_mi = 2
