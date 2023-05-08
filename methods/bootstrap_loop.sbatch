@@ -4,9 +4,9 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --mem-per-cpu=4000m
+#SBATCH --mem-per-cpu=8000m
 #SBATCH --time=10:00:00
-#SBATCH --array=1-2
+#SBATCH --array=1-200
 #SBATCH --account=wdem1
 #SBATCH --partition=standard
 #SBATCH --output=/home/wdem/fda-recurrentevents/methods/attempt.log
