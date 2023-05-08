@@ -42,7 +42,7 @@ setwd("/nfs/turbo/sph-wdem/SI_data/")
 
 # set.seed(123193871)
 set_of_types = c("eda", "acc")
-set_of_Deltas = c(15) #,15,30)
+set_of_Deltas = c(5,15,30) #,15,30)
 for (Delta in set_of_Deltas) {
   for (type in set_of_types){
     print(paste("At type = ",type))
