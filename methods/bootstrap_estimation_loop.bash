@@ -2,11 +2,11 @@
 
 for BS in {1..2}
 do
-  for MI in {1..2}
+  for MI in 1
   do
-    for DELTA in 5 15 30
+    for DELTA in 15
     do
-      sbatch bootstrap_estimation_loop.sbatch
+      sbatch --export=BS=$BS, MI=$MI, DELTA=$DELTA]bootstrap_estimation_loop.sbatch
     done
   done
 done
