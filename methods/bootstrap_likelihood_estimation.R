@@ -12,13 +12,16 @@ if(length(args)==0){
   ##supply default values
   current_bootstrap = 1 # CONVERT TO ACCEPT THIS 
   current_mi = 1
+  currrent_Delta = 30
 }else{
   current_bootstrap = as.numeric(args[[1]])
   current_mi = as.numeric(args[[2]])
+  current_Delta = as.numeric(args[[3]])
 }
 
 print(paste("Current bootstrap:", current_bootstrap))
 print(paste("Current mi:", current_mi))
+print(paste("Current Delta:", current_Delta))
 
 ## WINDOWS
 setwd("Z:/SI_data/bootstrap_files_Delta/")
@@ -168,9 +171,6 @@ ridge.fit.cv <- cv.glmnet(all_model.matrix[daytime_obs,], all_Y[daytime_obs],
 runtime = proc.time() - ptm
 
 ridge.fit.lambda <- ridge.fit.cv$lambda.min
-bindeviance[which(c(5,15,30) == Delta)] = deviance(ridge.fit.cv$glmnet.fit)[lambdapath == ridge.fit.lambda]
-lengthY[which(c(5,15,30) == Delta)] = length(all_Y[daytime_obs])
-
 # Extract coefficient values for lambda.1se (without intercept)
 ridge.coef <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[-1]
 intercept <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[1]
@@ -203,15 +203,15 @@ df_acc_summary <- data.frame(sequence = acc_sequence+Delta, estimate = acc_betaH
 # acc_xmax = max(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
 # acc_xmin = min(df_acc_summary$sequence[which(df_acc_summary$lowerCI > 0)])
 
-png(paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/acc_coef_joint_Delta_",Delta,".png", sep = ""),
-    # png(paste("~/Documents/github/fda-recurrentevents/figures/acc_coef_joint_Delta_",Delta,".png", sep = ""),
-    width = 480, height = 480, units = "px", pointsize = 16)
-ggplot(df_acc_summary, aes(x=sequence, y=estimate)) +
-  geom_line(size=1, alpha=0.8) +
-  geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
-  # annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
-  xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
-dev.off()
+# png(paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/acc_coef_joint_Delta_",Delta,".png", sep = ""),
+#     # png(paste("~/Documents/github/fda-recurrentevents/figures/acc_coef_joint_Delta_",Delta,".png", sep = ""),
+#     width = 480, height = 480, units = "px", pointsize = 16)
+# ggplot(df_acc_summary, aes(x=sequence, y=estimate)) +
+#   geom_line(size=1, alpha=0.8) +
+#   geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
+#   # annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
+#   xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
+# dev.off()
 # geom_line(data=df_tidy, aes(x=Time, y=Ratio, group=Cell), color="grey") +
 
 df_eda_summary <- data.frame(sequence = eda_sequence+Delta, estimate = eda_betaHat.net,
@@ -221,22 +221,23 @@ df_eda_summary <- data.frame(sequence = eda_sequence+Delta, estimate = eda_betaH
 # eda_xmax = max(df_eda_summary$sequence[which(df_eda_summary$lowerCI > 0)])
 # eda_xmin = min(df_eda_summary$sequence[which(df_eda_summary$lowerCI > 0)])
 
-png(paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_coef_joint_Delta_",Delta,".png", sep = ""),
-    # png(paste("~/Documents/github/fda-recurrentevents/figures/eda_coef_joint_Delta_",Delta,".png", sep = ""),
-    width = 480, height = 480, units = "px", pointsize = 16)
-ggplot(df_eda_summary, aes(x=sequence, y=estimate)) +
-  geom_line(size=1, alpha=0.8) +
-  geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
-  # annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
-  xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
-dev.off()
+# png(paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_coef_joint_Delta_",Delta,".png", sep = ""),
+#     # png(paste("~/Documents/github/fda-recurrentevents/figures/eda_coef_joint_Delta_",Delta,".png", sep = ""),
+#     width = 480, height = 480, units = "px", pointsize = 16)
+# ggplot(df_eda_summary, aes(x=sequence, y=estimate)) +
+#   geom_line(size=1, alpha=0.8) +
+#   geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
+#   # annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
+#   xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
+# dev.off()
+
 library(lubridate)
 
-saveRDS(df_acc_summary, paste("bootstrap_fits/acc_bootstrap_",
-                              current_bootstrap, "_mi_", current_mi,
+saveRDS(df_acc_summary, paste("bootstrap_fits_Delta/acc_bootstrap_Delta_",Delta,
+                              "_bs_",current_bootstrap, "_mi_", current_mi,
                               "_", today(), ".RDS", sep = ""))
 
-saveRDS(df_eda_summary, paste("bootstrap_fits/eda_bootstrap_",
-                              current_bootstrap, "_mi_", current_mi,
+saveRDS(df_eda_summary, paste("bootstrap_fits/eda_bootstrap_Delta_",Delta,
+                              "_bs_",current_bootstrap, "_mi_", current_mi,
                               "_", today(), ".RDS", sep = ""))
 
