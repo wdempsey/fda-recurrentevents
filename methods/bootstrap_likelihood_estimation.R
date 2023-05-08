@@ -236,11 +236,11 @@ print("Onto saving these files")
 
 library(lubridate)
 
-saveRDS(df_acc_summary, paste("acc_bootstrap_Delta_",Delta,
+saveRDS(df_acc_summary, paste("estimates/acc_bootstrap_Delta_",Delta,
                               "_bs_",current_bootstrap, "_mi_", current_mi,
                               "_", today(), ".RDS", sep = ""))
 
-saveRDS(df_eda_summary, paste("eda_bootstrap_Delta_",Delta,
+saveRDS(df_eda_summary, paste("estimates/eda_bootstrap_Delta_",Delta,
                               "_bs_",current_bootstrap, "_mi_", current_mi,
                               "_", today(), ".RDS", sep = ""))
 
