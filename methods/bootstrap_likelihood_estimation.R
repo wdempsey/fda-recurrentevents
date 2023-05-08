@@ -12,16 +12,16 @@ if(length(args)==0){
   ##supply default values
   current_bootstrap = 1 # CONVERT TO ACCEPT THIS 
   current_mi = 1
-  currrent_Delta = 30
+  Delta = 30
 }else{
   current_bootstrap = as.numeric(args[[1]])
   current_mi = as.numeric(args[[2]])
-  current_Delta = as.numeric(args[[3]])
+  Delta = as.numeric(args[[3]])
 }
 
 print(paste("Current bootstrap:", current_bootstrap))
 print(paste("Current mi:", current_mi))
-print(paste("Current Delta:", current_Delta))
+print(paste("Current Delta:", Delta))
 
 ## WINDOWS
 # setwd("Z:/SI_data/bootstrap_files_Delta/")
