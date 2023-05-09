@@ -14,12 +14,12 @@ cd $SLURM_SUBMIT_DIR
 
 echo $SLURM_SUBMIT_DIR
 
+
 echo "Bootstrap number $BS"
 
 echo "MI number $MI"
 
 echo "Delta equals $DELTA"
-
 
 # Load required software modules
 
@@ -29,3 +29,4 @@ module load gsl
 
 # Run program
 Rscript bootstrap_likelihood_estimation.R $BS $MI $DELTA > ./outfiles/sim_estimation_bs_${BS}_mi_${MI}_Delta_${DELTA}.Rout
+
