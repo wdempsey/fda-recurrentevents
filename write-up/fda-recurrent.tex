@@ -730,6 +730,14 @@ Here, we focus on two physiological processes -- (1) electrodermal activity (EDA
 
 Inspection of Figures~\ref{fig:mean_eda} and~\ref{fig:mean_acc} suggest setting $\Delta = 30$ minutes is adequate to capturing the proximal impact of EDA and AI on the risk of a button press.  To ensure minimal loss of efficiency, the subsampling rate was set to once every fifteen minutes.  Given the daily button press rate, this ensures an average of $44$ non-events to $2.5$ events per day.  Based on Table~\ref{tab:compvseff}, this ensures we can achieve a substantial data reduction at a minimal loss of efficiency.  After sampling non-event times, complete-case analyses are performed, i.e., sampled times where sensors included in the model have any level of missing data are ignored.
 
+\begin{table}
+\begin{tabular}{c c c c}
+Delta & 5 & 15 & 30 \\ \hline
+AIC & - & - & - \\
+BIC & - & - & - \\ \hline
+\end{tabular}
+\end{table}
+
 We analyzed activity index (AI) and electrodermal activity separately as given in equation~~\eqref{eq:hazardlinear} as well as jointly in a multivariate model as in equation~\eqref{eq:multihazardlinear}.  Results did not change substantially.  Figure~\ref{fig:eda_estimate} and~\ref{fig:acc_estimate} presents the estimates from the joint analysis with their associated 95\% confidence intervals.  We highlight in gray the statistically significant regions.  Here, we see that standardized EDA is not associated with increased risk of button press, while activity index sees a positive association in the final few minutes prior to a button press.  In section~\ref{sec:missingdata_heterogeneity}, we investigate whether the results are sensitive to missing data.
  % and whether individual-level coefficients,~$\beta(t) + b_i (t)$, effects show stronger dependence on EDA and/or AI for certain individuals.
 
@@ -737,21 +745,21 @@ We analyzed activity index (AI) and electrodermal activity separately as given i
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=.8\linewidth]{../figures/eda_coef_joint.png}
+  \includegraphics[width=.8\linewidth]{../figures/eda_coef_joint_bootstrap_Delta_15.png}
   \caption{Electrodermal activity (EDA)}
   \label{fig:eda_estimate}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=.8\linewidth]{../figures/acc_coef_joint.png}
+  \includegraphics[width=.8\linewidth]{../figures/acc_coef_joint_bootstrap_Delta_15.png}
   \caption{Activity Index (AI)
 }  \label{fig:acc_estimate}
 \end{subfigure}
-\caption{$\beta (t)$ for ACC and EDA with 95\% CI; solid line is point estimate for the complete-case analysis, while highlighted region are the model-based pointwise 95\% confidence intervals.}
+\caption{$\beta (t)$ for AI and EDA with 95\% CI; solid line is point estimate for the complete-case analysis, while highlighted region are the model-based pointwise 95\% confidence intervals.}
 \label{fig:edacc_estimate}
 \end{figure}
 
-\subsection{Accounting for missing data}
+\subsection{Sensitivity analysis for window length}
 \label{sec:missingdata_heterogeneity}
 
 
@@ -761,15 +769,15 @@ In Section~\ref{app:csmissing} of the supplementary materials, Figures~\ref{fig:
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=.8\linewidth]{../figures/eda_coef_joint_bootstrap.png}
-  \caption{Electrodermal activity (EDA)}
-  \label{fig:eda_estimate_bs}
+  \includegraphics[width=.8\linewidth]{../figures/acc_coef_joint_bootstrap_Delta_5.png}
+  \caption{$\Delta = 5$ minutes}
+  \label{fig:acc_estimate_bs_delta5}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=.8\linewidth]{../figures/acc_coef_joint_bootstrap.png}
-  \caption{Activity Index (AI)
-}  \label{fig:acc_estimate_bs}
+  \includegraphics[width=.8\linewidth]{../figures/acc_coef_joint_bootstrap_Delta_30.png}
+  \caption{$\Delta = 30$ minutes}
+  \label{fig:acc_estimate_bs_delta30}
 \end{subfigure}
 \caption{$\beta (t)$ for ACC and EDA with 95\% CI; solid line is point estimate for the missing data analysis, while highlighted region are the boostrap and MI based pointwise 95\% confidence intervals.}
 \label{fig:edacc_estimate_bs}

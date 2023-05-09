@@ -5,7 +5,7 @@ number_bootstraps = 200
 number_mi = 2
 seq_of_Delta = c(5,15,30)
 
-current_Delta = 30
+current_Delta = 5
 
 acc_size = length(seq(-current_Delta,0, by = 1/6))
 eda_size = length(seq(-current_Delta,0, by = 1/60))
@@ -118,7 +118,9 @@ ggplot(df_acc_summary, aes(x=sequence, y=estimate)) +
   geom_line(size=1, alpha=0.8) +
   geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
   annotate("rect",xmin=acc_xmin,xmax=acc_xmax,ymin=-Inf,ymax=Inf, alpha=0.1, fill="black") +
-  xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
+  xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)"))) +
+  theme(axis.text.x=element_text(size=15), axis.text.y=element_text(size=15),
+        axis.title.x = element_text(size=15), axis.title.y = element_text(size=15))
 dev.off()
 
 df_eda_summary <- data.frame(sequence = eda_temp_mi1$sequence,
@@ -131,5 +133,7 @@ png(paste("C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/figures/eda_c
 ggplot(df_eda_summary, aes(x=sequence, y=estimate)) +
   geom_line(size=1, alpha=0.8) +
   geom_ribbon(aes(ymin=lowerCI, ymax=upperCI) ,fill="blue", alpha=0.2) +
-  xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)")))
+  xlab("Time until Button Press") + ylab(expression(paste(beta, "(s)"))) +
+  theme(axis.text.x=element_text(size=15), axis.text.y=element_text(size=15),
+        axis.title.x = element_text(size=15), axis.title.y = element_text(size=15))
 dev.off()
