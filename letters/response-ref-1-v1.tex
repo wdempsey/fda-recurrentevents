@@ -75,14 +75,14 @@ We appreciate all of the very helpful comments from the editor, associate editor
 \item {\it This paper was reviewed by two referees, who tend to agree in their positive assessments of the value and novelty of your work, and provide some very specific comments for further improvements.}
 
 \vspace{5mm}
-We thank the associate editor.  We have addressed the two reviewers' specific comments.  Responses to their concerns are detailed below and have significantly improved the clarify of this manuscript.   All major edits are highlighted in blue in order to help the referees know what has changed as part of the major revision.
+We thank the associate editor.  We have addressed the two reviewers' specific comments.  Responses to their concerns are detailed below and have significantly improved the clarity of this manuscript.   All major edits are highlighted in blue in order to help the referees know what has changed as part of the major revision.
 % CHECK
 \vspace{5mm}
 
 \item {\it Expanded literature review on existing modeling approaches. Both referees raise this point, and I agree that the contrast with existing works could be more explicit. The second referee provides some specific suggestions on relevant works.}
 
 \vspace{5mm}
-We have added a detailed discussion of related work in Section 1.1, which includes the specific suggestions on relevant works provided by the second referee; specifically, we discuss recent modeling of time-to-event data with functional covariates as well as joint modelling from a functional regression perspective.  We contrast these approaches with our design-based approach which becomes necessary when considering high-frequency sensor processes rather than traditional longitudinal studies as the number of measurement occasions increase from tens to thousands/millions of times per individual.  We connect and contrast our use of subsampling with the general use of subsampling in handling massive data and its recent use in massive data with functional predictors.  As stated by the second referee, our proposed joint model uses a recent history functional linear model which we now link with the previous work by Damla Senturk and others.  This motivates Section 5.2 which provides additional empirical study and discussion of the tuning parameter~$\Delta$.
+We have added a detailed discussion of related work in Section 1.1, which includes the specific suggestions on relevant works provided by the second referee; specifically, we discuss recent modeling of time-to-event data with functional covariates as well as joint modelling from a functional regression perspective.  We contrast these approaches with our design-based approach which becomes necessary when considering high-frequency sensor processes rather than traditional longitudinal studies as the number of measurement occasions increase from tens to thousands/millions of times per individual.  We connect and contrast our use of subsampling with the general use of subsampling in handling massive data and its recent use in massive data with functional predictors.  As stated by the second referee, our proposed joint model uses a recent history functional linear model which we now link with the previous work by Damla Senturk and others.  This motivates Section 5.2 which provides an additional empirical study and discussion of the tuning parameter~$\Delta$.
 % CHECK
 \vspace{5mm}
 
@@ -95,14 +95,13 @@ We have addressed the missing notation and helped to justify the transitions/equ
 \item {\it As the first reviewer, I am confused by $\varepsilon(t) = 0$ on page 4, line 39, in line with equation (3) and measurement error methodology. I suspect comment 7 from the 2nd reviewer alludes to the same thing. I suspect this may be a notation issue rather than the modeling issue, but either way, it needs to be clarified.}
 
 \vspace{5mm}
-We have decided that the point we were trying to raise is non-essential to the current manuscript, so we have removed the discussion of \emph{independent evolution} and its implication that $\varepsilon (t) = 0$ for all $t >0$.  The key issue we were trying to clarify is that the traditional joint model formulation in which the observed health process and time-to-event are conditionally independent given the latent process implies that the hazard function conditional on the entire observed health process depends on values after the current time.  In the case study, for example, this implies that the expected risk of a button press given the entire sensor process will depend on future activity index and electrodermal activity.  This holds unless we assume the measurement error is set to zero.  While we still think it is an important point that should be more well appreciated in the joint modeling literature, the current paper has enough content for this discussion to be omitted.  Moreover, the empirical impact seems to be limited and therefore it is better to make this point in a different manuscript and case study.
+We have decided that the point we were trying to raise is not essential to the main manuscript, so we have moved the discussion of \emph{independent evolution} and its implication that $\varepsilon (t) = 0$ for all $t >0$ to Appendix B.  The key issue we were trying to clarify is that the traditional joint model formulation in which the observed health process and time-to-event are conditionally independent given the latent process implies that the hazard function conditional on the entire observed health process depends on values after the current time.  In the case study, for example, this implies that the expected risk of a button press given the entire sensor process will depend on future activity index and electrodermal activity.  This holds unless we assume the measurement error is set to zero.  While we still think it is an important point that should be more well appreciated in the joint modeling literature, the current paper has enough content for this discussion to be left to the appendix.  Moreover, the empirical impact seems to be limited and therefore it is better to make this point in less central to the current manuscript.
 \vspace{5mm}
 
 \item {\it Practical considerations, such as window size and smoothing parameter selection, need clarification.}
 
 \vspace{5mm}
-\textcolor{red}{
-We added Section 5.2 to discuss choice of window size; specifically, we consider selection based on Akaike information criteria as part of the simulation study rather than simply the impact of incorrect choice of $\Delta$. Table 4 shows that when inference is sensitive to bandwidth selection, the adaptive tuning of $\Delta$ based on AIC does perform well empirically.  We now use this approach in selecting~$\Delta$ in the case study, and provide a plot of AIC across several choices of $\Delta$ in Figure XX in Appendix XX.}
+We added Section 5.2 to discuss choice of window size; specifically, we consider selection based on Akaike information criteria as part of the simulation study rather than simply the impact of incorrect choice of $\Delta$. Table 4 shows that when inference is sensitive to bandwidth selection, the adaptive tuning of $\Delta$ based on AIC does perform well empirically.  We now use this approach in selecting~$\Delta$ in the case study, and provide AIC and BIC across several choices of $\Delta$ in Table 6.
 \vspace{5mm}
 
 The smoothing parameter selection is also discussed in Section 4.6; given our connection to off-the-shelf penalized logistic regression, the smoothing parameter selection occurs as part of this implementation.  In the R package we are using, `glmnet', the smoothness parameter is chosen via cross-validation.
@@ -111,13 +110,13 @@ The smoothing parameter selection is also discussed in Section 4.6; given our co
 \item {\it Reviewer 2 suggests adding additional details on proof steps and lemma clarifications. I can't entirely agree that the proofs should go in the main manuscript as the paper is already on the longer side. When making adjustments to this section (theoretical analysis), please keep at most its current length, and move things to supplement as needed.}
 
 \vspace{5mm}
-\textcolor{red}{To accommodate the second referee's request without making the discussion too long, we have added Remark XX and XX that provide some intuition.  We have re-written the technical proofs to first provide a sketch proof (with intuition) and then a detailed proof.  We hope this helps the reader develop intuition on the first read while giving them some helpful guidance in order to facilitate understanding of the detailed theoretical analysis.}
+To accommodate the second referee's request without making the discussion too long, we have re-written the technical proofs to include the intuition and integrated this with our detailed proof. We point the interested reader to these details in the main paper.  We hope this helps the reader develop intuition on the first read while giving them some helpful guidance in order to facilitate understanding of the detailed theoretical analysis.
 \vspace{5mm}
 
 \item {\it Both reviewers suggest additional simulation studies. I agree that it would be good to have a numerical benchmark of the magnitude of the computational issue that you allude to in lines 16-28 on page 5, especially for JCGS readership. I don’t think you need references for this, as the reviewer asks, as a numerical example would be more helpful and convincing in this case. However, I think you need another method for comparison, as the simulations are only done for your approach with different sampling rates. Perhaps some suggestions from the first referee could be useful. If some of these alternatives are computationally prohibitive, then doing a computational numerical comparison on even 1 rep will provide a convincing argument for why those methods are not tried.}
 
 \vspace{5mm}
-As far as the author is aware, there does not exist a joint modeling package that can estimate the proposed model directly; one way would be assume you know the functional form of the parameter but not the scale.  Comparison of measures of bias, estimation accuracy, and numerical speed under this approach to our methodology which learns the functional form are likely inappropriate. To address the reviewers concern, we now highlight the extent of the numerical issues in Remark 5.1.  Specifically, running a traditional joint model will take a similar time to running our approach under very high subsampling frequencies, i.e., at the sensor measurement rate.  We now subsample at a rate of every five minutes, fifteen minutes, thirty minutes, one hour, and two hours in our simulation section.  Using a time-complexity analysis (supported by the simulations), we can extrapolate run times when sampling at 4Hz to a standard joint model needing approximately 2 and 6.2 hours to run in our two settings respectively; at 32Hz this would be 16 and 50.1 hours respectively. These are extremely high run times when we compare to a run-time of 1.8 and 3.5 minutes when subsampling at rate of every fifteen minutes.  Moreover, the benefits in terms of variance, squared bias, and MISE appear almost negligible.
+As far as the author is aware, there does not exist a joint modeling package that can estimate the proposed model directly; one way would be to assume you know the functional form of the parameter but not the scale.  Comparison of measures of bias, estimation accuracy, and numerical speed under this approach to our methodology which learns the functional form are likely inappropriate. To address the reviewers concern, we now highlight the extent of the numerical issues in Remark 5.1.  Specifically, running a traditional joint model will take a similar time to running our approach under very high subsampling frequencies, i.e., at the sensor measurement rate.  We now subsample at a rate of every five minutes, fifteen minutes, thirty minutes, one hour, and two hours in our simulation section.  Using a time-complexity analysis (supported by the simulations), we can extrapolate run times when sampling at 4Hz to a standard joint model needing approximately 2 and 6.2 hours to run in our two settings respectively; at 32Hz this would be 16 and 50.1 hours respectively. These are extremely high run times when we compare to a run-time of 1.8 and 3.5 minutes when subsampling at rate of every fifteen minutes.  Moreover, the benefits in terms of variance, squared bias, and MISE appear almost negligible.
 \vspace{5mm}
 
 \item {\it I also have additional comments that were not raised. A major one is the absence of code. A user-friendly software with the method’s implementation and documentation is a must for accepted JCGS papers. Please provide the code so that the results are reproducible.}
@@ -130,13 +129,13 @@ We apologize for this omission.  Upon original submission, we had a GitHub repos
 A minor one is the absence of truncation $K_x$ in the equation on line 37, page 8. Please reread everything carefully to ensure all notations are defined and the equations are consistent with the text.}
 
 \vspace{5mm}
-We apologize for this omission. We have reread everything and addressed any missing notation and equation consistency.
+We apologize for this omission. We have reread everything and addressed any missing notation and equation consistency.  Moreover, we have added a notation glossary in the Appendix.
 \vspace{5mm}
 
 \item {\it Another minor one is your choice of smoothing the entire covariance, including the diagonals (page 8, lines 13-18). It’s unclear to me what the rationale is for changing this step compared to Park and Staicu, 2015, and how much it matters for the final performance.}
 
 \vspace{5mm}
-We have removed the discussion of \emph{independent evolution}.  While the author still thinks it an important point that he wishes was more well appreciated in the joint modeling literature, the current paper has enough content for this discussion to be omitted.  We compare our approach to Park and Staicu (2018) and report the smoothing of the covariance matrix as it comes from their prior work.
+We have moved the discussion of \emph{independent evolution} to the Appendix.  While the author still thinks it an important point that he wishes was more well appreciated in the joint modeling literature, the current paper has enough content for this discussion to be omitted from the main paper.
 \vspace{5mm}
 
 \end{enumerate}
@@ -154,23 +153,22 @@ I am very grateful to the referee for the incredibly detailed review.  The detai
 We have added a detailed discussion of related work in Section 1.1, which includes the specific suggestions on relevant works provided by the second referee; specifically, we discuss recent modeling of time-to-event data with functional covariates as well as joint modelling from a functional regression perspective.  We contrast these approaches with our design-based approach which becomes necessary when considering high-frequency sensor processes rather than traditional longitudinal studies as the number of measurement occasions increase from tens to thousands/millions of times per individual.  We connect and contrast our use of subsampling with the general use of subsampling in handling massive data and its recent use in massive data with functional predictors.  As stated by the second referee, our proposed joint model includes a recent history functional linear model which we now link with the previous work by Damla Senturk and others.  This motivates Section 5.2 which provides an empirical study of choosing the tuning parameter~$\Delta$ using an AIC-based selection criteria.
 \vspace{5mm}
 
-\item {\it The measurement error part can be added to the end with other exten-
-sions. It does not seem to play a major role in developing the algorithm.}
+\item {\it The measurement error part can be added to the end with other extensions. It does not seem to play a major role in developing the algorithm.}
 
 \vspace{5mm}
 We agree.  This point was over-emphasized in the original manuscript. We have decided that the point we were trying to raise is non-essential to the current manuscript, so we have removed the discussion of \emph{independent evolution} and its implications.
 \vspace{5mm}
 
-\item {\it In equationn (4), page 4, do you mean that equation (2) and the mesurement error part $x_i (t) = \eta_i (t) + \epsilon_i (t)$ imply conditional hazard equation in (3)?  If yes, then why is $\int_{t-\Delta}^t \epsilon_i (s) \beta(s) ds = 0$?  Or are you assuming a model?  Please add more clarity.}
+\item {\it In equation (4), page 4, do you mean that equation (2) and the mesurement error part $x_i (t) = \eta_i (t) + \epsilon_i (t)$ imply conditional hazard equation in (3)?  If yes, then why is $\int_{t-\Delta}^t \epsilon_i (s) \beta(s) ds = 0$?  Or are you assuming a model?  Please add more clarity.}
 
 \vspace{5mm}
-We have now omitted this part from the current manuscript. The key issue we were trying to clarify is that the traditional joint model formulation in which the observed health process and time-to-event are conditionally independent given the latent process implies that the hazard function conditional on the entire observed health process depends on values after the current time.  In the case study, for example, this implies that the expected risk of a button press given the entire sensor process will depend on future activity index and electrodermal activity.  This holds unless we assume the measurement error is set to zero.  In this setting,~$\epsilon_i (t) = 0$ and so $\int_{t-\Delta}^t \epsilon_i (s) \beta(s)ds = 0$ by definition. While the author still thinks it an important point that he wishes was more well appreciated in the joint modeling literature, the current paper has enough content for this discussion to be omitted.  Moreover, the empirical impact seems to be limited and therefore it is better to make this point in a different manuscript and case study.
+We have now moved this part from the current manuscript to the Appendix. The key issue we were trying to clarify is that the traditional joint model formulation in which the observed health process and time-to-event are conditionally independent given the latent process implies that the hazard function conditional on the entire observed health process depends on values after the current time.  In the case study, for example, this implies that the expected risk of a button press given the entire sensor process will depend on future activity index and electrodermal activity.  This holds unless we assume the measurement error is set to zero.  In this setting,~$\epsilon_i (t) = 0$ and so $\int_{t-\Delta}^t \epsilon_i (s) \beta(s)ds = 0$ by definition. While the author still thinks it an important point that he wishes was more well appreciated in the joint modeling literature, the current paper has enough content for this discussion to be moved from the main paper to the Appendix.  Moreover, the empirical impact seems to be limited and therefore it is better to make this point less central to the main manuscript.
 \vspace{5mm}
 
 \item {\it Several notations in section 2.1 such as ${\bf x}_i, {\bf H}_{i,\tau_i}^X$ are not defined.}
 
 \vspace{5mm}
-\textcolor{red}{Both of these were defined in Section 3 but we agree that the definitions were obscured in the writing, which led to confusion.  To address this, we have added a notation glossary as Appendix XX.}
+Both of these were defined in Section 3 but we agree that the definitions were obscured in the writing, which led to confusion.  To address this, we have added a notation glossary as Appendix A.
 \vspace{5mm}
 
 \item {\it How did you get the equation in line 24, page 4.}
@@ -182,13 +180,13 @@ We believe the referee is referring to the log-likelihood related to the event p
 \item {\it In line 39, page 4, by assuming $\epsilon(t) = 0$, you assume there is no measurement error? Why is section 2.1 called measurement error if the error is 0? Should this be named missing data section instead?}
 
 \vspace{5mm}
-The key point raised on page 4 of the original submission is that if $\epsilon(t)$ is not equivalently zero, your model assumes risk of an event at time $t$ depends on both the current and future measurements of the process ${\bf x}_i$. We argue this is not sensible since current risk should not depend on future risk and thus set $\epsilon(t) = 0$.
+The key point raised on page 4 of the original submission is that if $\epsilon(t)$ is not equivalently zero, your model assumes risk of an event at time $t$ depends on both the current and future measurements of the process ${\bf x}_i$. We argue this is not sensible since current risk should not depend on future risk and thus set $\epsilon(t) = 0$.  This discussion is now in Appendix B.
 \vspace{5mm}
 
 \item  {\it Is $\theta$ defined anywhere prior to section 2.2?}
 
 \vspace{5mm}
-It was used in equation (1) to refer to all the parameters underlying the model to distinguish it from the functional parameter~$\beta (s)$. We have added a notation glossary in Appendix XX, and re-iterate its definition in Section 3 to make this clearer.
+It was used in equation (1) to refer to all the parameters underlying the model to distinguish it from the functional parameter~$\beta (s)$. We have added a notation glossary in Appendix A, and re-iterate its definition in Section 3 to make this clearer.
 \vspace{5mm}
 
 \item {\it On page 5, lines 16 - 28 you claim that computing the double integral is computationally expensive. Add some references. Also, to give a greater insight to the extent of the computational cost, solve the score equation in lines 8,9 i.e. without the sub-sampling framework in the simulations (there is another comment on this for the simulation section). Reporting a rough summary of computational cost such as ” it took x min to solve equations involving n samples” here, would help the reader understand
@@ -216,7 +214,7 @@ We have included correct subscripts in the revision.  Derivation of (6) follows 
 comment 8 will naturally lead the way your proposed method.}
 
 \vspace{5mm}
-We thank the referee for this suggestion.  We have now used Remark 2.1 and comment 8 on the computational costs to the end of section 2.2 to motivated our proposed method.
+We thank the referee for this suggestion.  We have now used Remark 2.1 and comment 8 on the computational costs to improve the end of section 2.2 and motivate our proposed method.
 \vspace{5mm}
 
 \item {\it Page 7, line 48, in the definition of the marginal covariance, it should be $dT$ in the integral.}
@@ -235,16 +233,13 @@ The term $\tau$ refers to the censoring time of the observation process. We make
 \item {\it Is there a difference between the mean and covariance functions for $y = 0$ and $y = 1$ especially if points in $D_i$ and $T_i$ are spread roughly evenly on a grid even if the sets are disjoint? For example, pick a grid of equidistant points and number them from $1-10$. If all odd points are events in $T_i$ and even ones are sampled in $D_i$, won't the pooled sample covariance for both be the same}
 
 \vspace{5mm}
-The event times~$T_i$ depend heavily on the event intensity function~$h_i (t;\theta)$ and will not be guaranteed to be uniformly spread across points in $[0,\tau]$.  The subsampling times~$D_i$ depend on the subsampling intensity function~$\pi_i(t)$; under the assumption that $\pi_i (t) = \lambda$, we can view this as first drawing the number of non-event times from a Poisson distribution, i.e., $| D_i | \sim Poisson(\lambda)$, and then independently selecting $|D_i|$ non-event times uniformly at random over the observation window~$[0, \tau_i]$.  Given the potential difference between the distributions, we choose to model the mean and covariance functions separately to ensure good approximation when applying the spectral decomposition of the estimated covariance function.
-\vspace{5mm}
-
-\textcolor{red}{Another reason for treating these two distinctly is that the missing data imputation from XXXX requires distinct covariance functions.  We do think one could marginalize across the two if the mean and covariance functions are not expected to differ greatly and state as such in Section XX (in blue) where we discuss the new Figure XX of the mean and covariance functions for $y=0$ and $y=1$.}
+The event times~$T_i$ depend heavily on the event intensity function~$h_i (t;\theta)$ and will not be guaranteed to be uniformly spread across points in $[0,\tau]$.  The subsampling times~$D_i$ depend on the subsampling intensity function~$\pi_i(t)$; under the assumption that $\pi_i (t) = \lambda$, we can view this as first drawing the number of non-event times from a Poisson distribution, i.e., $| D_i | \sim Poisson(\lambda)$, and then independently selecting $|D_i|$ non-event times uniformly at random over the observation window~$[0, \tau_i]$.  Given the potential difference between the distributions, we choose to model the mean and covariance functions separately to ensure good approximation when applying the spectral decomposition of the estimated covariance function.  To illustrate this, Figure 2 in Appendix D.3 presents mean curves for EDA and AI over the same 30 minute window.  These figures demonstrate quite distinct behavior. Another reason for treating these two distinctly is that the missing data imputation from Petrovich et al. (2018) requires distinct covariance functions.  given the potential difference between the distributions, we choose to model the mean and covariance functions separately to ensure good approximation when applying the spectral decomposition of the estimated covariance function.  To illustrate this, Figure 2 in Appendix D.3 presents mean curves for EDA and AI over the same 30 minute window.
 \vspace{5mm}
 
 \item {\it Add a plot of the mean, covariance functions for $y=0$ and $y=1$.}
 
 \vspace{5mm}
-\textcolor{red}{We have added mean and covariance functions to the supplementary materials as suggested.  The plots demonstrate distinct behavior in the means for $y=0$ and $y=1$; while the covariance functions are XXXX.}
+Figure 2 in Appendix D.3 presents mean curves for EDA and AI over the same 30 minute window.  The covariance functions did not plot well and given the point regarding need of modeling $y=0$ and $y=1$ separately is answered by the simpelr mean plot, we omitted the covariance function plots.
 \vspace{5mm}
 
 \item {\it Page 9, line 6, isn’t the integral in (2) $\int_{t-\Delta}^t X(s) \beta(s)ds$? The whole development assumes the integral to be $\int_{t-\Delta}^t X(t-s) \beta(s)ds$. The interpretation of the coefficient function $\beta()$ would be different for two cases. Please clarify.}
@@ -278,19 +273,19 @@ We have added Remark 4.5 to provide a simple example where these assumptions are
 We have now clarified that the convergence is in law as the number of individuals goes to infinity.  Proofs are also clarified accordingly.
 \vspace{5mm}
 
-\item {\it Outline the proof of Lemma 3.5 first and then prove the details.  It will be easier to follow.  Alternatively, we }
+\item {\it Outline the proof of Lemma 3.5 first and then prove the details.  It will be easier to follow.}
 
 \vspace{5mm}
-We have added a sketch of the proof with an outline as part of the supplementary details.
+We have added intuition to the detailed proofs where necessary and highlighted these edits in blue.  We think this will help the reader understand the proof at a high-level and then the interested reader can delve into the technical details.
 \vspace{5mm}
 
 \item {\it In Lemma 3.6 state the theorem clearly.  What condition do yu show in the proof that establishes optimality}
 
 \vspace{5mm}
-We have now included the statement of how we define optimality in the main paper to make the theorem statement clear.  Specifically, we view weights $w^\star$ as optimal if the difference between the asympotic variance~$V (\theta_0; w^\star)$ and the asymptotic variance under any other choice of weights~$w$, $V(\theta_0; w)$ is postivie semi-definite. The proof is kept in the supplementary materials for conciseness.
+We have now included the statement of how we define optimality in the main paper to make the theorem statement clear.  Specifically, we view weights $w^\star$ as optimal if the difference between the asymptotic variance~$V (\theta_0; w^\star)$ and the asymptotic variance under any other choice of weights~$w$, $V(\theta_0; w)$ is positive semi-definite. The proof is kept in the supplementary materials for conciseness.
 \vspace{5mm}
 
-\item {\it Combine section 3.6 and 3.7 in to a single result that establishes a confidence band for $\beta (t)$. Also, wont Lemma 3.5 lead to a confidence band for $\hat \beta (t)$? Are the two bands same?}
+\item {\it Combine section 3.6 and 3.7 into a single result that establishes a confidence band for $\beta (t)$. Also, wont Lemma 3.5 lead to a confidence band for $\hat \beta (t)$? Are the two bands same?}
 
 \vspace{5mm}
 We have moved the discussion of confidence bands to follow Lemma 3.5 (now 4.5) given that it is directly a consequence of the asymptotic result.  We then  discuss penalization in a subsequent section which is employed due to the potential complexity induced by choosing $K_b$ large enough for the assumption $\beta (t) =\phi (t) b^\star$ to hold.
@@ -304,7 +299,7 @@ In the subsampled version you suggest in equation 6, page 6, you essentially rep
 would will be estimating the same number of parameters. This type of approach should be added to simulations and evaluated for accuracy and time complexity.}
 
 \vspace{5mm}
-We really appreciate this question which has helped clarify an important element of the paper.  To address this question, we have added Section XX to evaluate the accuracy and time complexity.  We recap some of our discussion here for convenience.
+We really appreciate this question which has helped clarify an important element of the paper.  To address this question, we have added Remark 5.1 to evaluate the accuracy and time complexity.  We recap some of our discussion here for convenience.
 \vspace{5mm}
 
 We observe each high frequency sensor process at a specific Hertz (Hz, number of observations per second) and so the time complexity will depend on this unit of measurement.  Take EDA, for example, which is measured at 4Hz.  Then a time complexity analysis of the entire statistical procedure must capture three elements: (1) computing the marginal covariance, (2) computing $\int_{0}^\Delta x_i (t-s) \beta(s) ds$, and (3) computing the cumulative hazard.  Step (1) requires computing a sum $O(n E\left[|D_i| \right])$ computations under subsampling; a complete-case analysis sets $|D_i|$ equal to the maximum number of observation times.  For a 4Hz sensor, if $\tau_i$ is measured in minutes then the total number of observations is $4 \times 60 \times \tau_i$.  Step (2) requires computation of $\hat c_{i,k}^{(y)} (t)$ which has time-complexity $O(n E \left[ |D_i| + |T_i| \right] K_x)$.  For a 4Hz sensor, a complete case again has approximatley $4 \times 60 \times \tau_i$ non-event times.  Step (3) is then well approximated by the trapezoidal rule on the uniform grid of non-event times.  This has time-complexity $O(4 \times 60 \times \tau_i)$ compared to the subsampling time-complexity of $O(E \left[ |D_i|  + |T_i| \right]$.  Thus each step in this procedure is magnified, and this only reflects computations for a single evaluation of the log-likelihood.
@@ -318,7 +313,7 @@ To address the time-complexity of maximizing the log-likelihood, we use Lemma 3.
 \item {\it How about using a concurrent model for $h_i (t;\theta) = h_0 (t; \theta) \exp (g_t (H_{i,t}^N)^\top \alpha + x_i (t) \beta (t))$. This does not look at the past window like the suggested model but this drawback might be compensated with the constructed features $g_t (H_{i,t}^N)$ that capture the past. The concurrent approach might be much less expensive computationally. This can be added as an alternative to the simulations.}
 
 \vspace{5mm}
-The above calculations hold for even the concurrent model, so that approach is still computationally expensive.  To show this while ensuring no bias, we have added a simulation in Section XX where we show the computation trade-off and applying the concurrent model without subsampling.  We find the approach computationally demanding with minimal information gain.
+The above calculations hold for even the concurrent model, so that approach is still computationally expensive. We discuss this futher in Remark 5.1 where we show the computation trade-off.  We find the approach computationally demanding with minimal information gain.
 \vspace{5mm}
 
 \item {\it In section 5.2.1 what is uncongeniality? Does it have a mathematical
@@ -328,24 +323,23 @@ meaning?}
 Rubin defined conditions for an imputation procedure to be so-called ‘proper’ for a given complete data analysis. If in addition the complete data analysis gives frequentist valid inferences, MI using Rubin’s rules yields valid frequentist inferences. Meng defined the concept of congeniality between an imputation procedure and an analyst’s complete (and incomplete) analysis procedure. The imputation model and the analyst’s complete data procedure are said to be congenial if there exists a unifying Bayesian model which embeds the imputer’s imputation model and the analyst’s complete data procedure.  A formal definition of congeniality can be found Bartlett and Hughes (2020).  If an imputation and analysis procedure are congenial, this implies the imputation is proper for the analysis procedure. Meng showed that for certain types of uncongeniality, Rubin’s variance estimator is conservative, ensuring the intervals have at least the advertised coverage level. In other settings, however, it can be biased downwards, leading to under-coverage of confidence intervals.  We provide these details as part of our discussion in Section 6.2.1.
 \vspace{5mm}
 
-\item Page 23, Figure 2. EDA seems to spike at the end. Even AI seems to be
-turning up. Add longer history to both the Figures.
+\item {\it Page 23, Figure 2. EDA seems to spike at the end. Even AI seems to be turning up. Add longer history to both the Figures.}
 \vspace{5mm}
 
-We have investigated this issue and there is a slight uptick in EDA but not in ACC; however, we are concerned that showing a longer history may not be helpful given our focus on a potentially shorter $\Delta$ based on the data analysis.  Therefore, we keep the plot as is, and note that there is a spike at 30-minutes for EDA while emphasizing that most of the signal appears in the 15-minute range.  This helps motivate our data adaptive choice of $\Delta$ in Section 7.1 which confirms that $\Delta = 5$ is the most appropriate choice although results are consistent across a range of $\Delta$ choices.
+We have investigated this issue and there is a slight uptick in EDA but not in ACC; however, we are concerned that showing a longer history may not be helpful given our focus on a potentially shorter $\Delta$ based on the data analysis.  Therefore, we keep the plot as is, and note that there is a spike at 30-minutes for EDA while emphasizing that most of the signal appears in the 15-minute range.  This helps motivate our data adaptive choice of $\Delta$ in Section 7.1 which confirms that $\Delta = 15$ is the most appropriate choice although results are consistent across a range of $\Delta$ choices.
 \vspace{5mm}
 
 
 \item {\it Doesn’t Figure 3 suggest smaller $\Delta$?}
 
 \vspace{5mm}
-We agree.  We have re-run the analysis with a window length of 15 minutes.  A comparison of AIC provides empirical evidence that the smaller $\Delta$ was an appropriate choice.  We now present $\Delta = 5$ in the main paper and move the current analysis to be a sensitivity analysis presented in the supplementary materials.
+We agree.  We have re-run the analysis with a window length of 15 minutes.  A comparison of AIC provides empirical evidence that the smaller $\Delta$ was an appropriate choice.  We now present $\Delta = 15$ in the main paper, and then $\Delta =5$ and $30$ as a sensitivity analysis.
 \vspace{5mm}
 
 \item {\it What features were constructed for the real data analysis?}
 
 \vspace{5mm}
-As the case study was meant to be illustrative, we only included time-of-day as a covariate.  We now include the number of button presses in the prior 2 hours as another feature to control for the heterogeneity seen in the .  These features are described in Section XX.
+As the case study was meant to be illustrative, we controlled for time-of-day by restricting to 9AM to 8PM as users who were asleep cannot press the button and thus were not 'at-risk'.  We now include the number of button presses in the prior 12 hours as another feature to control for the heterogeneity. This is clarified in Section 7.1.
 \vspace{5mm}
 
 
@@ -367,14 +361,14 @@ We have added a detailed discussion of related work in Section 1.1, which includ
 \item {\it It might be worth mentioning existing literature on historical functional linear models, e.g., papers by Dr. Damla Senturk from UCLA and collaborators.}
 
 \vspace{5mm}
-We now state that our proposed joint model includes a recent history functional linear model which we now link with the previous work by Damla Senturk and others.  This motivates Section XX which provides additional empirical study and discussion of the tuning parameter~$\Delta$.
-We added Section XX to describe the related work and connect our methodology to the existing literature.
+We now state that our proposed joint model includes a recent history functional linear model which we now link with the previous work by Damla Senturk and others.  This motivates Section 5.2 which provides additional empirical study and discussion of the tuning parameter~$\Delta$.
+We added Section 1.1 to describe the related work and connect our methodology to the existing literature.
 \vspace{5mm}
 
 \item {\it As with any recent history functional linear models, the size of the window ($\Delta$) is an important parameter. So it would be helpful to see some efforts on developing a data-adaptive method for the selection of $\Delta$.}
 
 \vspace{5mm}
-We agree.  As with other tuning parameters, we take an AIC approach to selection of $\Delta$ in order to be data-adaptive.  We study the performance of this criteria as part of the simulation study in Section XX and then apply it in the case study to determine the appropriate window-length.
+We agree.  As with other tuning parameters, we take an AIC approach to selection of $\Delta$ in order to be data-adaptive.  We study the performance of this criteria as part of the simulation study in Section 5.2 and then apply it in the case study to determine the appropriate window-length.
 \vspace{5mm}
 
 \item {\it While in Section 3.6 the paper discusses penalized functional regression to reduce overfitting, it is unclear if the paper actually adopts it in simulation studies and application. It is of interest how the smoothing parameter is selected. My concern is that if no penalty is employed, with more than 30 basis functions, overfitting can be severe and much wider confidence bands are often obtained}
@@ -386,29 +380,26 @@ We now clarify that throughout the simulation studies and application we employ 
 \item {\it In the theoretical section, it would be helpful to understand what intermediate results Assumption 3.4 will lead to.}
 
 \vspace{5mm}
-To address this and Referee \#1's comment \#X, we have added Remark XX to clarify settings where Assumption 3.4 will hold. Specifically, if the functional process is bounded, i.e., $|X(t,s)| < M$ and the other component is also bounded then we are guaranteed to have these assumptions hold.  This is likely to be true in most practical settings and thus demonstrates the reasonableness of our assumptions for applied settings.
+To address this and the Referee \#1's comment, we have added Remark 4.5 to clarify settings where Assumption 3.4 will hold. Specifically, if the functional process is bounded, i.e., $|X(t,s)| < M$ and the other component is also bounded then we are guaranteed to have these assumptions hold.  This is likely to be true in most practical settings and thus demonstrates the reasonableness of our assumptions for applied settings.
 \vspace{5mm}
 
 \item {\it In the simulation study, it would make sense to me consider a coefficient function for which the magnitude is not only decaying further away from current time and also becomes 0 at $t-\Delta$. In addition, it might be helpful to use relative errors to quantify the accuracy of estimation of coefficient functions.}
 
 \vspace{5mm}
-By design, $\beta(s) = 0$ for $s > \Delta$.  In practical settings we do not anticipate~$\beta(s)$ to be non-smooth and thus chose two scenarios where $\beta$ decays smoothly to 0.  To address this, we have added a third scenario which has more rapid decay to zero; specifically, the coefficient function mimics taking a temporal difference over two average windows.   To address the other comment, we have adjusted Table 2 to also report the relative values.  This allows the reader to understand the MISE increases slowly and is mainly a consequence of the variance increases from reducing the subsampling rate.
+By design, $\beta(s) = 0$ for $s > \Delta$.  Therefore, we considered two settings for~$\beta(s)$. First, an exponential decaying $\beta(s)$ that mimics a weighted averaging over past values that decays to $0$ smoothly as $s \to^- \Delta$. Second, a sinusoidal $\beta(s)$ that mimics taking a temporal difference over two average windows but is different from $0$ near $s =\Delta$.   We clarify these choices in Section 5. To address the other comment, we have added a row to Table 2 that reports relative MISE (RMISE).
 \vspace{5mm}
 
 \item {\it Section 2.1 discusses the rationale of modeling functional predictor without noises. Note that the proposed methodology is actually suitable for data with noises. First, the data application seems to suggest noises are indeed present; see Figure 2 (A). Second, I am not sure I fully understand why in the equation after (3), the conditional probability is conditioning on functional predictor observed up to censoring or truncation time. Isn’t it more sensible to condition on functional predictor observed up to t? Then, the conditional probability will not depend on functional predictor beyond time t.}
 
 \vspace{5mm}
-We have decided that the point we were trying to raise is non-essential to the current manuscript, so we have removed the discussion of \emph{independent evolution} and its implication that $\varepsilon (t) = 0$ for all $t >0$.  The key issue we were trying to clarify is that the traditional joint model formulation in which the observed health process and time-to-event are conditionally independent given the latent process implies that the hazard function conditional on the entire observed health process depends on values after the current time.  In the case study, for example, this implies that the expected risk of a button press given the entire sensor process will depend on future activity index and electrodermal activity.  This holds unless we assume the measurement error is set to zero.  The referee is correct that we will only compute conditional probabilities given the historical functional predictor; however, the likelihood factorization means that we implicitly are defining a conditional intensity given the entire functional predictor and the traditional approach has this undesirable dependence. While the author still thinks it an important point that he wishes was more well appreciated in the joint modeling literature, the current paper has enough content for this discussion to be omitted.  Moreover, the empirical impact seems to be limited and therefore it is better to make this point in a different manuscript and case study.
+We have decided that the point we were trying to raise is not essential to the main manuscript, so we have moved the discussion of \emph{independent evolution} and its implication that $\varepsilon (t) = 0$ for all $t >0$ to the Appendix.  The key issue we were trying to clarify is that the traditional joint model formulation in which the observed health process and time-to-event are conditionally independent given the latent process implies that the hazard function conditional on the entire observed health process depends on values after the current time.  In the case study, for example, this implies that the expected risk of a button press given the entire sensor process will depend on future activity index and electrodermal activity.  This holds unless we assume the measurement error is set to zero.  The referee is correct that we will only compute conditional probabilities given the historical functional predictor; however, the likelihood factorization means that we implicitly are defining a conditional intensity given the entire functional predictor and the traditional approach has this undesirable dependence. While the author still thinks it an important point that he wishes was more well appreciated in the joint modeling literature, the current paper has enough content for this discussion to be omitted from the main manuscript.  Moreover, the empirical impact seems to be limited and therefore it is better to make this point in the Appendix.
 \vspace{5mm}
 
 
 \item {\it In Section 3.1, the paper considers modeling the mean function separately at event times and non-event times. Is there some reasoning or justification for this?}
 
 \vspace{5mm}
-Since the event times~$T_i$ depend heavily on the event intensity function~$h_i (t;\theta)$ while the subsampling times~$D_i$ depend on the subsampling intensity function~$\pi_i(t)$, we chose to model the mean and covariance functions separately to ensure good approximation when applying the spectral decomposition of the estimated covariance function.  For example
-\vspace{5mm}
-
-Another reason for treating these two distinctly is that the missing data imputation from XXXX requires distinct covariance functions.  We do think one could marginalize across the two if the mean and covariance functions are not expected to differ greatly and state as such in Section XX (in blue) where we discuss the new Figure XX of the mean and covariance functions for $y=0$ and $y=1$.
+Since the event times~$T_i$ depend heavily on the event intensity function~$h_i (t;\theta)$ while the subsampling times~$D_i$ depend on the subsampling intensity function~$\pi_i(t)$, we chose to model the mean and covariance functions separately to ensure good approximation when applying the spectral decomposition of the estimated covariance function.  Given the potential difference between the distributions, we choose to model the mean and covariance functions separately to ensure good approximation when applying the spectral decomposition of the estimated covariance function.  To illustrate this, Figure 2 in Appendix D.3 presents mean curves for EDA and AI over the same 30 minute window. Another reason for treating these two distinctly is that the missing data imputation from Petrovich et al. (2018) requires distinct covariance functions.
 \vspace{5mm}
 
 \item {\it Minor comments: there are typos and inconsistent naming in the paper, e.g., Proposition 3.6 should actually be Lemma 3.6, AI and ACC are used to refer to activity index.}
