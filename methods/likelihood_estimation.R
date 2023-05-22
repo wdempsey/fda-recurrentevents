@@ -356,4 +356,11 @@ for(Delta in all_Deltas) {
 saveRDS(object = bindeviance, file = "C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/methods/deviance.RDS")
 saveRDS(object = lengthY, file = "C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/methods/numobs.RDS")
 
-(bindeviance + c(31,35,35)*log(lengthY))/lengthY
+
+# bindeviance = readRDS(file = "C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/methods/deviance.RDS")
+# lengthY =readRDS(file = "C:/Users/Balthazar/Documents/GitHub/fda-recurrentevents/methods/numobs.RDS")
+
+
+BIC = (2*bindeviance + c(31,35,35)*log(lengthY))/lengthY
+
+AIC = (2*bindeviance + 2* c(31,35,35))/lengthY
