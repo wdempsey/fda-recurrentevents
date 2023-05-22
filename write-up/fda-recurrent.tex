@@ -154,9 +154,9 @@
 \begin{document}
 
 \title[Recurrent event analysis with functional covariates via random subsampling]{Recurrent event analysis in the presence of real-time high frequency data via random subsampling}
-% \author{Walter Dempsey}
-% \address {Department of Biostatistics, University of Michigan, 1415 Washington Heights, Ann Arbor, MI 48109, USA}
-% \email{wdem@umich.edu}
+\author{Walter Dempsey}
+\address {Department of Biostatistics, University of Michigan, 1415 Washington Heights, Ann Arbor, MI 48109, USA}
+\email{wdem@umich.edu}
 
 \date{\today}
 
@@ -187,7 +187,7 @@ Since the linear assumption may be too restrictive,~\cite{doi:10.1080/10618600.2
 
 In our setting, the high frequency sensor process is an outcome and must therefore be jointly modeled with the recurrent event process.  Recently, \cite{Li2022} proposed a functional approach to joint modeling of multivariate longitudinal biomarkers and a time-to-event outcome~\citep{Tsiatis2004,Rizopoulos2010}.  Here, as in traditional joint models, the longitudinal biomarker is observed at only a few observation times (typically on the order of tens of observations) and is modelled via a functional principal components analysis.  The eigenscores are the shared parameters across the longitudinal and survival submodels.  A similar joint model was proposed in~\cite{Dong2021}.  Inference proceeds by Monte Carlo EM which can require very large Monte Carlo sample size to ensure good performance, and na{\"i}ve implementation may not recover EM's ascent property~\citep{Caffo2005}.
 
-In this paper, we also consider joint modeling of recurrent events and a high frequency sensor process. In contrast to traditional longitudinal biomarkers, sensor processes are observed multiple times per second leading to thousand and/or millions of observations per individual.  To address this increase in scale, a design-based perspective is taken in which we subsample non-event times to avoid some of the computationally demanding aspects of joint models.  Subsampling in the context of functional data analysis for massive data has recently been investigated~\citep{https://doi.org/10.48550/arxiv.2104.03446} in which a functional L-optimality criterion is derived. Subsampling is different in our current context, as our goal is to subsample from the individual sensor processes to produce a design-unbiased estimate of the cumulative hazard function.  Finally, traditional joint modeling often consider the hazard function to depend on the current or cumulative value of the health process~\citep{Li2022,Rizopoulos2010}. For high frequency sensor processes, we expect the hazard function to only depend on the recent sensor history and use recent history functional linear models~\cite{KIM20111554} to account for this local dependence.  We combine these models with advances in longitudinal functional data analysis~\citep{Staicu2010} and penalized functional regression~\citep{Goldsmith2015} to perform scalable inference using off-the-shelf software.
+In this paper, we also consider joint modeling of recurrent events and a high frequency sensor process. In contrast to traditional longitudinal biomarkers, sensor processes are observed multiple times per second leading to thousand and/or millions of observations per individual.  To address this increase in scale, a design-based perspective is taken in which we subsample non-event times to avoid some of the computationally demanding aspects of joint models.  Subsampling in the context of functional data analysis for massive data has recently been investigated~\citep{https://doi.org/10.48550/arxiv.2104.03446} in which a functional L-optimality criterion is derived. Subsampling is different in our current context, as our goal is to subsample from the individual sensor processes to produce a design-unbiased estimate of the cumulative hazard function.  Finally, traditional joint modeling often consider the hazard function to depend on the current or cumulative value of the health process~\citep{Li2022,Rizopoulos2010}. For high frequency sensor processes, we expect the hazard function to only depend on the recent sensor history and use recent history functional linear models~\citep{KIM20111554} to account for this local dependence.  We combine these models with advances in longitudinal functional data analysis~\citep{Staicu2010} and penalized functional regression~\citep{Goldsmith2015} to perform scalable inference using off-the-shelf software.
 
 
 \section{Main contributions and outline}
@@ -200,7 +200,7 @@ We define a joint model using historical functional linear models and demonstrat
 \section{Recurrent event process and associated high frequency data}
 \label{section:modeloverview}
 
-Suppose $n$ subjects are independently sampled with observed event times~$\bfT_{i} = \{ T_{i,1}, \ldots, T_{i,k_i}\}$ over some observation window $[0, \tau_i]$ for each subject $i = 1,\ldots, n$.  Assume the event times are ordered, i.e., $T_{i,j} < T_{i,j^\prime}$ for $j < j^\prime$. The observation window length, $\tau_i$, is the censoring time and is assumed independent of the event process. Let~$N_{i} (t)$ denote the associated counting process of $\bfT_{i}$; that is, $N_i (t) = \sum_{j=1}^{k_i} 1 [ T_{i,j} < t ]$. In this section, we assume a single-dimensional health process~$\bfx_i = \{ x_i (s) \}_{0 < s < \tau_i}$ for each participant is measured at a dense grid of time points.  Accelerometer, for example, is measured at a rate of 32Hz (i.e., $32$ times per second). Electrodermal activity (EDA), on the other hand, is measured at a rate of 4Hz (i.e., 4 times per second).  Given the high frequency nature of sensor data, this paper assumes the process is measured continuously.
+Suppose $n$ subjects are independently sampled with observed event times~$\bfT_{i} = \{ T_{i,1}, \ldots, T_{i,k_i}\}$ over some observation window $[0, \tau_i]$ for each subject $i = 1,\ldots, n$.  Assume the event times are ordered, i.e., $T_{i,j} < T_{i,j^\prime}$ for $j < j^\prime$. The observation window length, $\tau_i$, is the censoring time and is assumed independent of the event process. Let~$N_{i} (t)$ denote the associated counting process of $\bfT_{i}$; that is, $N_i (t) = \sum_{j=1}^{k_i} 1 [ T_{i,j} < t ]$. In this section, we assume a single-dimensional health process~$\bfx_i = \{ x_i (s) \}_{0 \le s < \tau_i}$ for each participant is measured at a dense grid of time points.  Accelerometer, for example, is measured at a rate of 32Hz (i.e., $32$ times per second). Electrodermal activity (EDA), on the other hand, is measured at a rate of 4Hz (i.e., 4 times per second).  Given the high frequency nature of sensor data, this paper assumes the process is measured continuously. \textcolor{blue}{See Appendix~\ref{app:notation} for a notation glossary.}
 
 Let~$H_{i,t}^{NX} = H_{i,t}^{N} \otimes H_{i,t}^{X}$ be the $\sigma$-field generated by all past values~$(N_i (s), x_i (s))_{0 \leq s \leq t}$. In this paper, the instantaneous risk of an event at time~$t$ is assumed to depend on the health process, time-in-study, and the event history through a fully parametric conditional hazard function:
 \begin{equation}
@@ -222,13 +222,13 @@ An alternative to~\eqref{eq:hazardlinear} would be to construct features from th
 
 \subsection{Likelihood calculation}
 
-For the sake of notational simplicity, we leave the dependency of the conditional hazard function on~$H_{i,t}^{NX}$ implicit, and write~$h_i (t; \theta)$. The component of the log-likelihood related to the event process is then given by
+For the sake of notational simplicity, we leave the dependency of the conditional hazard function on~$H_{i,t}^{NX}$ implicit, and write~$h_i (t; \theta)$. \textcolor{blue}{In our current setting, we assume the health process $\{ x_i(s)\}_{0 \leq s < \tau_i}$ is directly observed.  Therefore, we can consider the event process~$\bfT_i$ conditional on the health process~$\bfx_i$, which results in the log-likelihood related to the event process being then given by}
 \[
   L_n (\theta) = \sum_{i=1}^{n} \left ( \sum_{j=1}^{k_i}
     \log \left( h_i \left( T_{i,j}; \theta
       \right) \right) - H_{i} \left( \tau_i; \theta \right) \right)
 \]
-where~$H_{i} (\tau_i ; \theta) = \int_{0}^{\tau_i} h_{i} (t; \theta) dt$ is the cumulative hazard function. Solving the associated score equations~$U_n (\theta) = {\bf 0}$ yields the maximum likelihood estimator~$\hat \theta$, where
+where~$H_{i} (\tau_i ; \theta) = \int_{0}^{\tau_i} h_{i} (t; \theta) dt$ is the cumulative hazard function. \textcolor{blue}{See Appendix~\ref{section:memproblems} for additional arguments in favor of our proposed approach.} Solving the associated score equations~$U_n (\theta) = {\bf 0}$ yields the maximum likelihood estimator~$\hat \theta$, where
 \[
 U_n (\theta) = \sum_{i=1}^{n} \left ( \sum_{j=1}^{k_i} \frac{h^{(1)}_i
     (T_{i,j}; \theta)}{h_i (T_{i,j}; \theta)} - H^{(1)}_{i} (\tau_i;
@@ -238,9 +238,10 @@ with $h_i^{(1)} (T_{i,j}; \theta)$ and $H_i^{(1)} (\tau_{i}; \theta)$ are deriva
 
 In classical joint models~\citep{Henderson2000, Tsiatis2004}, time-varying covariates~$x_i (t)$ are observed only intermittently at appointment times. In our current setting, maximizing the likelihood is computationally prohibitive since for any~$\theta$ we must compute the cumulative hazard functions~$H_{i} (\tau_i; \theta)$ which requires integration of~$h_i(t;\theta)$ given by~\eqref{eq:hazardlinear} which itself depends on the integral~$\int_{t-\Delta}^t x_i (s) \beta(s) ds$ that is a function of the unknown functional parameter $\beta(\cdot)$.  That is, the risk model now depends on an integrated past history of the time-varying covariate which leads to severe increase in computational complexity.
 
-\begin{rmk}[Connection to design-based estimation]
-The approximate score equations given by~\eqref{eq:approxscore} arise in design-based inference of point processes.  Design-based inference is common for spatial point processes~\citep{Waagepetersen2008} where the spatial varying covariate is observed at a random sample of locations. It is common in mobile health where ecological momentary assessments~\citep{Rathbun2012,Rathbun2016} are used to randomly sample individuals at various time-points to assess their emotional state.  In the current setting, we leverage these ideas to form a subsampling protocol that can substantially reduce computationally complexity.  Therefore, the purpose is quite different. Moreover, the dependence of the intensity function on the recent history of sensor values leads to additional complications that must be addressed.
-\end{rmk}
+% \begin{rmk}[Design-based estimation]
+\textcolor{blue}{
+To circumvent these computational difficulties, we will derive approximate score equations based on design-based inference of point processes.  Design-based inference is common for spatial point processes~\citep{Waagepetersen2008} where the spatial varying covariate is observed at a random sample of locations. It is common in mobile health where ecological momentary assessments~\citep{Rathbun2012,Rathbun2016} are used to randomly sample individuals at various time-points to assess their emotional state.  In the current setting, we will leverage these ideas to form a subsampling protocol that can substantially reduce computationally complexity.  Therefore, the purpose is quite different. Moreover, the dependence of the intensity function on the recent history of sensor values leads to additional complications that must be addressed.}
+% \end{rmk}
 
 % \begin{rmk}[Assessment of computational benefit]
 % Cool we have speed ups.
@@ -256,7 +257,7 @@ An estimator is design-unbiased if its expectation is equal to that parameter un
 \hat H_{i}^{(1)} (\tau_i; \theta) = \sum_{u \in (\bfT_i \cup \bfD_i)}
 \frac{ h^{(1)}_i ( u; \theta ) }{ \pi_i (u) + h_i ( u ; \theta) }
 \end{equation}
-Equation~\eqref{eq:WPest} is the estimator suggested by~\cite{Waagepetersen2008}.  This estimator depends on the superposition of the event and subsampling processes. Proposition~\ref{prop:optimal} shows the estimator for~$\theta$ associated with using~\eqref{eq:WPest} is the most efficient within a suitable class of estimators for the derivative of the cumulative hazard function (including the Horvitz-Thompson estimator). Therefore, we restrict our attention to~\eqref{eq:WPest} for the remainder of this paper. Letting
+Equation~\eqref{eq:WPest} is the estimator suggested by~\cite{Waagepetersen2008}.  This estimator depends on the superposition of the event and subsampling processes. Lemma~\ref{prop:optimal} shows the estimator for~$\theta$ associated with using~\eqref{eq:WPest} is the most efficient within a suitable class of estimators for the derivative of the cumulative hazard function (including the Horvitz-Thompson estimator). Therefore, we restrict our attention to~\eqref{eq:WPest} for the remainder of this paper. Letting
 \begin{equation}
 \label{eq:waage_weights}
 w_i (t; \theta) = \frac{\pi_i (t)}{\pi_i (t) + h_i (t ; \theta)},
@@ -289,7 +290,7 @@ for~$0 \leq s,s^\prime \leq \Delta$, where~$c_y((t,s), (t,s^\prime))$ is the cov
 \[
 \tilde \Sigma_0 (s_r , s_{r^\prime}) = \left( \sum_{i=1}^n \left | \bfD_i \right |\right)^{-1} \left( \sum_{i=1}^n \sum_{t \in \bfD_i} \tilde X (t,s_r) \tilde X (t,s_{r^\prime}) \right).
 \]
-Due to our concern over independent evolution as discussed in section~\ref{section:memproblems}, we do not assume that each observation is observed with white noise and therefore the diagonal elements of~$\hat \Sigma_0$ are not inflated. Second, the estimator~$\hat \Sigma$ is further smoothed again using the sandwich smoother~\citep{Xiao2013}. Note~\cite{Park2018} smooth the off-diagonal elements, while here we smooth the entire pooled sample covariance matrix. All negative eigenvalues are set to zero to ensure positive semi-definiteness. The result is used as an estimator~$\hat \Sigma_0$ for the pooled covariance $\Sigma_0$.
+\textcolor{blue}{As we assume the health process~$\bfx_i$ is directly observed}, the diagonal elements of~$\hat \Sigma_0$ are not inflated. Second, the estimator~$\hat \Sigma$ is further smoothed again using the sandwich smoother~\citep{Xiao2013}. Note~\cite{Park2018} smooth the off-diagonal elements, while here we smooth the entire pooled sample covariance matrix. All negative eigenvalues are set to zero to ensure positive semi-definiteness. The result is used as an estimator~$\hat \Sigma_0$ for the pooled covariance $\Sigma_0$.
 
 Next, we take the spectral decomposition of the estimated covariance function; let $\{ \hat \psi^{(0)}_k (s),\hat \lambda^{(0)}_k \}_{k \geq 1}$ be the resulting sequence of eigenfunctions and eigenvalues. The key benefit of the marginal covariance approach is that it allows us to compute a single, time-invariant basis expansion; this reduces the computational burden by avoiding the three dimensional covariance function (i.e., covariance depends on~$t$) and associated spectral decomposition in methods considered by \cite{ChenMuller2012}. Using the Karhunen-Lo{\`e}ve decomposition, we can represent~$X(t,s)$ for $t \in \bfT_i \cap \bfD_i$ by
 \[
@@ -342,12 +343,13 @@ where~$\tilde W_{i,t} = -W_{i,t}$. This is the score function for logistic regre
 The connection established by Lemma~\ref{lemma:logistic} between our proposed methodology and logistic regression allows us to leverage ``off-the-shelf'' software.  The main complication is pre-processing of the functional data; however, these additional steps can also be taken care of via existing software.  Therefore, the entire data analytic pipeline is easy-to-implement and requires minimal additional effort by the end-user. To see this, we briefly review the proposed inference procedure.
 
 \begin{rmk}[Inference procedure review] \normalfont
+\label{rmk:review}
 Given observed recurrent event and high frequency data~$\{ \bfT_i, \bfx_i \}_{i=1}^n$,
 \begin{enumerate}[(a)]
 \item For each $i \in [n]$, sample non-event times as a time-inhomogeneous Poisson point process with intensity according to~$\pi_i (t)$
 \item \label{p2} Estimate mean~$\mu_y (t,s)$ for $0 \leq s \leq \Delta$ at all event times~$t \in \cup_{i=1}^n \bfT_i$ and sampled non-event times~$t \in \cup_{i=1}^n \bfD_i$.
 \item \label{p3} Compute marginal covariance across event times,~$\Sigma_1$, and non-event times,~$\Sigma_0$.
-\item \label{p4} Compute eigendecomposition~$\{ \hat \psi_k^{(y)}, \hat \lambda_k^{()} \}$ of marginal covariance~$\Sigma_y$
+\item \label{p4} Compute eigendecomposition~$\{ \hat \psi_k^{(y)}, \hat \lambda_k^{(y)} \}$ of marginal covariance~$\Sigma_y$
 \item Use the eigendecomposition to construct~$W_{i,t}$ for all $i \in [n]$ and $t \in \bfD_i \cup \bfT_i$
 \item \label{point:log} Perform logistic regression with binary outcome~$\{ \Y_i (t) \}$  and offset of~$\log \pi_i (t)$.
 \end{enumerate}
@@ -359,7 +361,7 @@ Given observed recurrent event and high frequency data~$\{ \bfT_i, \bfx_i \}_{i=
 \subsection{Theoretical analysis}
 \label{section:theory}
 
-Our theoretical analysis requires assumptions regarding the subsampling procedure, the event process, and the functional data. We state these assumptions and then our main theorems. We start by assuming there exists a~$\tau < \infty$ such that all individuals are no longer at risk (i.e.,~$\tau_i < \tau$ for all~$i$). Moreover, define $R_i (t)$ to be the at-risk indicator for participant~$i$, i.e., $R_i (t) = {\bf 1} [t \in (0,\tau_i)]$. Asymptotic theory provided in Lemma~\ref{lemma:simpleasym} will be proven under regularity conditions A-E in~\cite[pp. 420--421]{Andersen1993} along with the following additional assumptions:
+Our theoretical analysis requires assumptions regarding the subsampling procedure, the event process, and the functional data. We state these assumptions and then our main theorems. We start by assuming there exists~$\tau < \infty$ such that all individuals are no longer at risk (i.e.,~$\tau_i < \tau$ for all~$i$). Moreover, define $R_i (t)$ to be the at-risk indicator for participant~$i$, i.e., $R_i (t) = {\bf 1} [t \in (0,\tau_i)]$. Asymptotic theory provided in Lemma~\ref{lemma:simpleasym} will be proven under regularity conditions A-E in~\cite[pp. 420--421]{Andersen1993} along with the following additional assumptions:
 
 \begin{assumption}[Event process assumptions]
 \label{assumption:events}\normalfont
@@ -395,20 +397,21 @@ The following assumptions are standard in prior work on longitudinal functional 
 \end{enumerate}
 \end{assumption}
 Finally, for simplicity, we assume that there exists~$b^\star$ such that~$\beta(t) = \mathbold{\phi} (t) b^\star$; that is, the true function~$\beta(t)$ sits in the span of the spline basis expansion.
+
+\begin{newmaterial}
 \begin{rmk}[Practical consequences of Assumptions~\ref{assumption:events} and~\ref{assumption:truncation}]
-Bounded and iid.
+Assumptions~\ref{assumption:events} and~\ref{assumption:truncation} contain as a special case the scenario where individuals are independent and identically distributed, the functional process is bounded (i.e., $|X(t,s)| < M$ for some $M <\infty$), and the subsampling rate is both lower and upper bounded at all risk times. As such bounds are likely to be true in most practical settings, this demonstrates the reasonableness of our assumptions for applied settings.
 \end{rmk}
+\end{newmaterial}
 
-
-With the necessary assumptions stated, we can now state Lemma~\ref{lemma:simpleasym}, which provides asymptotic theory.
-
+% With the necessary assumptions stated, we can now state Lemma~\ref{lemma:simpleasym}, which provides asymptotic theory.
 \begin{lemma} \normalfont
 \label{lemma:simpleasym}
 Under Assumption~\ref{assumption:events}, Assumption~\ref{assumption:truncation}, and~$\Delta$ known, for large~$n$ the estimator~$\hat \theta_n$ is consistent; moreover,
 \[
-\sqrt{n} (\hat \theta - \theta) \to N(0, \Xi (\theta)^{-1})
+\sqrt{n} (\hat \theta - \theta) \overset{D}{\to} N(0, \Xi (\theta)^{-1}),
 \]
-where
+where $\overset{D}{\to}$ is convergence is distribution and
 \[
   \Xi (\theta) = \int_{0}^{\tau} w(s; \theta) \times \left[ \frac{h^{(1)}(s;
       \theta) \times  h^{(1)} (s;\theta)^{\top}}{h(s; \theta)} \right]
@@ -416,7 +419,7 @@ where
 \]
 and~$\tau$ is the random censoring time of the event process.
 \end{lemma}
-A design-unbiased estimator for~$\Xi(\theta)$ is
+\textcolor{blue}{Proof of Lemma~\ref{lemma:simpleasym} is presented in Appendix~\ref{proof:asymp}.} A design-unbiased estimator for~$\Xi(\theta)$ is
 \begin{equation}
 \label{eq:fisher}
   \hat \Xi (\theta) = n^{-1} \sum_{i=1}^n \sum_{t \in \bfT_i \cup D_i}
@@ -437,13 +440,13 @@ Lemma~\ref{prop:optimal} shows~\eqref{eq:waage_weights} is optimal within a clas
 If the event process is an inhomogeneous Poisson point process with intensity~$h(t; \theta)$ and subsampling occurs via an independent, inhomogeneous Poisson point process with intensity~$\pi (t)$, then~$\hat U_n (\theta)$ are optimal estimating functions (i.e., most efficient) in the class of weighted estimating functions given by~\eqref{eq:approxscore} replacing~\eqref{eq:waage_weights} by any weight function~$w_i (t; \theta)$. This class includes the Horvitz-Thompson estimator under~$w(s; \theta) = 1$.
 % WD: Consider larger class and show the proof doesn't extend to non PP models?}
 \end{lemma}
+\noindent \textcolor{blue}{Proof of Lemma~\ref{prop:optimal} is presented in Appendix~\ref{app:optimalweights}.}
 
-\noindent
 
 \subsection{Computation versus statistical efficiency tradeoff}
 \label{section:tradeoff}
 
-Under assumption~\ref{assumption:truncation}, we next consider the statistical efficiency of our proposed estimator when compared to complete-data maximum likelihood estimation. While subsampling introduces additional variation, it may significantly reduce the overall computational burden. It is this trade-off that we next make precise. In particular, we consider the following choice of subsampling rate,~$\pi(t) = c \times h(t; \theta)$ for $c>0$. That is, the subsampling rate is proportional to the intensity function with time-independent constant~$c > 0$. Under this subsampling rate, the weight function~\eqref{eq:waage_weights} is equal to $c/ (c+1)$. Under Lemma~\ref{lemma:simpleasym},
+We next consider the statistical efficiency of our proposed estimator when compared to complete-data maximum likelihood estimation. While subsampling introduces additional variation, it may significantly reduce the overall computational burden. It is this trade-off that we next make precise. In particular, we consider the following choice of subsampling rate,~$\pi(t) = c \times h(t; \theta)$ for $c>0$. That is, the subsampling rate is proportional to the intensity function with time-independent constant~$c > 0$. Under this subsampling rate, the weight function~\eqref{eq:waage_weights} is equal to $c/ (c+1)$. Under Lemma~\ref{lemma:simpleasym},
 \[
 \Xi (\theta) = \frac{c}{c+1} \int_0^\tau \frac{ h^{(1)} (t; \theta)
   h^{(1)} (t; \theta)^\top}{h (t; \theta)} dt = \frac{c}{c+1} \Sigma (\theta)
@@ -467,7 +470,7 @@ Sensor measurements occur multiple times per second.  Suppose the intensity rate
 & 5 & 5760 & 2880 & 960 & 576 & 288 & 0.833 \\
 & 10 & 2880 & 1440 & 480 & 288 & 144 & 0.909 \\
 & 100 & 288 & 144 & 48 & 29 & 14 & 0.990 \\ \hline
-\multirow{3}{*}{32Hz (ACC)}
+\multirow{3}{*}{32Hz (AI)}
 & 5 & 46080 & 23040 & 7680 & 4608 & 2304 & 0.833 \\
 & 10 & 23040 & 11520 & 3840 & 2304 & 1152 & 0.909 \\
 & 100 & 2304 & 1152 & 384 & 230 & 115 & 0.990 \\ \hline
@@ -479,7 +482,7 @@ Sensor measurements occur multiple times per second.  Suppose the intensity rate
 
 \subsection{Penalized functional regression models}
 
-Recall theoretical results were proven under the assumption that there exists~$b^\star$ such that~$\beta(t) = \phi(t) {\bf b}^\star$. To make this assumption plausible, we set~$K_b$ large enough (but less than~$K_x$ to ensure identifiability) to ensure the spline basis expansion is sufficiently expressive. However, in practice, such a choice of~$K_b$ may lead to overfitting the data. Following~\cite{Goldsmith2011}, we choose the polynomial spline model and set~$\phi(t) = b_0 + b_1 t + b_2 t^2 + \sum_{j=3}^{K_b} (t-\kappa_j)^3$ where~$\{ \kappa_j \}_{j=3}^{K_b}$ are the chosen knots and assume~$\{ b_j \}_{j=3}^{K_b} \sim N(0, \sigma^2 I)$ to induce smoothness on the spline model.  Combining the penalized spline formulation with Lemma~\ref{lemma:logistic} establishes a connection between our approximate score equations and solving a generalized mixed effects logistic regression with offset.  Given the connection with generalized mixed effects models, the inferential machinery to obtain variance-covariance estimates.  \textcolor{blue}{As we leverage the standard R package `glmnet', the smoothness parameter is chosen via cross-validation.} In this context, we acknowledge another limitation.  Specifically, penalization may lead to confidence intervals that perform poorly in regions where~$\hat \beta(t)$ is over-smoothed.
+Recall theoretical results were proven under the assumption that there exists~$b^\star$ such that~$\beta(t) = \phi(t) {\bf b}^\star$. To make this assumption plausible, we set~$K_b$ large enough (but less than~$K_x$ to ensure identifiability) to ensure the spline basis expansion is sufficiently expressive. However, in practice, such a choice of~$K_b$ may lead to overfitting the data. Following~\cite{Goldsmith2011}, we choose the linear spline model and set~$\phi(t) = b_0 + b_1 t + \sum_{j=2}^{K_b-1} (t-\kappa_j)_{+}$ where~$\{ \kappa_j \}_{j=2}^{K_b-1}$ are the chosen knots and assume~$\{ b_j \}_{j=2}^{K_b-1} \sim N(0, \sigma^2 I)$ to induce smoothness on the spline model.  Combining the penalized spline formulation with Lemma~\ref{lemma:logistic} establishes a connection between our approximate score equations and solving a generalized mixed effects logistic regression with offset.  Given the connection with generalized mixed effects models, the inferential machinery to obtain variance-covariance estimates.  \textcolor{blue}{As we leverage the standard R package `glmnet', the smoothness parameter is chosen via cross-validation.} In this context, we acknowledge another limitation.  Specifically, penalization may lead to confidence intervals that perform poorly in regions where~$\hat \beta(t)$ is over-smoothed.
 
 
 
@@ -500,7 +503,7 @@ We set~$\Delta$ to mimic a 30-minute window for a $12$-hour day.  We set~$\theta
 
 We generate $1000$ datasets, each consisting of $500$ user-days.  For a given simulated user-day, we randomly sample non-event times using a Poisson process with rate of every five minutes.  We use the proposed methodology to construct the estimate $\hat \beta_{i,12} (t)$ for the $i$th simulated dataset; we then subsample the sampled non-event times with thinning probability $1/3$, $1/6$, $1/12$, and $1/24$.  This results in randomly sampled non-event times given by a Poisson process with rates of every fifteen minutes, half-hour, hour, and two hours.  We can construct the corresponding estimates: $\hat \beta_{i,4} (t)$, $\hat \beta_{i,2} (t)$, $\hat \beta_{i,1} (t)$, and $\hat \beta_{i,0.05} (t)$ respectively. Subsampling allows us to compare the variance due to subsampling as compared to the variance due to sampling fewer non-event times.
 
-Since we are primarily interested in accuracy, we report the mean integrated squared error (MISE) defined as~$\frac{1}{1000} \sum_{i=1}^{1000} \int_{0}^{\infty} ( \hat \beta_{i,j} (s) - \beta(s))^2 ds$ for each~$j$ where~$\beta(s) \equiv 0$ for $s > \Delta$.  The MISE is defined in this manner to account for settings where~$\Delta$ is unknown.  Next, let $\bar \beta_{j} (t) = \frac{1}{1000} \sum_{i=1}^{1000} \hat \beta_{i,j} (t)$ denote the average estimate for $j=0.5,1,2,4$.  Then the squared bias is given by $\int_{0}^{\infty} ( \bar \beta_{j} (s) - \beta (s))^2 ds$ and the variance is given by $\frac{1}{1000} \sum_{j=1}^{1000} \int_{0}^{\infty} ( \hat \beta_{i,j} (s) - \bar \beta_j(s))^2 ds$.  The subsampling variance is defined as $\frac{1}{1000} \sum_{i=1}^{1000} \int_{0}^{\infty} ( \hat \beta_{i,j} (s) - \hat \beta_{i,12} (s))^2 ds$.  Table~\ref{tab:mise} show the MISE decomposed into the variance and squared biased as well as the subsampling variance.  To allow fair comparisons across the two choices of $\beta(s)$, all reported numbers are scaled by the integrated square of the true function $\int_{0}^{\infty} \beta(s)^2 ds$. The average runtime (in seconds) is also reported.
+Since we are primarily interested in accuracy, we report the mean integrated squared error (MISE) defined as~$\frac{1}{1000} \sum_{i=1}^{1000} \int_{0}^{\infty} ( \hat \beta_{i,j} (s) - \beta(s))^2 ds$ for each~$j$ where~$\beta(s) \equiv 0$ for $s > \Delta$.  The MISE is defined in this manner to account for settings where~$\Delta$ is unknown.  Next, let $\bar \beta_{j} (t) = \frac{1}{1000} \sum_{i=1}^{1000} \hat \beta_{i,j} (t)$ denote the average estimate for $j=0.5,1,2,4$.  Then the squared bias is given by $\int_{0}^{\infty} ( \bar \beta_{j} (s) - \beta (s))^2 ds$ and the variance is given by $\frac{1}{1000} \sum_{j=1}^{1000} \int_{0}^{\infty} ( \hat \beta_{i,j} (s) - \bar \beta_j(s))^2 ds$.  The subsampling variance is defined as $\frac{1}{1000} \sum_{i=1}^{1000} \int_{0}^{\infty} ( \hat \beta_{i,j} (s) - \hat \beta_{i,12} (s))^2 ds$.  Table~\ref{tab:mise} show the MISE decomposed into the variance and squared biased as well as the subsampling variance.  \textcolor{blue}{To allow fair comparisons across the two choices of $\beta(s)$, all reported numbers are scaled by the integrated square of the true function $\int_{0}^{\infty} \beta(s)^2 ds$. The relative MISE (RMISE) to the lowest sampling rate and the average runtime (in seconds) are also reported.}
 
 Table~\ref{tab:mise} demonstrates that the variance may increase as the sampling rate decreases.  However, the rate of increase in the MISE is relatively quite low.  In the first setting, for example, the RMISE when sampling every hour versus every five minutes is 1.16 while the run time is 14.8 times faster.  In the second setting, the RMISE remains below or equal to $1$ while the run time is 23.1 times faster when sampling every hour rather than every minute.  This highlights the efficiency-computation trade-off.
 
@@ -568,15 +571,15 @@ $\Delta=$ & & 4.0 & 2.0 & 1.0 & 0.5 \\ \hline
 \begin{newmaterial}
 \subsection{Selection of bandwidth} \label{section:bandwidth}
 
-While above we explore the bias-variance trade-off under bandwidth misspecification, here we explore a data-adaptive method for bandwidth selection, a critical consideration for recent history functional linear models~\citep{KIM20111554}.  Specifically, given the model complexity does not change as a function of $\Delta$, our modest proposal is to compare AIC across a range of bandwidths and choose that which maximizes the criterion. Table~\ref{tab:aic_selection} presents AIC-based selection across the 500 simulated datasets analyzed in the prior section. We see markedly distinct behavior of the selection criterion in the two settings.  The AIC-based selection works well for the sinusoidal effect across subsampling rates, but performs poorly in the exponential setting. Recall that the sinusoidal effect is significantly different from 0 at $\Delta^\star$ and then 0 for all $s > \Delta^\star$ while the exponential effect decays slowly towards 0 as $s \to^{-} \Delta$. Therefore, the selection problem under the sinusoidal effect is much easier than under the exponential effect.  Moreover, bias, variance, and MISE do not vary substantially under bandwidth misspecification in the exponential setting.  Thus, we conclude that the AIC-based selection method works well in settings where inference depends heavily on estimating the bandwidth accurately.
+While above we explore the bias-variance trade-off under bandwidth misspecification, here we explore a data-adaptive method for bandwidth selection. This is a critical consideration for recent history functional linear models~\citep{KIM20111554}.  Given the model complexity does not change as a function of $\Delta$ in our simulations, our proposal is to compare AIC across a range of bandwidths and choose that which maximizes the criterion. Table~\ref{tab:aic_selection} presents AIC-based selection across the 500 simulated datasets analyzed in the prior section. We see markedly distinct behavior of the selection criterion in the two settings.  The AIC-based selection works well for the sinusoidal effect across subsampling rates, but performs poorly in the exponential setting. Recall that the sinusoidal effect is significantly different from 0 at $\Delta^\star$ and then 0 for all $s > \Delta^\star$ while the exponential effect decays slowly towards 0 as $s \to^{-} \Delta$. Therefore, the selection problem under the sinusoidal effect is much easier than under the exponential effect.  Moreover, bias, variance, and MISE do not vary substantially under bandwidth misspecification in the exponential setting.  Thus, we conclude that the AIC-based selection method works well in settings where inference depends heavily on estimating the bandwidth accurately.
 
 \begin{table}[!th]
-\begin{tabular}{c | c c c c | c c c c}
+\begin{tabular}{l | c c c c | c c c c}
 & \multicolumn{4}{c}{Exponential} & \multicolumn{4}{c}{Sinusoidal} \\ \hline
 \diagbox{$\Delta=$}{Rate} & 4.0 & 2.0 & 1.0 & 0.5 & 4.0 & 2.0 & 1.0 & 0.5 \\ \hline
 26 & {\bf 0.38} & {\bf 0.35} & {\bf 0.30} & 0.26 & 0.00 & 0.00 & 0.00 & 0.00 \\
 29 & 0.22 & 0.20 & 0.17 & 0.12 & 0.09 & 0.14 & 0.15 & 0.18 \\
-32 & 0.11 & 0.12 & 0.13 & 0.18 & {\bf 0.85} & {\bf 0.79} & {\bf 0.76} & {\bf 0.70} \\
+32$^\star$ & 0.11 & 0.12 & 0.13 & 0.18 & {\bf 0.85} & {\bf 0.79} & {\bf 0.76} & {\bf 0.70} \\
 35 & 0.13 & 0.13 & 0.14 & 0.15 & 0.05 & 0.06 & 0.06 & 0.09 \\
 37 & 0.14 & 0.20 & 0.26 & {\bf 0.28} & 0.01 & 0.01 & 0.02 & 0.03 \\ \hline
 \end{tabular}
@@ -588,7 +591,7 @@ While above we explore the bias-variance trade-off under bandwidth misspecificat
 
 \end{newmaterial}
 
-\subsection{Computational comparison to alternative methods} \label{section:simcomparisons}
+% \subsection{Computational comparison to alternative methods} \label{section:simcomparisons}
 
 
 \section{Extensions}
@@ -646,7 +649,7 @@ $\mathbold{\mu}_i (t) = \E [ \bfx_i (t) \given Y_i (t) = y] = \{
 \mu_y (s_{j}, t) \}_{j=1}^r$ and~$\mu_y (s,t)$ is the mean of~$X(t,s)$
 from group~$y$, and~$\Sigma_t ( s^\prime, s)$ is the covariance
 between~$X(s^\prime,t)$ and $X(s,t)$ for $s^\prime, s \in [0, \Delta]$
-and~$t \in \mathbb{R}_+$. 
+and~$t \in \mathbb{R}_+$. \textcolor{blue}{Note that~\cite{Petrovich2018} requires modeling the mean and covariance functions separately for $y=0$ and $y=1$.}
 %To account for overlap between $\Delta$-windows for $t \in \bfT_i \cup \bfD_i$ - i.e., avoid imputing values at a particular time to different values -- imputation is performed sequentially over this set.
 %$\{ (t,t') : t, t^\prime \in \bfT_i \cup \bfD_i \& |t - t'| < \Delta \}$
 
@@ -682,7 +685,7 @@ Given the paper's focus on ``off-the-shelf'' software implementations, multileve
 
 During an eight month period in 2018, 91 psychiatric inpatients admitted for suicidal risk to Franciscan Children's Hospital were enrolled in an observational study.  Study data were graciously provided by Evan Kleiman and his study team ({\tt https://kleimanlab.org}). Each study participant wore an Empatica E4~\citep{empaticae3}, a medical-grade wearable device that offers real-time physiological data.  On each user-day, participants were asked to self-identify moments of suicidal distress.  At these times, the participant was asked to press a button on the Empatica E4 device.  The timestamp of the button press was recorded.  One of the primary study goals was to assess the association between sensor-based physiological measurements and self-identified moments of suicidal distress. In particular, the scientific question is whether there are early indicators of escalating distress by monitoring physiological correlates.
 
-A key concern is whether all moments of suicidal distress are recorded.  To ensure this, clinical staff interviewed participants in the evening who were then asked to review their button press activity.  Any events that were identified as incorrect button press activity were removed.  At the end of the 30-day study period, the average number of button presses per day was $2.42$ with a standard deviation of $2.62$.  Investigation of the button press data shows low button-press counts prior to 7AM and a sharp drop off by 11PM. This demonstrates an additional concern: events can only occur when the individual is at-risk, i.e., (A) the individual is wearing the Empatica E4 and (B) is currently awake. To deal with (A) and (B), here we define each study day to begin at 9AM and end at 8PM.
+A key concern is whether all moments of suicidal distress are recorded.  To ensure this, clinical staff interviewed participants in the evening who were then asked to review their button press activity.  Any events that were identified as incorrect button press activity were removed.  At the end of the 30-day study period, the average number of button presses per day was $2.42$ with a standard deviation of $2.62$.  Investigation of the button press data shows low button-press counts prior to 7AM and a sharp drop off by 11PM. This demonstrates an additional concern: events can only occur when the individual is at-risk, i.e., (A) the individual is wearing the Empatica E4 and (B) is currently awake. \textcolor{blue}{To deal with (A) and (B), here we define each study day to begin at 9AM and end at 8PM.}
 % Due to (A), we use the Empatica E4 temperature sensor and filter out all records during which temperature data are below $30^{\circ}$ Celsius.
 
 \vspace{0.25cm}
@@ -706,7 +709,7 @@ Figure~\ref{fig:buttons} visualizes button presses versus time since study entry
       \label{tab:anova}
 \end{table}
 
-Here, we focus on two physiological processes -- (1) electrodermal activity (EDA), a measure of skin conductance measured at 4Hz, and  (2) \emph{activity index}~\citep{10.1371/journal.pone.0160644}, a coordinate-free feature built from accelerometer data collected at 32Hz that measures physical movement.  Electrodermal activity can be significantly impacted by external factors (e.g., room temperature).  To account for the high between user-day variation, we analyze EDA standardized per study-day and  device. The individual EDA and AI trajectories are highly variable which tends to obscure patterns and trends.  In Figure~\ref{fig:mean_edacc}, the mean trajectories of EDA and AI are plotted in reverse time from button press timestamps, which shows sharp changes in EDA and AI in the 10 minutes prior to button presses.
+Here, we focus on two physiological processes -- (1) electrodermal activity (EDA), a measure of skin conductance measured at 4Hz, and  (2) \emph{activity index} (AI)~\citep{10.1371/journal.pone.0160644}, a coordinate-free feature built from accelerometer data collected at 32Hz that measures physical movement.  Electrodermal activity can be significantly impacted by external factors (e.g., room temperature).  To account for the high between user-day variation, we analyze EDA standardized per study-day and  device. The individual EDA and AI trajectories are highly variable which tends to obscure patterns and trends.  In Figure~\ref{fig:mean_edacc}, the mean trajectories of EDA and AI are plotted in reverse time from button press timestamps, which shows sharp changes in EDA and AI in the 30 minutes prior to button presses.  \textcolor{blue}{In Figure~\ref{fig:mean_edacc_nonevents} in Appendix~\ref{app:addtlfigs}, the mean trajectories of EDA and AI are plotted in reverse time for the sampled non-event times in the 30 minutes prior to the non-event time.  The distinct mean behavior motivates our desire to model these two processes separately as discussed in Remark~\ref{rmk:review}.}
 
 \begin{figure}[!th]
 \centering
@@ -728,20 +731,25 @@ Here, we focus on two physiological processes -- (1) electrodermal activity (EDA
 
 \subsection{Complete-case analysis}
 
-Inspection of Figures~\ref{fig:mean_eda} and~\ref{fig:mean_acc} suggest setting $\Delta = 30$ minutes is adequate to capturing the proximal impact of EDA and AI on the risk of a button press.  To ensure minimal loss of efficiency, the subsampling rate was set to once every fifteen minutes.  Given the daily button press rate, this ensures an average of $44$ non-events to $2.5$ events per day.  Based on Table~\ref{tab:compvseff}, this ensures we can achieve a substantial data reduction at a minimal loss of efficiency.  After sampling non-event times, complete-case analyses are performed, i.e., sampled times where sensors included in the model have any level of missing data are ignored.
+\begin{newmaterial}
+
+Inspection of Figures~\ref{fig:mean_eda} and~\ref{fig:mean_acc} suggest setting $\Delta$ between $5$ and $30$ minutes. Here, we investigate three potential window lengths, $\Delta = 5, 15,$ and $30$.  To ensure minimal loss of efficiency, the subsampling rate was set to once every fifteen minutes.  Given the daily button press rate, this ensures an average of $44$ non-events to $2.5$ events per day.  Based on Table~\ref{tab:compvseff}, this ensures we can achieve a substantial data reduction at a minimal loss of efficiency.  After sampling non-event times, complete-case analyses are performed, i.e., sampled times where sensors included in the model have any level of missing data are ignored.  Table~\ref{tab:aicbic} presents both AIC and BIC criteria on the complete-case data, normalized by the number of observations to ensure fair comparison. We find that $\Delta = 15$ is adequate to capturing the proximal impact of EDA and AI on the risk of a button press.
 
 \begin{table}
 \begin{tabular}{c c c c}
 Delta & 5 & 15 & 30 \\ \hline
-AIC & - & - & - \\
-BIC & - & - & - \\ \hline
+AIC & 0.96 & 0.98 & 0.95 \\
+BIC & 0.99 & 1.01 & 0.99 \\ \hline
 \end{tabular}
+\caption{Normalized AIC and BIC for different choices of $\Delta$ using complete-case data. For $\Delta = 5$, $K_b = K_x = 31$ due to amount of data in shorter window-length, while $K_b=K_x = 35$ for $\Delta = 15$ and $30$.}
+\label{tab:aicbic}
 \end{table}
 
-We analyzed activity index (AI) and electrodermal activity separately as given in equation~~\eqref{eq:hazardlinear} as well as jointly in a multivariate model as in equation~\eqref{eq:multihazardlinear}.  Results did not change substantially.  Figure~\ref{fig:eda_estimate} and~\ref{fig:acc_estimate} presents the estimates from the joint analysis with their associated 95\% confidence intervals.  We highlight in gray the statistically significant regions.  Here, we see that standardized EDA is not associated with increased risk of button press, while activity index sees a positive association in the final few minutes prior to a button press.  In section~\ref{sec:missingdata_heterogeneity}, we investigate whether the results are sensitive to missing data.
- % and whether individual-level coefficients,~$\beta(t) + b_i (t)$, effects show stronger dependence on EDA and/or AI for certain individuals.
 
-\begin{figure}[!th]
+In Section~\ref{app:csmissing} of the supplementary materials, Figures~\ref{fig:missing_eda} and~\ref{fig:missing_acc} present the per-patient average fraction with missing EDA and AI in 30-minute windows respectively. For EDA, we have a wide range of missingness -- from $0\%$ to over $40$\% across individuals with most between $5\%$ and $30\%$ average fraction missing.  For AI, the missingness is less pronounced -- from $0\%$ to $15\%$ across individuals with most between $0\%$ and $10\%$ average fraction missing.
+
+
+ \begin{figure}[!th]
 \centering
 \begin{subfigure}{.5\textwidth}
   \centering
@@ -759,11 +767,19 @@ We analyzed activity index (AI) and electrodermal activity separately as given i
 \label{fig:edacc_estimate}
 \end{figure}
 
-\subsection{Sensitivity analysis for window length}
+We analyzed activity index (AI) and electrodermal activity jointly in a multivariate model as in equation~\eqref{eq:multihazardlinear}.  To account for times when the participants may not be wearing the device and thus not be \emph{at-risk} for a button press, we limited the analysis to data collected between 9AM and 8PM.  In the analysis, we assumed a constant baseline hazard and included a binary indicator of whether the participant had an event in the past 12 hours to account for patient heterogeneity in the number of events as seen in Figure~\ref{fig:buttons}.   Figure~\ref{fig:eda_estimate} and~\ref{fig:acc_estimate} presents the estimates from the joint analysis and their associated 95\% confidence intervals using the bootstrap and multiple imputation strategy.  We highlight in gray the statistically significant regions.  Here, we see that standardized EDA is not associated with increased risk of button press, while activity index sees a positive association in the final few minutes prior to a button press.
+
+\end{newmaterial}
+ % and whether individual-level coefficients,~$\beta(t) + b_i (t)$, effects show stronger dependence on EDA and/or AI for certain individuals.
+
+
+ \subsection{Sensitivity analysis for window length}
 \label{sec:missingdata_heterogeneity}
 
+\begin{newmaterial}
 
-In Section~\ref{app:csmissing} of the supplementary materials, Figures~\ref{fig:missing_eda} and~\ref{fig:missing_acc} present the per-patient average fraction with missing EDA and AI in 30-minute windows respectively. For EDA, we have a wide range of missingness -- from $0\%$ to over $40$\% across individuals with most between $5\%$ and $30\%$ average fraction missing.  For AI, the missingness is less pronounced -- from $0\%$ to $15\%$ across individuals with most between $0\%$ and $10\%$ average fraction missing.  To assess the impact of missing data, we perform the imputation under uncongeniality using the boostrap and multiple imputation strategy described in Section~\ref{section:miuncong}.  Here we see that the EDA curve remains non-significant while the region where the AI curve is significant widens slightly to be the prior 4 minutes.
+ We next investigate whether the results are sensitive to window length. Specifically, we re-analyzed activity index (AI) and electrodermal activity jointly in a multivariate model as in equation~\eqref{eq:multihazardlinear} with $\Delta = 5$ and $30$ minutes.  Figure~\ref{fig:acc_estimate_bs_delta5} and~\ref{fig:acc_estimate_bs_delta30} presents the estimates from the joint analysis for the activity index (AI) and their associated 95\% confidence intervals using the bootstrap and multiple imputation strategy.  We highlight in gray the statistically significant regions which remain similar across all three choices of window length.  We do not present results for the standardized EDA as it continues to be not associated with increased risk of button press.
+ \end{newmaterial}
 
 \begin{figure}[!th]
 \centering
@@ -779,7 +795,7 @@ In Section~\ref{app:csmissing} of the supplementary materials, Figures~\ref{fig:
   \caption{$\Delta = 30$ minutes}
   \label{fig:acc_estimate_bs_delta30}
 \end{subfigure}
-\caption{$\beta (t)$ for ACC and EDA with 95\% CI; solid line is point estimate for the missing data analysis, while highlighted region are the boostrap and MI based pointwise 95\% confidence intervals.}
+\caption{$\beta (t)$ for AI and EDA with 95\% CI; solid line is point estimate for the missing data analysis, while highlighted region are the boostrap and MI based pointwise 95\% confidence intervals.}
 \label{fig:edacc_estimate_bs}
 \end{figure}
 
