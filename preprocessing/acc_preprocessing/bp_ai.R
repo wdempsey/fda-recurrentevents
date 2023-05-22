@@ -62,7 +62,7 @@ bp_ai_summary = bp_ai %>%
 max(bp_ai_summary$AI_entries) # should be no larger than 180 = 30*60/epch
 
 #### Draw the mean plot and the boxplot ####
-bp_ai = bp_ai_read %>%
+bp_ai = bp_ai %>%
   group_by(ID, BP_num, Device) %>%
   mutate(time_to_bp = max(AI_num)+1-AI_num) %>%
   ungroup() %>%
