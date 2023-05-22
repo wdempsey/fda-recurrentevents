@@ -38,9 +38,10 @@ Below we list important details in order use this repository:
   pressed the button to indicate a moment of distress.  Each row
   consists of Participant ID, timestamp (both in seconds and
   milliseconds).
-2. **[Data visualization](/visualization)**: Directory with code to
-   generate plots per participant
-3. **[Methods](/methods)**: Directory with code implementation of the
+2. **[Simulations](/simulations**: Directory with code to generate and analyze simulated datasets
+3. **[Preprocessing](/preprocessing)**: Directory with code to
+   pre-process case study data (AI and EDA).
+4. **[Methods](/methods)**: Directory with code implementation of the
    random subsampling methodology
 * **Inputs file**: Fill in the [`inputs.R`](/methods/inputs.R) file. File contains spots for:
   * `eda_dir`: Directory for EDA participant data (1 file per participant)
