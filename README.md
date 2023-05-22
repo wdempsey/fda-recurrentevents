@@ -43,36 +43,6 @@ Below we list important details in order use this repository:
    pre-process case study data (AI and EDA).
 4. **[Methods](/methods)**: Directory with code implementation of the
    random subsampling methodology
-* **Inputs file**: Fill in the [`inputs.R`](/methods/inputs.R) file. File contains spots for:
-  * `eda_dir`: Directory for EDA participant data (1 file per participant)
-  * `acc_dir`: Directory for ACC participant data (1 file per participant)
-  * `button_press_dir`: Directory for button press data (1 file containing all button press data)
-  * `participant_ids`: List of all participant ids
-  * `feature_generator`: User-specified function that takes in timestamp, participant id, and the button press data and outputs a feature vector. One simple example is number of button presses in prior 30-minutes.
-  * `partial_pooling_indicator`: User-specified indicator of whether partial pooling should be used. If 1, fit hierarchical model; if 0, fit population model.
-  * `sampling-rate`: User-specified sampling rate (per hour) for the non-event times. Default is set to 1 sample every 30-minutes.
-  * `Delta`: user-specified window-length (per hour). Default is set to 30-minute window-length.
-* **Methods run file**: The following code snippet can be run once `inputs.R` has been completed: ```Rscript fda-recurrent.R```
-* **Intermediate output files**:
-  * `sampled_data.RDS`: data frame where each row is participant id,
-  sampled_timestamp, minute-by-minute smoothed EDA for prior
-  * `sandwich-mean-output`: Sandwich smooth estimate of mu(s,t) at
-  sampled_timestamps
-  * `pooled-covariance`: Pooled sample covariance estimate
-  * `eigenfunctions` and `eigenvalues`: Vector of eigenfunctions and
-    eigenvalues
-* **Outputs file**: All output is saved in `outputs.RDS`. Contains:
-  * `sample-ts`: List of all sampled time points
-  * `theta-hat`: Penalized maximum likelihood estimate
-  * `std-err-theta`: Standard errors
-  * `var-sample-comp`: Component of the variance related to
-  subsampling
-  * `var-process-comp`: Component of the variance related to
-  recurrent event process
-4. **[Evaluate](/evaluation)**: all code for evaluation of the
-methodology (both simulation and case study)
-* Code to evaluate method on simulation studies [simulation subdirectory](/evaluation/simulationstudies)
-* Code to evaluate method on Franciscan dataset [case study subdirectory](/evaluation/casestudy)
 5. **Write-up**: Latex file containing the [statistical writeup](/write-up/fda-recurrent.tex)
 
 ## Contact me ##
