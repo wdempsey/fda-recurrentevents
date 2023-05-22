@@ -46,6 +46,5 @@ rsconnect/
 *.bbl
 *.blg
 
-# Images
-*.png
+# Rar
 *.rar
