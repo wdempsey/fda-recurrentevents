@@ -5,11 +5,14 @@ Code for project on combining functional data analysis (FDA) with random subsamp
 This project includes the code needed to reproduce the results in the paper: "Recurrent event analysis in the presence of functional covariates via random subsampling". If using this code please cite the paper using the following bibtex:
 
 ```tex
-@article{Dempsey:2019,
-author = {Dempsey, Walter},
-title = {Recurrent event analysis in the presence of functional
-covariates via random subsampling},
-year = {2019}}
+@misc{dempsey2022recurrent,
+      title={Recurrent event analysis in the presence of real-time high frequency data via random subsampling}, 
+      author={Walter Dempsey},
+      year={2022},
+      eprint={2204.06632},
+      archivePrefix={arXiv},
+      primaryClass={stat.ME}
+}
 ```
 
 The goal of this project is to build subsampling-unbiased likelihood-based estimators that trade off statistical and  computational efficiency.
